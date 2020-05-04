@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name_kh">វចនានុក្រមខ្មែរ</string>
     <string name="app_name">Khmer Dictionary</string>
+    <string name="nav_close">Close Drawer</string>
+    <string name="nav_open">Open Drawer</string>
+
+    <string name="bookmarks">បញ្ជីពាក្យរក្សាទុក</string>
+    <string name="histories">បញ្ជីពាក្យធ្លាប់មើល</string>
+    <string name="search_hint">ស្វែងរកពាក្យ</string>\
+    <string name="close">បិទ</string>
+    <string name="exit">ចាកចេញ</string>
+    <string name="delete">លុប</string>
+
+    <string name="bookmark">រក្សាទុក</string>
+    <string name="delete_bookmark">លុបការរក្សាទុក</string>
+    <string name="zoom_in">ពង្រីក</string>
+    <string name="zoom_out">បង្រួម</string>
+    <string name="app_version_place_holder">ជំនាន់កម្មវិធី %s</string>
 </resources>

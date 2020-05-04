@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.fragment.MviFragment
@@ -17,6 +19,8 @@ import com.sovathna.khmerdictionary.ui.main.MainActivity
 import com.sovathna.khmerdictionary.util.LogUtil
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -25,7 +29,7 @@ import javax.inject.Provider
 
 class WordListFragment : MviFragment<WordListIntent, WordListState, WordListViewModel>(
   R.layout.fragment_word_list
-) {
+), DrawerLayout.DrawerListener {
 
   @Inject
   @Named("filter")
@@ -47,7 +51,7 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
   @Inject
   lateinit var mActivity: MainActivity
 
-  lateinit var layoutManager: LinearLayoutManager
+  private lateinit var layoutManager: LinearLayoutManager
 
   private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
 
@@ -59,11 +63,15 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setHasOptionsMenu(true)
-    LogUtil.i("onCreate")
     if (savedInstanceState != null) {
       oldTerm = savedInstanceState.getString("old_term")
       searchItemState = savedInstanceState.getBoolean("search_item_state")
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    LogUtil.i("fragment destroy")
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,6 +79,36 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
     layoutManager = layoutManagerProvider.get() as LinearLayoutManager
     rv.layoutManager = layoutManager
     rv.adapter = adapter
+
+    mActivity.drawer_layout.addDrawerListener(this)
+    mActivity.fab.show()
+    mActivity.fab.setOnClickListener {
+      if (searchItemState) {
+        mActivity.fab?.setImageDrawable(
+          ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.round_search_white_24
+          )
+        )
+        searchItem?.isVisible = false
+        searchItem?.collapseActionView()
+      } else {
+        mActivity.fab?.setImageDrawable(
+          ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.round_clear_white_24
+          )
+        )
+        searchItem?.isVisible = true
+        searchItem?.expandActionView()
+      }
+    }
+  }
+
+  override fun onDestroyView() {
+    mActivity.drawer_layout.removeDrawerListener(this)
+    mActivity.fab.hide()
+    super.onDestroyView()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
@@ -94,7 +132,7 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
   override fun render(state: WordListState) {
     with(state) {
 
-      if (isInit) filterIntent.onNext(WordListIntent.Filter(null, 0))
+      if (isInit) filterIntent.onNext(WordListIntent.Filter(mActivity.getFilterType(), null, 0))
 
 
       if (isMore) {
@@ -140,7 +178,7 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
     removeScrollChangedListener()
     scrollChanged = ViewTreeObserver.OnScrollChangedListener {
       if (layoutManager.findLastVisibleItemPosition() + Const.LOAD_MORE_THRESHOLD >= itemCount) {
-        filterIntent.onNext(WordListIntent.Filter(oldTerm, itemCount))
+        filterIntent.onNext(WordListIntent.Filter(mActivity.getFilterType(), oldTerm, itemCount))
         LogUtil.i("load more. count: $itemCount")
         removeScrollChangedListener()
       }
@@ -158,6 +196,31 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
     inflater.inflate(R.menu.main, menu)
     LogUtil.i("onCreateOptionsMenu $oldTerm")
     searchItem = menu.findItem(R.id.action_search)
+    searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+      override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+        searchItemState = true
+        mActivity.fab?.setImageDrawable(
+          ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.round_clear_white_24
+          )
+        )
+        searchItem?.isVisible = true
+        return true
+      }
+
+      override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+        searchItemState = false
+        mActivity.fab?.setImageDrawable(
+          ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.round_search_white_24
+          )
+        )
+        searchItem?.isVisible = false
+        return true
+      }
+    })
     if (searchItemState) searchItem?.expandActionView()
     val searchView = searchItem!!.actionView as SearchView
     searchView.queryHint = "ស្វែងរកពាក្យ"
@@ -174,7 +237,7 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
           LogUtil.i("search: $searchTerm")
           oldTerm = searchTerm
           searchIntent.onNext(
-            WordListIntent.Filter(searchTerm, 0)
+            WordListIntent.Filter(mActivity.getFilterType(), searchTerm, 0)
           )
           return true
         }
@@ -187,4 +250,19 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
     })
   }
 
+  override fun onDrawerStateChanged(newState: Int) {
+
+  }
+
+  override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+
+  }
+
+  override fun onDrawerClosed(drawerView: View) {
+
+  }
+
+  override fun onDrawerOpened(drawerView: View) {
+    searchItem?.collapseActionView()
+  }
 }

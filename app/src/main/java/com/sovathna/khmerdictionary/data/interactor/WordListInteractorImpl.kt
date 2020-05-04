@@ -15,7 +15,12 @@ class WordListInteractorImpl @Inject constructor(
 
   override val filterWordList = ObservableTransformer<WordListIntent.Filter, WordListResult> {
     it.flatMap { intent ->
-      repository.filterWordList(intent.filter, intent.offset, Const.PAGE_SIZE)
+      repository.filterWordList(
+        intent.filterType,
+        intent.searchTerm,
+        intent.offset,
+        Const.PAGE_SIZE
+      )
         .toObservable()
         .map { words ->
           WordListResult.Success(

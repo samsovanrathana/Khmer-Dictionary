@@ -18,10 +18,6 @@ class WordListModule {
     ViewModelProvider(fragment, factory)[WordListViewModel::class.java]
 
   @Provides
-  @Named("filter")
-  fun filterIntent() = PublishSubject.create<WordListIntent.Filter>()
-
-  @Provides
   @Named("search")
   fun searchIntent() = PublishSubject.create<WordListIntent.Filter>()
 

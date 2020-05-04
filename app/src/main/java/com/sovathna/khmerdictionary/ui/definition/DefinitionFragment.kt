@@ -7,11 +7,13 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.URLSpan
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
-import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
-import androidx.core.widget.PopupWindowCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
@@ -20,6 +22,7 @@ import com.sovathna.khmerdictionary.ui.main.MainActivity
 import com.sovathna.khmerdictionary.util.LogUtil
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_definition.*
 import javax.inject.Inject
 
@@ -37,6 +40,8 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    LogUtil.i("definition fragment on create")
+    setHasOptionsMenu(true)
     arguments?.let {
       id = it.getLong("id", 0L)
     }
@@ -49,15 +54,21 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
     } else {
       mActivity.title = getString(R.string.app_name_kh)
     }
-    mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+    mActivity.drawerToggle.isDrawerIndicatorEnabled =
+      resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT
+    mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(!mActivity.drawerToggle.isDrawerIndicatorEnabled)
+    if (!mActivity.drawerToggle.isDrawerIndicatorEnabled) {
+      mActivity.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
 
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
     mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    mActivity.drawerToggle.isDrawerIndicatorEnabled = true
+    mActivity.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     mActivity.title = getString(R.string.app_name_kh)
-    PopupWindow()
   }
 
   override fun intents(): Observable<DefinitionIntent> =
@@ -115,5 +126,13 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
     }
     text.text = strBuilder
     text.movementMethod = LinkMovementMethod.getInstance()
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    inflater.inflate(R.menu.definition_menu, menu)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return super.onOptionsItemSelected(item)
   }
 }
