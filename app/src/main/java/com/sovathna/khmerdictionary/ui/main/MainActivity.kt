@@ -6,10 +6,10 @@ import androidx.core.view.GravityCompat
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.FilterType
+import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.WordListIntent
 import com.sovathna.khmerdictionary.ui.definition.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
-import com.sovathna.khmerdictionary.util.LogUtil
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
@@ -109,12 +109,10 @@ class MainActivity : DaggerAppCompatActivity() {
     tv_title?.text = title
   }
 
-  fun onItemClick(id: Long) {
-    selectIntent.onNext(WordListIntent.Select(id))
+  fun onItemClick(word: Word) {
+    selectIntent.onNext(WordListIntent.Select(word.id))
     val fragment =
       supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as? DefinitionFragment
-
-    LogUtil.i("fragment: $fragment")
 
     if (supportFragmentManager.backStackEntryCount > 0)
       supportFragmentManager.popBackStackImmediate()
@@ -128,7 +126,7 @@ class MainActivity : DaggerAppCompatActivity() {
       if (definition_container != null) R.id.definition_container else R.id.word_list_container,
       (fragment ?: DefinitionFragment()).apply {
         arguments = Bundle().apply {
-          putLong("id", id)
+          putParcelable("word", word)
         }
       },
       Const.DEFINITION_FRAGMENT_TAG

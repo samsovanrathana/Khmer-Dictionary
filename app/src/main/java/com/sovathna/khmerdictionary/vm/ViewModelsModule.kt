@@ -2,36 +2,30 @@ package com.sovathna.khmerdictionary.vm
 
 import androidx.lifecycle.ViewModel
 import com.sovathna.khmerdictionary.di.ViewModelKey
-import com.sovathna.khmerdictionary.domain.interactor.DefinitionInteractor
-import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
-import com.sovathna.khmerdictionary.domain.interactor.WordListInteractor
 import com.sovathna.khmerdictionary.ui.definition.DefinitionViewModel
 import com.sovathna.khmerdictionary.ui.splash.SplashViewModel
 import com.sovathna.khmerdictionary.ui.wordlist.WordListViewModel
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.multibindings.IntoMap
 
 @Module
-class ViewModelsModule {
+abstract class ViewModelsModule {
 
-  @Provides
+  @Binds
   @IntoMap
   @ViewModelKey(SplashViewModel::class)
-  fun splashViewModel(interactor: SplashInteractor): ViewModel =
-    SplashViewModel(interactor)
+  abstract fun splashViewModel(viewModel: SplashViewModel): ViewModel
 
-  @Provides
+  @Binds
   @IntoMap
   @ViewModelKey(WordListViewModel::class)
-  fun wordListViewModel(interactor: WordListInteractor): ViewModel =
-    WordListViewModel(interactor)
+  abstract fun wordListViewModel(viewModel: WordListViewModel): ViewModel
 
-  @Provides
+  @Binds
   @IntoMap
   @ViewModelKey(DefinitionViewModel::class)
-  fun definitionViewModel(interactor: DefinitionInteractor): ViewModel =
-    DefinitionViewModel(interactor)
+  abstract fun definitionViewModel(viewModel: DefinitionViewModel): ViewModel
 
 }
 

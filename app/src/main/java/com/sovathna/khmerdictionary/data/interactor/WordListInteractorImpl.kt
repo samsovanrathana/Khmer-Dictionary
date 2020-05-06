@@ -21,7 +21,6 @@ class WordListInteractorImpl @Inject constructor(
         intent.offset,
         Const.PAGE_SIZE
       )
-        .toObservable()
         .map { words ->
           WordListResult.Success(
             words,

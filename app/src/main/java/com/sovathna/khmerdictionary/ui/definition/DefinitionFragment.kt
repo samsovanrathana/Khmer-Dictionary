@@ -12,10 +12,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.khmerdictionary.R
+import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import com.sovathna.khmerdictionary.ui.main.MainActivity
@@ -26,24 +28,35 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_definition.*
 import javax.inject.Inject
 
-class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, DefinitionViewModel>(
-  R.layout.fragment_definition
-) {
+class DefinitionFragment:
+  MviFragment<DefinitionIntent, DefinitionState, DefinitionViewModel>(
+    R.layout.fragment_definition
+  ) {
+
+  companion object {
+    fun newInstance(arguments: Bundle? = null): DefinitionFragment =
+      DefinitionFragment().apply {
+        this.arguments = arguments
+      }
+  }
 
   @Inject
   lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.Get>
 
   @Inject
+  lateinit var bookmarkIntent: PublishSubject<DefinitionIntent.Bookmark>
+
+  @Inject
   lateinit var mActivity: MainActivity
 
-  private var id: Long = 0
+  private lateinit var word: Word
+  private lateinit var bookmarkItem: MenuItem
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    LogUtil.i("definition fragment on create")
     setHasOptionsMenu(true)
     arguments?.let {
-      id = it.getLong("id", 0L)
+      word = it.getParcelable("word")!!
     }
   }
 
@@ -72,11 +85,15 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
   }
 
   override fun intents(): Observable<DefinitionIntent> =
-    getDefinitionIntent.cast(DefinitionIntent::class.java)
+    Observable.merge(
+      getDefinitionIntent,
+      bookmarkIntent
+    )
 
   override fun render(state: DefinitionState) {
     with(state) {
-      if (isInit) getDefinitionIntent.onNext(DefinitionIntent.Get(id))
+      LogUtil.i("definition state: $this")
+      if (isInit) getDefinitionIntent.onNext(DefinitionIntent.Get(word.id))
       definition?.let {
         tv_name.text = definition.word
 
@@ -92,9 +109,24 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
           .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
         setTextViewHTML(tv_definition, tmp)
 //        tv_definition.text = definition.definition
+
+        if (::bookmarkItem.isInitialized) {
+          if (isBookmark == true) {
+            bookmarkItem.icon =
+              ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_white_24)
+            bookmarkItem.title = getString(R.string.delete_bookmark)
+          } else {
+            bookmarkItem.icon =
+              ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_border_white_24)
+            bookmarkItem.title = getString(R.string.bookmark)
+          }
+        }
+        this@DefinitionFragment.isBookmark = isBookmark
       }
     }
   }
+
+  private var isBookmark: Boolean? = null
 
   private fun makeLinkClickable(
     strBuilder: SpannableStringBuilder,
@@ -130,9 +162,24 @@ class DefinitionFragment : MviFragment<DefinitionIntent, DefinitionState, Defini
 
   override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     inflater.inflate(R.menu.definition_menu, menu)
+    bookmarkItem = menu.findItem(R.id.action_bookmark)
+    if (isBookmark == true) {
+      bookmarkItem.icon =
+        ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_white_24)
+      bookmarkItem.title = getString(R.string.delete_bookmark)
+    } else {
+      bookmarkItem.icon =
+        ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_border_white_24)
+      bookmarkItem.title = getString(R.string.bookmark)
+    }
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    when (item.itemId) {
+      R.id.action_bookmark -> {
+        bookmarkIntent.onNext(DefinitionIntent.Bookmark(word))
+      }
+    }
     return super.onOptionsItemSelected(item)
   }
 }

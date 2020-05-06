@@ -26,6 +26,7 @@ class RetrofitModule {
   fun converterFactory(): Converter.Factory = MoshiConverterFactory.create().withNullSerialization()
 
   @Provides
+  @Singleton
   fun downloadRetrofit(
     baseUrl: String,
     client: OkHttpClient,

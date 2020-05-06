@@ -11,8 +11,9 @@ import com.sovathna.khmerdictionary.domain.model.result.WordListResult
 import com.sovathna.khmerdictionary.domain.model.state.WordListState
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
+import javax.inject.Inject
 
-class WordListViewModel(
+class WordListViewModel @Inject constructor(
   private val interactor: WordListInteractor
 ) : MviViewModel<WordListIntent, WordListResult, WordListState>() {
 

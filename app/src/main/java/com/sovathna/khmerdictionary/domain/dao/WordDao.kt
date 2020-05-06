@@ -20,4 +20,7 @@ interface WordDao {
   @Insert
   fun inserts(words: List<WordEntity>): Single<List<Long>>
 
+  @Query("SELECT * FROM dict WHERE id IN(:ids)")
+  fun gets(ids: List<Long>): Single<List<WordEntity>>
+
 }

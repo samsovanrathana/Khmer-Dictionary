@@ -4,11 +4,13 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 class OkHttpModule {
 
   @Provides
+  @Singleton
   fun downloadOkHttp() = OkHttpClient()
     .newBuilder()
     .connectTimeout(1, TimeUnit.MINUTES)

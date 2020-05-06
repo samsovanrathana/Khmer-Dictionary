@@ -8,11 +8,13 @@ import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
 import com.sovathna.khmerdictionary.domain.model.result.SplashResult
 import com.sovathna.khmerdictionary.domain.model.state.SplashState
+import com.sovathna.khmerdictionary.util.LogUtil
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import javax.inject.Inject
 
-class SplashViewModel(
+class SplashViewModel @Inject constructor(
   private val interactor: SplashInteractor
 ) : MviViewModel<SplashIntent, SplashResult, SplashState>() {
 
@@ -46,4 +48,9 @@ class SplashViewModel(
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(::setValue)
     }
+
+  override fun onCleared() {
+    super.onCleared()
+    LogUtil.i("SplashViewModel cleared")
+  }
 }

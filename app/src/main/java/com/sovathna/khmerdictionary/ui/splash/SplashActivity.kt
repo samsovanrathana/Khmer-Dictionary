@@ -114,6 +114,7 @@ class SplashActivity : MviActivity<SplashIntent, SplashState, SplashViewModel>(
   }
 
   override fun onBackPressed() {
-    Toast.makeText(this,"ចាំតិចទៅថី? បានអីមកវិញហ្នុង",Toast.LENGTH_SHORT).show()
+    super.onBackPressed()
+    Toast.makeText(this, "ចាំតិចទៅថី? បានអីមកវិញហ្នុង", Toast.LENGTH_SHORT).show()
   }
 }

@@ -147,7 +147,7 @@ class WordListFragment : MviFragment<WordListIntent, WordListState, WordListView
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
               (searchItem?.actionView as? SearchView)?.setOnQueryTextListener(null)
 //            searchItemState = searchItem?.isActionViewExpanded == true
-            mActivity.onItemClick(adapter.currentList[index].word.id)
+            mActivity.onItemClick(adapter.currentList[index].word)
 
           }
         }

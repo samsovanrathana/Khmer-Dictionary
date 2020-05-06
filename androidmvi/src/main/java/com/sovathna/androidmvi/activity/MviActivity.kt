@@ -9,25 +9,27 @@ import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.Observable
 import javax.inject.Inject
+import javax.inject.Named
 
 abstract class MviActivity<I : MviIntent, S : MviState, VM : BaseViewModel<I, S>>(
-    @LayoutRes private val layoutRes: Int
+  @LayoutRes private val layoutRes: Int
 ) : DaggerAppCompatActivity() {
 
-    @Inject
-    protected lateinit var viewModel: VM
+  @Inject
+  @Named("instance")
+  protected lateinit var viewModel: VM
 
-    abstract fun intents(): Observable<I>
+  abstract fun intents(): Observable<I>
 
-    abstract fun render(state: S)
+  abstract fun render(state: S)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(layoutRes)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(layoutRes)
 
-        viewModel.init(intents())
-        viewModel.stateLiveData.observe(this, Observer(this::render))
+    viewModel.init(intents())
+    viewModel.stateLiveData.observe(this, Observer(this::render))
 
-    }
+  }
 
 }

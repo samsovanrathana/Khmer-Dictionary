@@ -12,12 +12,14 @@ import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import dagger.android.support.DaggerFragment
 import io.reactivex.Observable
 import javax.inject.Inject
+import javax.inject.Named
 
 abstract class MviFragment<I : MviIntent, S : MviState, VM : BaseViewModel<I, S>>(
   @LayoutRes private val layoutRes: Int
 ) : DaggerFragment() {
 
   @Inject
+  @Named("instance")
   protected lateinit var viewModel: VM
 
   abstract fun intents(): Observable<I>

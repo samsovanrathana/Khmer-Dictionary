@@ -7,12 +7,18 @@ import com.sovathna.khmerdictionary.domain.interactor.DefinitionInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.result.DefinitionResult
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
+import com.sovathna.khmerdictionary.util.LogUtil
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
+import javax.inject.Inject
 
-class DefinitionViewModel(
+class DefinitionViewModel @Inject constructor(
   private val interactor: DefinitionInteractor
 ) : MviViewModel<DefinitionIntent, DefinitionResult, DefinitionState>() {
+
+  init {
+    LogUtil.i("definition init")
+  }
 
   override val reducer =
     BiFunction<DefinitionState, DefinitionResult, DefinitionState> { state, result ->
@@ -22,6 +28,10 @@ class DefinitionViewModel(
             isInit = false,
             definition = result.definition
           )
+        is DefinitionResult.BookmarkChecked -> state.copy(
+          isInit = false,
+          isBookmark = result.isBookmark
+        )
       }
     }
   override val stateLiveData: LiveData<DefinitionState> =
@@ -33,4 +43,9 @@ class DefinitionViewModel(
         .distinctUntilChanged()
         .subscribe(::postValue)
     }
+
+  override fun onCleared() {
+    super.onCleared()
+    LogUtil.i("definition cleared")
+  }
 }

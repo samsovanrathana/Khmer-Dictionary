@@ -9,13 +9,16 @@ import io.reactivex.Single
 
 @Dao
 interface BookmarkDao {
-  @Query("SELECT * FROM bookmark LIMIT :offset, :pageSize")
+  @Query("SELECT * FROM bookmark ORDER BY id DESC LIMIT :offset, :pageSize")
   fun all(offset: Int, pageSize: Int): Single<List<BookmarkEntity>>
-
-  @Query("SELECT * FROM bookmark WHERE word LIKE :searchTerm LIMIT :offset, :pageSize")
-  fun search(searchTerm: String, offset: Int, pageSize: Int): Single<List<BookmarkEntity>>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun add(word: BookmarkEntity): Single<Long>
+
+  @Query("SELECT * FROM bookmark WHERE word_id=:wordId")
+  fun get(wordId: Long): Single<BookmarkEntity>
+
+  @Query("DELETE FROM bookmark WHERE word_id=:wordId")
+  fun delete(wordId: Long): Single<Int>
 
 }
