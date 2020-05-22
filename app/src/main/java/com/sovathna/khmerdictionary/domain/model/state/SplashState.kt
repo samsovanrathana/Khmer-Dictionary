@@ -1,6 +1,6 @@
 package com.sovathna.khmerdictionary.domain.model.state
 
-import com.sovathna.androidmvi.Event
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.state.MviState
 
 data class SplashState(

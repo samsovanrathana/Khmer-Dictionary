@@ -1,6 +1,5 @@
 package com.sovathna.khmerdictionary.data.interactor
 
-import android.content.Context
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
@@ -10,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
+import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -17,33 +17,41 @@ import java.util.zip.ZipInputStream
 import javax.inject.Inject
 
 class SplashInteractorImpl @Inject constructor(
-  private val downloadService: DownloadService,
-  private val context: Context
+  private val downloadService: DownloadService
 ) : SplashInteractor() {
 
-  override val checkDatabase = ObservableTransformer<SplashIntent.CheckDatabase, SplashResult> {
-    it.flatMap {
-      Observable.just(context.getDatabasePath(Const.DB_NAME).exists())
-        .flatMap { exists ->
-          if (exists) Observable.just(SplashResult.Success)
-          else downloadService.download(Const.RAW_DB_URL)
-            .subscribeOn(Schedulers.io())
-            .flatMap(::saveZip)
-            .startWith(SplashResult.Downloading(0, 0))
+  override val checkDatabase =
+    ObservableTransformer<SplashIntent.CheckDatabase, SplashResult> {
+      it
+        .flatMap { intent ->
+          Observable
+            .just(intent.db.exists())
+            .flatMap { exists ->
+              if (exists) {
+                Observable
+                  .just(SplashResult.Success)
+              } else {
+                downloadService
+                  .download(Const.RAW_DB_URL)
+                  .subscribeOn(Schedulers.io())
+                  .flatMap { response ->
+                    saveZip(response, intent.db, intent.tmpDb)
+                  }
+                  .startWith(SplashResult.Downloading(0, 0))
+              }
+            }
+            .onErrorReturn(SplashResult::Fail)
+            .startWith(SplashResult.Progressing)
         }
-        .onErrorReturn(SplashResult::Fail)
-        .startWith(SplashResult.Progressing)
     }
-  }
 
   private fun saveZip(
-    body: ResponseBody
+    body: ResponseBody,
+    db: File,
+    tmpDb: File
   ): Observable<SplashResult> {
 
-    val tmp = context.getFileStreamPath("db_tmp.zip")
-    if (tmp.exists()) tmp.delete()
-
-    val file = context.getDatabasePath(Const.DB_NAME)
+    if (tmpDb.exists()) tmpDb.delete()
 
     return Observable.create<SplashResult> { emitter ->
 
@@ -55,22 +63,23 @@ class SplashInteractorImpl @Inject constructor(
       try {
         val tmpReader = ByteArray(4096)
         tmpInStream = body.byteStream()
-        tmpOutStream = FileOutputStream(tmp)
+        tmpOutStream = FileOutputStream(tmpDb)
         var tmpTotalRead = 0L
         while (!emitter.isDisposed) {
           val read = tmpInStream.read(tmpReader)
           if (read == -1) break
           tmpOutStream.write(tmpReader, 0, read)
           tmpTotalRead += read
-//        LogUtil.i("save $tmpTotalRead")
-          emitter.onNext(SplashResult.Downloading(tmpTotalRead, body.contentLength()))
+          emitter.onNext(
+            SplashResult.Downloading(tmpTotalRead, body.contentLength())
+          )
         }
 
-        inStream = ZipInputStream(tmp.inputStream())
+        inStream = ZipInputStream(tmpDb.inputStream())
 
         inStream.nextEntry?.let {
           emitter.onNext(SplashResult.Downloading(it.size, it.size))
-          outStream = FileOutputStream(file)
+          outStream = FileOutputStream(db)
           while (!emitter.isDisposed) {
             val read = inStream.read(tmpReader)
             if (read == -1) break
@@ -80,7 +89,7 @@ class SplashInteractorImpl @Inject constructor(
           outStream?.flush()
         }
 
-        tmp.delete()
+        tmpDb.delete()
         emitter.onNext(SplashResult.Success)
 
       } catch (e: Exception) {
@@ -95,12 +104,12 @@ class SplashInteractorImpl @Inject constructor(
       }
 
     }.doOnError {
-      if (tmp.exists()) tmp.delete()
-      if (file.exists()) file.delete()
+      if (tmpDb.exists()) tmpDb.delete()
+      if (db.exists()) db.delete()
     }
       .doOnDispose {
-        if (tmp.exists()) tmp.delete()
-        if (file.exists()) file.delete()
+        if (tmpDb.exists()) tmpDb.delete()
+        if (db.exists()) db.delete()
       }.subscribeOn(Schedulers.io())
   }
 }

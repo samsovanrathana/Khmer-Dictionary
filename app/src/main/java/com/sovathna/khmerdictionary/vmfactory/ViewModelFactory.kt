@@ -6,9 +6,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class ViewModelFactory @Inject constructor(
-  private val providers: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
+  private val providers:
+  Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
-
   override fun <T : ViewModel> create(modelClass: Class<T>): T =
     requireNotNull(getProvider(modelClass).get()) {
       "Provider for $modelClass returned null"
@@ -23,5 +23,4 @@ class ViewModelFactory @Inject constructor(
     } catch (cce: ClassCastException) {
       error("Wrong provider type registered for ViewModel type $modelClass")
     }
-
 }

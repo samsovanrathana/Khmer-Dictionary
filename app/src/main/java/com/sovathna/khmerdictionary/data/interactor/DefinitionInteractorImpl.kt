@@ -14,28 +14,41 @@ class DefinitionInteractorImpl @Inject constructor(
   private val repository: AppRepository
 ) : DefinitionInteractor() {
 
-  override val getDefinition = ObservableTransformer<DefinitionIntent.Get, DefinitionResult> {
-    it.flatMap { intent ->
-      Observable.merge(
-        repository.getDefinition(intent.id).map(DefinitionResult::Success),
-        repository.checkBookmark(intent.id).map(DefinitionResult::BookmarkChecked)
-      ).subscribeOn(Schedulers.io())
-    }
-  }
-
-  override val bookmark = ObservableTransformer<DefinitionIntent.Bookmark, DefinitionResult> {tmp->
-    tmp.flatMap { intent ->
-      repository.checkBookmark(intent.word.id)
-        .flatMap {
-          if (it) {
-            repository.deleteBookmark(intent.word.id)
-              .map { DefinitionResult.BookmarkChecked(false) }
-          } else {
-            repository.addBookmark(BookmarkEntity(intent.word.name, intent.word.id))
-              .map { DefinitionResult.BookmarkChecked(true) }
-          }
+  override val getDefinition =
+    ObservableTransformer<DefinitionIntent.Get, DefinitionResult> {
+      it
+        .flatMap { intent ->
+          Observable
+            .merge(
+              repository
+                .getDefinition(intent.id)
+                .map(DefinitionResult::Success),
+              repository
+                .checkBookmark(intent.id)
+                .map(DefinitionResult::BookmarkChecked)
+            )
+            .subscribeOn(Schedulers.io())
         }
-        .subscribeOn(Schedulers.io())
     }
-  }
+
+  override val bookmark =
+    ObservableTransformer<DefinitionIntent.Bookmark, DefinitionResult> {
+      it
+        .flatMap { intent ->
+          repository
+            .checkBookmark(intent.word.id)
+            .flatMap {
+              if (it) {
+                repository
+                  .deleteBookmark(intent.word.id)
+                  .map { DefinitionResult.BookmarkChecked(false) }
+              } else {
+                repository
+                  .addBookmark(BookmarkEntity(intent.word.name, intent.word.id))
+                  .map { DefinitionResult.BookmarkChecked(true) }
+              }
+            }
+            .subscribeOn(Schedulers.io())
+        }
+    }
 }

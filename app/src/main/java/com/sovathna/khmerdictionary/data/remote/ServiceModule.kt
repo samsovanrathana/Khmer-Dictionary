@@ -11,6 +11,9 @@ class ServiceModule {
 
   @Provides
   @Singleton
-  fun downloadService(retrofit: Retrofit): DownloadService =
-    retrofit.create(DownloadService::class.java)
+  fun downloadService(
+    retrofit: Retrofit
+  ): DownloadService =
+    retrofit
+      .create(DownloadService::class.java)
 }

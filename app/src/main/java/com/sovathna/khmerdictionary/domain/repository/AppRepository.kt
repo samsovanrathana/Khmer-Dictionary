@@ -1,13 +1,12 @@
 package com.sovathna.khmerdictionary.domain.repository
 
-import com.sovathna.khmerdictionary.domain.model.BookmarkEntity
-import com.sovathna.khmerdictionary.domain.model.Definition
-import com.sovathna.khmerdictionary.domain.model.FilterType
-import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.*
 import io.reactivex.Observable
-import io.reactivex.Single
 
 interface AppRepository {
+
+  fun getWords(tableName: String): Observable<List<MainWordEntity>>
+
   fun filterWordList(
     filterType: FilterType,
     searchTerm: String?,
@@ -15,11 +14,19 @@ interface AppRepository {
     pageSize: Int
   ): Observable<List<Word>>
 
-  fun getDefinition(id: Long): Observable<Definition>
+  fun getDefinition(
+    id: Long
+  ): Observable<Definition>
 
-  fun checkBookmark(id: Long): Observable<Boolean>
+  fun checkBookmark(
+    id: Long
+  ): Observable<Boolean>
 
-  fun addBookmark(entity: BookmarkEntity): Observable<Long>
+  fun addBookmark(
+    entity: BookmarkEntity
+  ): Observable<Long>
 
-  fun deleteBookmark(id: Long): Observable<Int>
+  fun deleteBookmark(
+    id: Long
+  ): Observable<Int>
 }

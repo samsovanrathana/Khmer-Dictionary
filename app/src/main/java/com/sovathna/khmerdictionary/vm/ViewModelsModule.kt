@@ -11,21 +11,25 @@ import dagger.multibindings.IntoMap
 
 @Module
 abstract class ViewModelsModule {
-
   @Binds
   @IntoMap
   @ViewModelKey(SplashViewModel::class)
-  abstract fun splashViewModel(viewModel: SplashViewModel): ViewModel
+  abstract fun splashViewModel(
+    vm: SplashViewModel
+  ): ViewModel
 
   @Binds
   @IntoMap
   @ViewModelKey(WordListViewModel::class)
-  abstract fun wordListViewModel(viewModel: WordListViewModel): ViewModel
+  abstract fun wordListViewModel(
+    vm: WordListViewModel
+  ): ViewModel
 
   @Binds
   @IntoMap
   @ViewModelKey(DefinitionViewModel::class)
-  abstract fun definitionViewModel(viewModel: DefinitionViewModel): ViewModel
-
+  abstract fun definitionViewModel(
+    vm: DefinitionViewModel
+  ): ViewModel
 }
 

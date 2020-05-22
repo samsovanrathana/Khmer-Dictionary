@@ -6,14 +6,13 @@ import dagger.android.AndroidInjector
 import javax.inject.Singleton
 
 @Component(
-    modules = [
-        AndroidInjectionModule::class,
-        AppModule::class
-    ]
+  modules = [
+    AndroidInjectionModule::class,
+    AppModule::class
+  ]
 )
 @Singleton
 interface AppComponent : AndroidInjector<AndroidApp> {
-
-    @Component.Factory
-    interface Factory : AndroidInjector.Factory<AndroidApp>
+  @Component.Factory
+  interface Factory : AndroidInjector.Factory<AndroidApp>
 }

@@ -10,7 +10,6 @@ import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import dagger.android.support.DaggerDialogFragment
-import dagger.android.support.DaggerFragment
 import io.reactivex.Observable
 import javax.inject.Inject
 

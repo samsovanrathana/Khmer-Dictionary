@@ -11,6 +11,8 @@ abstract class RepositoryModule {
 
   @Binds
   @Singleton
-  abstract fun appRepository(impl: AppRepositoryImpl): AppRepository
+  abstract fun appRepository(
+    impl: AppRepositoryImpl
+  ): AppRepository
 
 }

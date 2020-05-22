@@ -11,9 +11,14 @@ import io.reactivex.Single
 @Dao
 interface HistoryDao {
   @Query("SELECT * FROM history LIMIT :offset, :pageSize")
-  fun all(offset: Int, pageSize: Int): Flowable<List<HistoryEntity>>
+  fun all(
+    offset: Int,
+    pageSize: Int
+  ): Flowable<List<HistoryEntity>>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  fun add(word: HistoryEntity): Single<Long>
+  fun add(
+    word: HistoryEntity
+  ): Single<Long>
 
 }

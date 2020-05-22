@@ -9,18 +9,31 @@ import io.reactivex.Single
 @Dao
 interface WordDao {
   @Query("SELECT * FROM dict LIMIT :offset, :pageSize")
-  fun getWordList(offset: Int, pageSize: Int): Single<List<WordEntity>>
+  fun getWordList(
+    offset: Int,
+    pageSize: Int
+  ): Single<List<WordEntity>>
 
   @Query("SELECT * FROM dict WHERE word LIKE :filter LIMIT :offset, :pageSize")
-  fun getFilterWordList(filter: String, offset: Int, pageSize: Int): Single<List<WordEntity>>
+  fun getFilterWordList(
+    filter: String,
+    offset: Int,
+    pageSize: Int
+  ): Single<List<WordEntity>>
 
   @Query("SELECT * FROM dict WHERE id = :id")
-  fun getDefinition(id: Long): Single<WordEntity>
+  fun getDefinition(
+    id: Long
+  ): Single<WordEntity>
 
   @Insert
-  fun inserts(words: List<WordEntity>): Single<List<Long>>
+  fun inserts(
+    words: List<WordEntity>
+  ): Single<List<Long>>
 
   @Query("SELECT * FROM dict WHERE id IN(:ids)")
-  fun gets(ids: List<Long>): Single<List<WordEntity>>
+  fun gets(
+    ids: List<Long>
+  ): Single<List<WordEntity>>
 
 }

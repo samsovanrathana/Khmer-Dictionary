@@ -15,14 +15,24 @@ class LocalModule {
   @Provides
   @Singleton
   fun appDatabase(context: Context): AppDatabase =
-    Room.databaseBuilder(context, AppDatabase::class.java, Const.DB_NAME)
+    Room
+      .databaseBuilder(
+        context,
+        AppDatabase::class.java,
+        Const.DB_NAME
+      )
       .fallbackToDestructiveMigration()
       .build()
 
   @Provides
   @Singleton
-  fun localDatabase(context: Context):LocalDatabase =
-    Room.databaseBuilder(context,LocalDatabase::class.java, "local.db")
+  fun localDatabase(context: Context): LocalDatabase =
+    Room
+      .databaseBuilder(
+        context,
+        LocalDatabase::class.java,
+        "local.db"
+      )
       .fallbackToDestructiveMigration()
       .build()
 

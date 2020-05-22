@@ -10,4 +10,4 @@ import dagger.Module
     RemoteModule::class
   ]
 )
-class DataModule
+abstract class DataModule

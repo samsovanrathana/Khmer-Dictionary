@@ -11,10 +11,11 @@ class OkHttpModule {
 
   @Provides
   @Singleton
-  fun downloadOkHttp() = OkHttpClient()
-    .newBuilder()
-    .connectTimeout(1, TimeUnit.MINUTES)
-    .readTimeout(0, TimeUnit.MINUTES)
-    .build()
+  fun downloadOkHttp(): OkHttpClient =
+    OkHttpClient()
+      .newBuilder()
+      .connectTimeout(1, TimeUnit.MINUTES)
+      .readTimeout(0, TimeUnit.MINUTES)
+      .build()
 
 }

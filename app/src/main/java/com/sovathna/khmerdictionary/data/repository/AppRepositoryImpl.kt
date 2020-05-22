@@ -8,7 +8,6 @@ import com.sovathna.khmerdictionary.domain.model.FilterType
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
 import io.reactivex.Observable
-import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,38 +26,76 @@ class AppRepositoryImpl @Inject constructor(
     searchTerm: String?,
     offset: Int,
     pageSize: Int
-  ): Observable<List<Word>> {
-    return when (filterType) {
-      FilterType.All -> {
-        when {
-          searchTerm.isNullOrEmpty() -> wordDao.getWordList(offset, pageSize)
-          else -> wordDao.getFilterWordList("$searchTerm%", offset, pageSize)
-        }.map { it.map { tmp -> Word(tmp.id, tmp.word) } }.toObservable()
+  ): Observable<List<Word>> = when (filterType) {
+    FilterType.All -> {
+      when {
+        searchTerm.isNullOrEmpty() -> {
+          wordDao
+            .getWordList(
+              offset,
+              pageSize
+            )
+        }
+        else -> {
+          wordDao
+            .getFilterWordList(
+              "$searchTerm%",
+              offset, pageSize
+            )
+        }
       }
-      FilterType.History -> {
-        historyDao.all(offset, pageSize)
-          .map { it.map { tmp -> Word(tmp.wordId, tmp.word) } }.toObservable()
-      }
-      FilterType.Bookmark -> {
-        bookmarkDao.all(offset, pageSize)
-          .map { it.map { tmp -> Word(tmp.wordId, tmp.word) } }.toObservable()
-      }
+        .map {
+          it
+            .map { tmp ->
+              Word(tmp.id, tmp.word)
+            }
+        }
+        .toObservable()
+    }
+    FilterType.History -> {
+      historyDao
+        .all(offset, pageSize)
+        .map {
+          it
+            .map { tmp ->
+              Word(tmp.wordId, tmp.word)
+            }
+        }
+        .toObservable()
+    }
+    FilterType.Bookmark -> {
+      bookmarkDao
+        .all(offset, pageSize)
+        .map {
+          it
+            .map { tmp ->
+              Word(tmp.wordId, tmp.word)
+            }
+        }
+        .toObservable()
     }
   }
 
-  override fun getDefinition(id: Long): Observable<Definition> {
-    return wordDao.getDefinition(id).map { Definition(it.word, it.definition) }.toObservable()
-  }
+  override fun getDefinition(id: Long): Observable<Definition> =
+    wordDao
+      .getDefinition(id)
+      .map { Definition(it.word, it.definition) }
+      .toObservable()
 
-  override fun checkBookmark(id: Long): Observable<Boolean> {
-    return bookmarkDao.get(id).map { true }.onErrorReturn { false }.toObservable()
-  }
+  override fun checkBookmark(id: Long): Observable<Boolean> =
+    bookmarkDao
+      .get(id).map { true }
+      .onErrorReturn { false }
+      .toObservable()
 
-  override fun addBookmark(entity: BookmarkEntity): Observable<Long> {
-    return bookmarkDao.add(entity).toObservable()
-  }
+  override fun addBookmark(entity: BookmarkEntity): Observable<Long> =
+    bookmarkDao
+      .add(entity)
+      .toObservable()
 
-  override fun deleteBookmark(id: Long): Observable<Int> {
-    return bookmarkDao.delete(id).toObservable()
-  }
+  override fun deleteBookmark(id: Long): Observable<Int> =
+    bookmarkDao
+      .delete(id)
+      .toObservable()
+
 }

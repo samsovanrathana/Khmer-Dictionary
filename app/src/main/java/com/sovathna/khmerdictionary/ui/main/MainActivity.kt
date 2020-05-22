@@ -39,8 +39,13 @@ class MainActivity : DaggerAppCompatActivity() {
     setSupportActionBar(toolbar)
     title = getString(R.string.app_name_kh)
 
-    drawerToggle =
-      ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.nav_open, R.string.nav_close)
+    drawerToggle = ActionBarDrawerToggle(
+      this,
+      drawer_layout,
+      toolbar,
+      R.string.nav_open,
+      R.string.nav_close
+    )
     drawerToggle.setToolbarNavigationClickListener {
       if (!drawerToggle.isDrawerIndicatorEnabled) {
         onBackPressed()
@@ -71,25 +76,45 @@ class MainActivity : DaggerAppCompatActivity() {
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()
         .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-        .replace(R.id.word_list_container, WordListFragment(), Const.WORD_LIST_FRAGMENT_TAG)
+        .replace(
+          R.id.word_list_container,
+          WordListFragment(),
+          Const.WORD_LIST_FRAGMENT_TAG
+        )
         .commit()
     } else {
-      val fragment =
-        supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as DefinitionFragment?
+      val fragment = supportFragmentManager
+        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as DefinitionFragment?
       fragment?.let {
         if (supportFragmentManager.backStackEntryCount > 0)
           supportFragmentManager.popBackStackImmediate()
 
         val tran = supportFragmentManager.beginTransaction()
-        if (definition_container != null)
-          tran.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-        else
-          tran.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
-        tran.replace(
-          if (definition_container != null) R.id.definition_container else R.id.word_list_container,
-          fragment,
-          Const.DEFINITION_FRAGMENT_TAG
-        ).addToBackStack(null)
+        if (definition_container != null) {
+          tran.setCustomAnimations(
+            R.anim.fade_in,
+            R.anim.fade_out
+          )
+        } else {
+          tran.setCustomAnimations(
+            R.anim.fade_in,
+            R.anim.fade_out,
+            R.anim.fade_in,
+            R.anim.fade_out
+          )
+        }
+
+        tran
+          .replace(
+            if (definition_container != null) {
+              R.id.definition_container
+            } else {
+              R.id.word_list_container
+            },
+            fragment,
+            Const.DEFINITION_FRAGMENT_TAG
+          )
+          .addToBackStack(null)
           .commit()
       }
 
@@ -111,26 +136,40 @@ class MainActivity : DaggerAppCompatActivity() {
 
   fun onItemClick(word: Word) {
     selectIntent.onNext(WordListIntent.Select(word.id))
-    val fragment =
-      supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as? DefinitionFragment
+    val fragment = supportFragmentManager
+      .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as? DefinitionFragment
 
     if (supportFragmentManager.backStackEntryCount > 0)
       supportFragmentManager.popBackStackImmediate()
 
     val tran = supportFragmentManager.beginTransaction()
-    if (definition_container != null)
-      tran.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-    else
-      tran.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out)
-    tran.replace(
-      if (definition_container != null) R.id.definition_container else R.id.word_list_container,
-      (fragment ?: DefinitionFragment()).apply {
-        arguments = Bundle().apply {
-          putParcelable("word", word)
-        }
-      },
-      Const.DEFINITION_FRAGMENT_TAG
-    ).addToBackStack(null)
+    if (definition_container != null) {
+      tran.setCustomAnimations(
+        R.anim.fade_in,
+        R.anim.fade_out
+      )
+    } else {
+      tran.setCustomAnimations(
+        R.anim.fade_in,
+        R.anim.fade_out,
+        R.anim.fade_in, R.anim.fade_out
+      )
+    }
+    tran
+      .replace(
+        if (definition_container != null) {
+          R.id.definition_container
+        } else {
+          R.id.word_list_container
+        },
+        (fragment ?: DefinitionFragment()).apply {
+          arguments = Bundle().apply {
+            putParcelable("word", word)
+          }
+        },
+        Const.DEFINITION_FRAGMENT_TAG
+      )
+      .addToBackStack(null)
       .commit()
 
   }

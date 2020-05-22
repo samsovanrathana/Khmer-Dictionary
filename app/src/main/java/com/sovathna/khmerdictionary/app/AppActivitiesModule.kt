@@ -12,13 +12,20 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class AppActivitiesModule {
-
-  @ContributesAndroidInjector(modules = [SplashModule::class])
+  @ContributesAndroidInjector(
+    modules = [
+      SplashModule::class
+    ]
+  )
   @SplashScope
   abstract fun splashActivity(): SplashActivity
 
-  @ContributesAndroidInjector(modules = [MainModule::class, MainFragmentsModule::class])
+  @ContributesAndroidInjector(
+    modules = [
+      MainModule::class,
+      MainFragmentsModule::class
+    ]
+  )
   @MainScope
   abstract fun mainActivity(): MainActivity
-
 }

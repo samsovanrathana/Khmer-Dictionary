@@ -13,7 +13,7 @@ class MainModule {
 
   @Provides
   @MainScope
-  fun viewModel(activity: MainActivity) =
+  fun viewModel(activity: MainActivity): MainViewModel =
     ViewModelProvider(activity)[MainViewModel::class.java]
 
   @Provides

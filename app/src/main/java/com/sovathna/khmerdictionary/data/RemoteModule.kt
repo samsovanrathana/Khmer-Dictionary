@@ -6,5 +6,4 @@ import com.sovathna.khmerdictionary.data.remote.ServiceModule
 import dagger.Module
 
 @Module(includes = [OkHttpModule::class, RetrofitModule::class, ServiceModule::class])
-class RemoteModule {
-}
+abstract class RemoteModule

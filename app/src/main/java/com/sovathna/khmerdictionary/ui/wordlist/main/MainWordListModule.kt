@@ -1,10 +1,9 @@
-package com.sovathna.khmerdictionary.ui.wordlist
+package com.sovathna.khmerdictionary.ui.wordlist.main
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sovathna.khmerdictionary.di.scope.WordListScope
-import com.sovathna.khmerdictionary.domain.model.intent.WordListIntent
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.ui.main.MainActivity
 import dagger.Module
 import dagger.Provides
@@ -12,19 +11,15 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Named
 
 @Module
-class WordListModule {
+class MainWordListModule {
 
   @Provides
-  @WordListScope
   @Named("instance")
-  fun viewModel(fragment: WordListFragment, factory: ViewModelProvider.Factory) =
-    ViewModelProvider(fragment, factory)[WordListViewModel::class.java]
+  fun viewModel(fragment: MainWordListFragment, factory: ViewModelProvider.Factory) =
+    ViewModelProvider(fragment, factory)[MainWordListViewModel::class.java]
 
   @Provides
-  @WordListScope
-  @Named("search")
-  fun searchIntent() = PublishSubject.create<WordListIntent.Filter>()
-
+  fun getWordsIntent() = PublishSubject.create<MainWordListIntent.GetWords>()
 
   @Provides
   fun layoutManager(activity: MainActivity): RecyclerView.LayoutManager =

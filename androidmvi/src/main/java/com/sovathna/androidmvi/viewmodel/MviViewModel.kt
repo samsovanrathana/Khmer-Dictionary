@@ -10,21 +10,21 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 
 abstract class MviViewModel<I : MviIntent, R : MviResult, S : MviState> :
-    ViewModel(),
-    BaseViewModel<I, S> {
+  ViewModel(),
+  BaseViewModel<I, S> {
 
-    protected val disposables = CompositeDisposable()
-    protected val intents = PublishSubject.create<I>()
+  protected val disposables = CompositeDisposable()
+  protected val intents = PublishSubject.create<I>()
 
-    override fun init(intents: Observable<I>) {
-        intents.subscribe(this.intents)
-    }
+  override fun init(intents: Observable<I>) {
+    intents.subscribe(this.intents)
+  }
 
-    protected abstract val reducer: BiFunction<S, R, S>
+  protected abstract val reducer: BiFunction<S, R, S>
 
-    override fun onCleared() {
-        disposables.clear()
-        super.onCleared()
-    }
+  override fun onCleared() {
+    disposables.clear()
+    super.onCleared()
+  }
 
 }

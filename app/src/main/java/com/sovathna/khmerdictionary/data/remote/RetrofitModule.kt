@@ -15,15 +15,20 @@ class RetrofitModule {
 
   @Provides
   @Singleton
-  fun baseUrl() = "https://www.example.com/"
+  fun baseUrl(): String =
+    "https://www.example.com/"
 
   @Provides
   @Singleton
-  fun callAdapterFactory(): CallAdapter.Factory = RxJava2CallAdapterFactory.create()
+  fun callAdapterFactory(): CallAdapter.Factory =
+    RxJava2CallAdapterFactory.create()
 
   @Provides
   @Singleton
-  fun converterFactory(): Converter.Factory = MoshiConverterFactory.create().withNullSerialization()
+  fun converterFactory(): Converter.Factory =
+    MoshiConverterFactory
+      .create()
+      .withNullSerialization()
 
   @Provides
   @Singleton
@@ -33,7 +38,8 @@ class RetrofitModule {
     callAdapterFactory: CallAdapter.Factory,
     converterFactory: Converter.Factory
   ): Retrofit =
-    Retrofit.Builder()
+    Retrofit
+      .Builder()
       .baseUrl(baseUrl)
       .client(client)
       .addCallAdapterFactory(callAdapterFactory)

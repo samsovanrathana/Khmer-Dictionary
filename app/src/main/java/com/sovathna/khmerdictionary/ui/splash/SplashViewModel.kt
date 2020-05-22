@@ -2,7 +2,7 @@ package com.sovathna.khmerdictionary.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sovathna.androidmvi.Event
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent

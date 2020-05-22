@@ -7,9 +7,9 @@ import retrofit2.http.Streaming
 import retrofit2.http.Url
 
 interface DownloadService {
-
   @Streaming
   @GET
-  fun download(@Url url: String): Observable<ResponseBody>
-
+  fun download(
+    @Url url: String
+  ): Observable<ResponseBody>
 }
