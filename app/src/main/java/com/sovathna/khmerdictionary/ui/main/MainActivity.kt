@@ -6,29 +6,14 @@ import androidx.core.view.GravityCompat
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.FilterType
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.WordListIntent
 import com.sovathna.khmerdictionary.ui.definition.DefinitionFragment
-import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
+import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import javax.inject.Inject
-import javax.inject.Named
 
 class MainActivity : DaggerAppCompatActivity() {
-
-  @Inject
-  lateinit var selectIntent: PublishSubject<WordListIntent.Select>
-
-  @Inject
-  @Named("filter")
-  lateinit var filterIntent: PublishSubject<WordListIntent.Filter>
-
-  @Inject
-  lateinit var viewModel: MainViewModel
 
   lateinit var drawerToggle: ActionBarDrawerToggle
 
@@ -57,15 +42,15 @@ class MainActivity : DaggerAppCompatActivity() {
       drawer_layout.closeDrawer(GravityCompat.START)
       if (!menu.isChecked) {
         updateTitle(menu.itemId)
-        filterIntent.onNext(
-          WordListIntent.Filter(
-            when (menu.itemId) {
-              R.id.nav_bookmarks -> FilterType.Bookmark
-              R.id.nav_histories -> FilterType.History
-              else -> FilterType.All
-            }, null, 0
-          )
-        )
+//        filterIntent.onNext(
+//          WordListIntent.Filter(
+//            when (menu.itemId) {
+//              R.id.nav_bookmarks -> FilterType.Bookmark
+//              R.id.nav_histories -> FilterType.History
+//              else -> FilterType.All
+//            }, null, 0
+//          )
+//        )
         return@setNavigationItemSelectedListener true
       }
       return@setNavigationItemSelectedListener false
@@ -78,7 +63,7 @@ class MainActivity : DaggerAppCompatActivity() {
         .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
         .replace(
           R.id.word_list_container,
-          WordListFragment(),
+          MainWordListFragment(),
           Const.WORD_LIST_FRAGMENT_TAG
         )
         .commit()
@@ -134,60 +119,57 @@ class MainActivity : DaggerAppCompatActivity() {
     tv_title?.text = title
   }
 
-  fun onItemClick(word: Word) {
-    selectIntent.onNext(WordListIntent.Select(word.id))
-    val fragment = supportFragmentManager
-      .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as? DefinitionFragment
-
-    if (supportFragmentManager.backStackEntryCount > 0)
-      supportFragmentManager.popBackStackImmediate()
-
-    val tran = supportFragmentManager.beginTransaction()
-    if (definition_container != null) {
-      tran.setCustomAnimations(
-        R.anim.fade_in,
-        R.anim.fade_out
-      )
-    } else {
-      tran.setCustomAnimations(
-        R.anim.fade_in,
-        R.anim.fade_out,
-        R.anim.fade_in, R.anim.fade_out
-      )
-    }
-    tran
-      .replace(
-        if (definition_container != null) {
-          R.id.definition_container
-        } else {
-          R.id.word_list_container
-        },
-        (fragment ?: DefinitionFragment()).apply {
-          arguments = Bundle().apply {
-            putParcelable("word", word)
-          }
-        },
-        Const.DEFINITION_FRAGMENT_TAG
-      )
-      .addToBackStack(null)
-      .commit()
-
-  }
+//  fun onItemClick(word: Word) {
+//    selectIntent.onNext(WordListIntent.Select(word.id))
+//    val fragment = supportFragmentManager
+//      .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG) as? DefinitionFragment
+//
+//    if (supportFragmentManager.backStackEntryCount > 0)
+//      supportFragmentManager.popBackStackImmediate()
+//
+//    val tran = supportFragmentManager.beginTransaction()
+//    if (definition_container != null) {
+//      tran.setCustomAnimations(
+//        R.anim.fade_in,
+//        R.anim.fade_out
+//      )
+//    } else {
+//      tran.setCustomAnimations(
+//        R.anim.fade_in,
+//        R.anim.fade_out,
+//        R.anim.fade_in, R.anim.fade_out
+//      )
+//    }
+//    tran
+//      .replace(
+//        if (definition_container != null) {
+//          R.id.definition_container
+//        } else {
+//          R.id.word_list_container
+//        },
+//        (fragment ?: DefinitionFragment()).apply {
+//          arguments = Bundle().apply {
+//            putParcelable("word", word)
+//          }
+//        },
+//        Const.DEFINITION_FRAGMENT_TAG
+//      )
+//      .addToBackStack(null)
+//      .commit()
+//
+//  }
 
   override fun onBackPressed() {
     if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
       drawer_layout.closeDrawer(GravityCompat.START)
     } else {
       if (supportFragmentManager.backStackEntryCount > 0) {
-        selectIntent.onNext(WordListIntent.Select(null))
+
         super.onBackPressed()
       } else {
         if (nav_view?.checkedItem?.isChecked == true) {
           nav_view?.checkedItem?.isChecked = false
           title = getString(R.string.app_name_kh)
-          filterIntent.onNext(
-            WordListIntent.Filter(FilterType.All, null, 0)
-          )
         } else {
           super.onBackPressed()
         }

@@ -19,7 +19,7 @@ class MainWordListModule {
     ViewModelProvider(fragment, factory)[MainWordListViewModel::class.java]
 
   @Provides
-  fun getWordsIntent() = PublishSubject.create<MainWordListIntent.GetWords>()
+  fun getWordsIntent() = PublishSubject.create<MainWordListIntent.GetWordList>()
 
   @Provides
   fun layoutManager(activity: MainActivity): RecyclerView.LayoutManager =

@@ -4,7 +4,6 @@ import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.di.scope.SplashScope
 import com.sovathna.khmerdictionary.ui.main.MainActivity
 import com.sovathna.khmerdictionary.ui.main.MainFragmentsModule
-import com.sovathna.khmerdictionary.ui.main.MainModule
 import com.sovathna.khmerdictionary.ui.splash.SplashActivity
 import com.sovathna.khmerdictionary.ui.splash.SplashModule
 import dagger.Module
@@ -22,7 +21,6 @@ abstract class AppActivitiesModule {
 
   @ContributesAndroidInjector(
     modules = [
-      MainModule::class,
       MainFragmentsModule::class
     ]
   )

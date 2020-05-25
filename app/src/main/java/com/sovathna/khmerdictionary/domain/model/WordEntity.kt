@@ -13,4 +13,6 @@ data class WordEntity(
   @PrimaryKey(autoGenerate = true)
   @ColumnInfo(name = "id")
   val id: Long = 0
-)
+) {
+  fun toWord() = Word(id, word)
+}

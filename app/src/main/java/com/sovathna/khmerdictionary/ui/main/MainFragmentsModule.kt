@@ -1,10 +1,9 @@
 package com.sovathna.khmerdictionary.ui.main
 
-import com.sovathna.khmerdictionary.di.scope.WordListScope
 import com.sovathna.khmerdictionary.ui.definition.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.definition.DefinitionModule
-import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
-import com.sovathna.khmerdictionary.ui.wordlist.WordListModule
+import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
+import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -13,11 +12,10 @@ abstract class MainFragmentsModule {
 
   @ContributesAndroidInjector(
     modules = [
-      WordListModule::class
+      MainWordListModule::class
     ]
   )
-  @WordListScope
-  abstract fun wordListFragment(): WordListFragment
+  abstract fun mainWordListFragment(): MainWordListFragment
 
   @ContributesAndroidInjector(
     modules = [

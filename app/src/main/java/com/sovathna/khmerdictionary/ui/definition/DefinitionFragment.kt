@@ -15,20 +15,20 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import com.sovathna.khmerdictionary.ui.main.MainActivity
-import com.sovathna.khmerdictionary.util.LogUtil
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_definition.*
 import javax.inject.Inject
 
-class DefinitionFragment:
+class DefinitionFragment :
   MviFragment<DefinitionIntent, DefinitionState, DefinitionViewModel>(
     R.layout.fragment_definition
   ) {
@@ -92,7 +92,7 @@ class DefinitionFragment:
 
   override fun render(state: DefinitionState) {
     with(state) {
-      LogUtil.i("definition state: $this")
+      Logger.d("definition state: $this")
       if (isInit) getDefinitionIntent.onNext(DefinitionIntent.Get(word.id))
       definition?.let {
         tv_name.text = definition.word
@@ -141,7 +141,7 @@ class DefinitionFragment:
       }
 
       override fun onClick(widget: View) {
-        LogUtil.i("click: ${span?.url}")
+        Logger.d("click: ${span?.url}")
       }
     }
     strBuilder.setSpan(clickable, start, end, flags)

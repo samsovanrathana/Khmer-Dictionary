@@ -4,7 +4,6 @@ import com.sovathna.khmerdictionary.data.local.AppDatabase
 import com.sovathna.khmerdictionary.data.local.LocalDatabase
 import com.sovathna.khmerdictionary.domain.model.BookmarkEntity
 import com.sovathna.khmerdictionary.domain.model.Definition
-import com.sovathna.khmerdictionary.domain.model.FilterType
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
 import io.reactivex.Observable
@@ -21,59 +20,13 @@ class AppRepositoryImpl @Inject constructor(
   private val historyDao = local.historyDao()
   private val bookmarkDao = local.bookmarkDao()
 
-  override fun filterWordList(
-    filterType: FilterType,
-    searchTerm: String?,
-    offset: Int,
-    pageSize: Int
-  ): Observable<List<Word>> = when (filterType) {
-    FilterType.All -> {
-      when {
-        searchTerm.isNullOrEmpty() -> {
-          wordDao
-            .getWordList(
-              offset,
-              pageSize
-            )
-        }
-        else -> {
-          wordDao
-            .getFilterWordList(
-              "$searchTerm%",
-              offset, pageSize
-            )
-        }
+  override fun getMainWordList(offset: Int, pageSize: Int): Observable<List<Word>> {
+    return wordDao
+      .getMainWordList(offset, pageSize)
+      .map { entities ->
+        entities.map { entity -> entity.toWord() }
       }
-        .map {
-          it
-            .map { tmp ->
-              Word(tmp.id, tmp.word)
-            }
-        }
-        .toObservable()
-    }
-    FilterType.History -> {
-      historyDao
-        .all(offset, pageSize)
-        .map {
-          it
-            .map { tmp ->
-              Word(tmp.wordId, tmp.word)
-            }
-        }
-        .toObservable()
-    }
-    FilterType.Bookmark -> {
-      bookmarkDao
-        .all(offset, pageSize)
-        .map {
-          it
-            .map { tmp ->
-              Word(tmp.wordId, tmp.word)
-            }
-        }
-        .toObservable()
-    }
+      .toObservable()
   }
 
   override fun getDefinition(id: Long): Observable<Definition> =

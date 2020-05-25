@@ -7,33 +7,41 @@ import com.sovathna.khmerdictionary.domain.interactor.MainWordListInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.result.MainWordListResult
 import com.sovathna.khmerdictionary.domain.model.state.MainWordListState
-import com.sovathna.khmerdictionary.domain.model.state.WordListState
 import com.sovathna.khmerdictionary.ui.wordlist.WordItem
 import io.reactivex.BackpressureStrategy
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import javax.inject.Inject
 
 class MainWordListViewModel @Inject constructor(
   private val interactor: MainWordListInteractor
-) : MviViewModel<MainWordListIntent, MainWordListResult, WordListState>() {
+) : MviViewModel<MainWordListIntent, MainWordListResult, MainWordListState>() {
 
   override val reducer =
-    BiFunction<WordListState, MainWordListResult, WordListState> { state, result ->
-      if (state is MainWordListState) {
-        when (result) {
-          is MainWordListResult.Success -> state.copy(
+    BiFunction<MainWordListState, MainWordListResult, MainWordListState> { state, result ->
+
+      when (result) {
+        is MainWordListResult.Success ->
+          state.copy(
             isInit = false,
-            words = result.words.map { WordItem(it) },
+            words =
+            if (state.words == null) {
+              result.words.map { WordItem(it) }
+            } else {
+              state.words.toMutableList().apply {
+                addAll(result.words.map { WordItem(it) })
+              }
+            },
             isMore = result.isMore
           )
-        }
-      } else {
-        state
       }
     }
-  override val stateLiveData: LiveData<WordListState> =
-    MutableLiveData<WordListState>().apply {
-      intents.compose(interactor.intentsProcessor)
+
+  override val stateLiveData: LiveData<MainWordListState> =
+    MutableLiveData<MainWordListState>().apply {
+      intents
+        .compose(interactor.intentsProcessor)
+        .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe { disposables.add(it) }
         .toFlowable(BackpressureStrategy.BUFFER)
         .scan(MainWordListState(), reducer)

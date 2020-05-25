@@ -1,24 +1,43 @@
 package com.sovathna.khmerdictionary.ui.wordlist.main
 
+import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
-import com.sovathna.khmerdictionary.domain.model.state.WordListState
+import com.sovathna.khmerdictionary.domain.model.state.MainWordListState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 
-class MainWordListFragment : WordListFragment<MainWordListIntent>() {
+class MainWordListFragment :
+  WordListFragment<MainWordListIntent, MainWordListState, MainWordListViewModel>() {
 
-  lateinit var getWordsIntent: PublishSubject<MainWordListIntent.GetWords>
+  @Inject
+  lateinit var getWordListIntent: PublishSubject<MainWordListIntent.GetWordList>
 
   override fun intents(): Observable<MainWordListIntent> =
-    getWordsIntent.cast(MainWordListIntent::class.java)
+    getWordListIntent
+      .cast(MainWordListIntent::class.java)
 
-  override fun render(state: WordListState) {
+  override fun render(state: MainWordListState) {
     super.render(state)
     with(state) {
       if (isInit) {
-        getWordsIntent.onNext(MainWordListIntent.GetWords)
+        getWordListIntent.onNext(
+          MainWordListIntent.GetWordList(
+            0,
+            Const.PAGE_SIZE
+          )
+        )
       }
     }
+  }
+
+  override fun onLoadMore(offset: Int) {
+    getWordListIntent.onNext(
+      MainWordListIntent.GetWordList(
+        offset,
+        Const.PAGE_SIZE
+      )
+    )
   }
 }

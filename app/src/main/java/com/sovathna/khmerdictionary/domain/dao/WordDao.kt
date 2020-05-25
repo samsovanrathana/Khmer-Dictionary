@@ -9,7 +9,7 @@ import io.reactivex.Single
 @Dao
 interface WordDao {
   @Query("SELECT * FROM dict LIMIT :offset, :pageSize")
-  fun getWordList(
+  fun getMainWordList(
     offset: Int,
     pageSize: Int
   ): Single<List<WordEntity>>

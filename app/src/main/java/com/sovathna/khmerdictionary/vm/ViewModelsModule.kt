@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.sovathna.khmerdictionary.di.ViewModelKey
 import com.sovathna.khmerdictionary.ui.definition.DefinitionViewModel
 import com.sovathna.khmerdictionary.ui.splash.SplashViewModel
-import com.sovathna.khmerdictionary.ui.wordlist.WordListViewModel
+import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -20,9 +20,9 @@ abstract class ViewModelsModule {
 
   @Binds
   @IntoMap
-  @ViewModelKey(WordListViewModel::class)
+  @ViewModelKey(MainWordListViewModel::class)
   abstract fun wordListViewModel(
-    vm: WordListViewModel
+    vm: MainWordListViewModel
   ): ViewModel
 
   @Binds
