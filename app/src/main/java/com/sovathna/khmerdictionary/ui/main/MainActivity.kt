@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.domain.model.FilterType
 import com.sovathna.khmerdictionary.ui.definition.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import dagger.android.support.DaggerAppCompatActivity
@@ -176,15 +175,6 @@ class MainActivity : DaggerAppCompatActivity() {
       }
     }
   }
-
-  fun getFilterType(): FilterType {
-    return when (nav_view?.checkedItem?.itemId) {
-      R.id.nav_bookmarks -> FilterType.Bookmark
-      R.id.nav_histories -> FilterType.History
-      else -> FilterType.All
-    }
-  }
-
 //  override fun onOptionsItemSelected(item: MenuItem): Boolean {
 //    if (item.itemId == android.R.id.home) {
 //      onBackPressed()
