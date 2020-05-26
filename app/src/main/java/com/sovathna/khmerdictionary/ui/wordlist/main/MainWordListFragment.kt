@@ -1,6 +1,7 @@
 package com.sovathna.khmerdictionary.ui.wordlist.main
 
 import com.sovathna.khmerdictionary.Const
+import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.state.MainWordListState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
@@ -32,11 +33,11 @@ class MainWordListFragment :
     }
   }
 
-  override fun onLoadMore(offset: Int) {
+  override fun onLoadMore(offset: Int, pageSize: Int) {
     getWordListIntent.onNext(
       MainWordListIntent.GetWordList(
         offset,
-        Const.PAGE_SIZE
+        pageSize
       )
     )
   }

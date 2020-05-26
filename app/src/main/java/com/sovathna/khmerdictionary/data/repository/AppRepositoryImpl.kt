@@ -29,6 +29,19 @@ class AppRepositoryImpl @Inject constructor(
       .toObservable()
   }
 
+  override fun getSearchWords(
+    searchTerm: String,
+    offset: Int,
+    pageSize: Int
+  ): Observable<List<Word>> {
+    return wordDao
+      .getFilterWordList("$searchTerm%", offset, pageSize)
+      .map { entities ->
+        entities.map { entity -> entity.toWord() }
+      }
+      .toObservable()
+  }
+
   override fun getDefinition(id: Long): Observable<Definition> =
     wordDao
       .getDefinition(id)

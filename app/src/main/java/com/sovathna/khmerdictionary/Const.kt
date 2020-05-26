@@ -11,5 +11,6 @@ object Const {
   const val LOAD_MORE_THRESHOLD = 10
 
   const val WORD_LIST_FRAGMENT_TAG = "word_list_fragment_tag"
+  const val SEARCH_WORDS_FRAGMENT_TAG = "search_words_fragment_tag"
   const val DEFINITION_FRAGMENT_TAG = "definition_fragment_tag"
 }

@@ -6,8 +6,13 @@ import com.sovathna.khmerdictionary.domain.model.Word
 import io.reactivex.Observable
 
 interface AppRepository {
-
   fun getMainWordList(
+    offset: Int,
+    pageSize: Int
+  ): Observable<List<Word>>
+
+  fun getSearchWords(
+    searchTerm: String,
     offset: Int,
     pageSize: Int
   ): Observable<List<Word>>
