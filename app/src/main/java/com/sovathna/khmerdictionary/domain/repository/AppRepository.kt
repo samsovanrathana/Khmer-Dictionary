@@ -17,6 +17,15 @@ interface AppRepository {
     pageSize: Int
   ): Observable<List<Word>>
 
+  fun addHistory(
+    word: Word
+  ): Observable<Long>
+
+  fun getHistories(
+    offset: Int,
+    pageSize: Int
+  ): Observable<List<Word>>
+
   fun getDefinition(
     id: Long
   ): Observable<Definition>

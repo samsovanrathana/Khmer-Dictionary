@@ -2,6 +2,8 @@ package com.sovathna.khmerdictionary.app
 
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.di.scope.SplashScope
+import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
+import com.sovathna.khmerdictionary.ui.definition.DefinitionModule
 import com.sovathna.khmerdictionary.ui.main.MainActivity
 import com.sovathna.khmerdictionary.ui.main.MainFragmentsModule
 import com.sovathna.khmerdictionary.ui.main.MainModule
@@ -28,4 +30,11 @@ abstract class AppActivitiesModule {
   )
   @MainScope
   abstract fun mainActivity(): MainActivity
+
+  @ContributesAndroidInjector(
+    modules = [
+      DefinitionModule::class
+    ]
+  )
+  abstract fun definitionActivity(): DefinitionActivity
 }

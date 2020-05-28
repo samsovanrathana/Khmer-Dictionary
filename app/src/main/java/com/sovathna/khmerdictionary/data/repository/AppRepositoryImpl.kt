@@ -4,6 +4,7 @@ import com.sovathna.khmerdictionary.data.local.AppDatabase
 import com.sovathna.khmerdictionary.data.local.LocalDatabase
 import com.sovathna.khmerdictionary.domain.model.BookmarkEntity
 import com.sovathna.khmerdictionary.domain.model.Definition
+import com.sovathna.khmerdictionary.domain.model.HistoryEntity
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
 import io.reactivex.Observable
@@ -23,6 +24,21 @@ class AppRepositoryImpl @Inject constructor(
   override fun getMainWordList(offset: Int, pageSize: Int): Observable<List<Word>> {
     return wordDao
       .getMainWordList(offset, pageSize)
+      .map { entities ->
+        entities.map { entity -> entity.toWord() }
+      }
+      .toObservable()
+  }
+
+  override fun addHistory(word: Word): Observable<Long> {
+    return historyDao
+      .add(HistoryEntity(word.name, word.id))
+      .toObservable()
+  }
+
+  override fun getHistories(offset: Int, pageSize: Int): Observable<List<Word>> {
+    return historyDao
+      .all(offset, pageSize)
       .map { entities ->
         entities.map { entity -> entity.toWord() }
       }

@@ -1,7 +1,9 @@
 package com.sovathna.khmerdictionary.ui.main
 
-import com.sovathna.khmerdictionary.ui.definition.DefinitionFragment
-import com.sovathna.khmerdictionary.ui.definition.DefinitionModule
+import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
+import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionModule
+import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
+import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesModule
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListModule
 import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
@@ -24,6 +26,13 @@ abstract class MainFragmentsModule {
     ]
   )
   abstract fun searchWordsFragment(): SearchWordsFragment
+
+  @ContributesAndroidInjector(
+    modules = [
+      HistoriesModule::class
+    ]
+  )
+  abstract fun historiesFragment(): HistoriesFragment
 
   @ContributesAndroidInjector(
     modules = [

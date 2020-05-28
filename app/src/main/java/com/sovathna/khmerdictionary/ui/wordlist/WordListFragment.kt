@@ -5,9 +5,9 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.androidmvi.intent.MviIntent
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
@@ -36,7 +36,7 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
   private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
 
   @Inject
-  lateinit var click: PublishSubject<Word>
+  lateinit var click: PublishSubject<Event<Word>>
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -59,7 +59,7 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
         if (words?.isNotEmpty() == true) {
           adapter.setOnItemClickListener { index ->
             with(adapter.currentList[index]) {
-              if (!isSelected) click.onNext(word)
+              if (!isSelected) click.onNext(Event(word))
             }
           }
         } else {

@@ -1,6 +1,7 @@
 package com.sovathna.khmerdictionary.ui.main
 
 import androidx.lifecycle.ViewModelProvider
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
@@ -20,7 +21,11 @@ class MainModule {
 
   @Provides
   @MainScope
-  fun click() = PublishSubject.create<Word>()
+  fun click() = PublishSubject.create<Event<Word>>()
+
+  @Provides
+  @MainScope
+  fun fab() = PublishSubject.create<Boolean>()
 
   @Provides
   @MainScope

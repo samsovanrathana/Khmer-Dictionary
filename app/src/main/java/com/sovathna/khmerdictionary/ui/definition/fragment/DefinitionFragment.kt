@@ -1,5 +1,6 @@
-package com.sovathna.khmerdictionary.ui.definition
+package com.sovathna.khmerdictionary.ui.definition.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
@@ -9,12 +10,14 @@ import android.text.style.URLSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
+import androidx.core.widget.NestedScrollView
 import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
+import dagger.Lazy
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_definition.*
@@ -25,15 +28,11 @@ class DefinitionFragment :
     R.layout.fragment_definition
   ) {
 
-  companion object {
-    fun newInstance(arguments: Bundle? = null): DefinitionFragment =
-      DefinitionFragment().apply {
-        this.arguments = arguments
-      }
-  }
-
   @Inject
   lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.Get>
+
+  @Inject
+  lateinit var fabVisibility: Lazy<PublishSubject<Boolean>>
 
   private lateinit var word: Word
 
@@ -44,29 +43,19 @@ class DefinitionFragment :
     }
   }
 
-//  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//    super.onViewCreated(view, savedInstanceState)
-//    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//      mActivity.title = "ពន្យល់ន័យ"
-//    } else {
-//      mActivity.title = getString(R.string.app_name_kh)
-//    }
-//    mActivity.drawerToggle.isDrawerIndicatorEnabled =
-//      resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT
-//    mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(!mActivity.drawerToggle.isDrawerIndicatorEnabled)
-//    if (!mActivity.drawerToggle.isDrawerIndicatorEnabled) {
-//      mActivity.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-//    }
-//
-//  }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-//  override fun onDestroyView() {
-//    super.onDestroyView()
-//    mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(false)
-//    mActivity.drawerToggle.isDrawerIndicatorEnabled = true
-//    mActivity.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-//    mActivity.title = getString(R.string.app_name_kh)
-//  }
+    if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      nsv.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+        if (scrollY < oldScrollY) {
+          fabVisibility.get().onNext(true)
+        } else if (scrollY > oldScrollY) {
+          fabVisibility.get().onNext(false)
+        }
+      }
+    }
+  }
 
   override fun intents(): Observable<DefinitionIntent> =
     getDefinitionIntent.cast(DefinitionIntent::class.java)
@@ -91,19 +80,6 @@ class DefinitionFragment :
           .replace("និ.", "<span style=\"color:#D50000\">និ.</span>")
           .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
         setTextViewHTML(tv_definition, tmp)
-//        tv_definition.text = definition.definition
-
-//        if (::bookmarkItem.isInitialized) {
-//          if (isBookmark == true) {
-//            bookmarkItem.icon =
-//              ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_white_24)
-//            bookmarkItem.title = getString(R.string.delete_bookmark)
-//          } else {
-//            bookmarkItem.icon =
-//              ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_border_white_24)
-//            bookmarkItem.title = getString(R.string.bookmark)
-//          }
-//        }
       }
     }
   }
@@ -140,26 +116,4 @@ class DefinitionFragment :
     text.movementMethod = LinkMovementMethod.getInstance()
   }
 
-//  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//    inflater.inflate(R.menu.definition_menu, menu)
-//    bookmarkItem = menu.findItem(R.id.action_bookmark)
-//    if (isBookmark == true) {
-//      bookmarkItem.icon =
-//        ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_white_24)
-//      bookmarkItem.title = getString(R.string.delete_bookmark)
-//    } else {
-//      bookmarkItem.icon =
-//        ContextCompat.getDrawable(requireContext(), R.drawable.round_bookmark_border_white_24)
-//      bookmarkItem.title = getString(R.string.bookmark)
-//    }
-//  }
-
-//  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//    when (item.itemId) {
-//      R.id.action_bookmark -> {
-//        bookmarkIntent.onNext(DefinitionIntent.Bookmark(word))
-//      }
-//    }
-//    return super.onOptionsItemSelected(item)
-//  }
 }

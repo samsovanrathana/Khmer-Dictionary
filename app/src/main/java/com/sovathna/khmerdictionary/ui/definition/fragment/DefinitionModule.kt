@@ -1,4 +1,4 @@
-package com.sovathna.khmerdictionary.ui.definition
+package com.sovathna.khmerdictionary.ui.definition.fragment
 
 import androidx.lifecycle.ViewModelProvider
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
