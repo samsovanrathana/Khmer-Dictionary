@@ -21,11 +21,14 @@ class DefinitionInteractorImpl @Inject constructor(
           Observable
             .merge(
               repository
-                .getDefinition(intent.id)
+                .getDefinition(intent.word.id)
                 .map(DefinitionResult::Success),
               repository
-                .checkBookmark(intent.id)
-                .map(DefinitionResult::BookmarkChecked)
+                .checkBookmark(intent.word.id)
+                .map(DefinitionResult::BookmarkChecked),
+              repository
+                .addHistory(intent.word)
+                .map(DefinitionResult::HistoryAdded)
             )
             .subscribeOn(Schedulers.io())
         }

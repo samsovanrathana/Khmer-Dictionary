@@ -27,4 +27,8 @@ class MainWordListInteractorImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
         }
     }
+
+  override val selected = ObservableTransformer<MainWordListIntent.Selected, MainWordListResult> {
+    it.map { intent -> MainWordListResult.Selected(intent.word) }
+  }
 }

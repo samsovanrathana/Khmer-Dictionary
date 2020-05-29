@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.ui.wordlist
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.fragment.MviFragment
@@ -36,7 +37,10 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
   private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
 
   @Inject
-  lateinit var click: PublishSubject<Event<Word>>
+  protected lateinit var selectedLiveData: MutableLiveData<Word>
+
+  @Inject
+  protected lateinit var click: PublishSubject<Event<Word>>
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)

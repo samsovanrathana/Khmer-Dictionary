@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.main
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.di.scope.MainScope
@@ -26,6 +27,10 @@ class MainModule {
   @Provides
   @MainScope
   fun fab() = PublishSubject.create<Boolean>()
+
+  @Provides
+  @MainScope
+  fun selectedLiveData() = MutableLiveData<Word>()
 
   @Provides
   @MainScope

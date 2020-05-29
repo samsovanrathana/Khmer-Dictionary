@@ -33,6 +33,14 @@ class HistoriesViewModel @Inject constructor(
             },
             isMore = result.isMore
           )
+        is HistoriesResult.Update ->
+          state.copy(words = state.words?.toMutableList()?.apply {
+            val index = indexOfFirst { item -> item.word.id == result.word.id }
+            if (index > 0) {
+              val tmp = this.removeAt(index)
+              add(0, tmp)
+            }
+          })
       }
     }
 

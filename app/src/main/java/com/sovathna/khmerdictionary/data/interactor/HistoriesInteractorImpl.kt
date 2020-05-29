@@ -27,4 +27,8 @@ class HistoriesInteractorImpl @Inject constructor(
             .subscribeOn(Schedulers.computation())
         }
     }
+
+  override val update = ObservableTransformer<HistoriesIntent.Update, HistoriesResult> {
+    it.map { intent -> HistoriesResult.Update(intent.word) }
+  }
 }

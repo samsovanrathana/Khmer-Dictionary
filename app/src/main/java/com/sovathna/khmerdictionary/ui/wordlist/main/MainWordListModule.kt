@@ -22,6 +22,9 @@ class MainWordListModule {
   fun getWordsIntent() = PublishSubject.create<MainWordListIntent.GetWordList>()
 
   @Provides
+  fun select() = PublishSubject.create<MainWordListIntent.Selected>()
+
+  @Provides
   fun layoutManager(activity: MainActivity): RecyclerView.LayoutManager =
     LinearLayoutManager(activity)
 

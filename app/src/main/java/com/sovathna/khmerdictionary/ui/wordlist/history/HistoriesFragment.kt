@@ -1,11 +1,15 @@
 package com.sovathna.khmerdictionary.ui.wordlist.history
 
+import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.Observer
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
 class HistoriesFragment :
@@ -14,9 +18,23 @@ class HistoriesFragment :
   @Inject
   lateinit var getHistories: PublishSubject<HistoriesIntent.GetWords>
 
+  @Inject
+  lateinit var update: PublishSubject<HistoriesIntent.Update>
+
   override fun intents(): Observable<HistoriesIntent> =
-    getHistories
-      .cast(HistoriesIntent::class.java)
+    Observable.merge(
+      getHistories,
+      update
+    )
+
+  override fun onResume() {
+    super.onResume()
+    LiveDataReactiveStreams
+      .fromPublisher(click.toFlowable(BackpressureStrategy.BUFFER))
+      .observe(viewLifecycleOwner, Observer {
+        update.onNext(HistoriesIntent.Update(it.peekContent()))
+      })
+  }
 
   override fun render(state: HistoriesState) {
     super.render(state)
@@ -29,6 +47,14 @@ class HistoriesFragment :
           )
         )
       }
+      words?.let {
+        val i = 0
+        if (i >= 0) {
+          rv.postDelayed({
+            rv.smoothScrollToPosition(0)
+          }, 500)
+        }
+      }
     }
   }
 
@@ -40,4 +66,5 @@ class HistoriesFragment :
       )
     )
   }
+
 }

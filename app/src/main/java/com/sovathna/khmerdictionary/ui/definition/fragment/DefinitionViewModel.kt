@@ -8,7 +8,9 @@ import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.result.DefinitionResult
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import io.reactivex.BackpressureStrategy
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Consumer
 import javax.inject.Inject
 
 class DefinitionViewModel @Inject constructor(
@@ -27,6 +29,7 @@ class DefinitionViewModel @Inject constructor(
           isInit = false,
           isBookmark = result.isBookmark
         )
+        is DefinitionResult.HistoryAdded -> state
       }
     }
   override val stateLiveData: LiveData<DefinitionState> =

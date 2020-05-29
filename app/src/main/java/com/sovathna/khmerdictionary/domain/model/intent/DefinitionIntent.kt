@@ -5,7 +5,7 @@ import com.sovathna.khmerdictionary.domain.model.Word
 
 sealed class DefinitionIntent : MviIntent {
   data class Get(
-    val id: Long
+    val word: Word
   ) : DefinitionIntent()
 
   data class Bookmark(

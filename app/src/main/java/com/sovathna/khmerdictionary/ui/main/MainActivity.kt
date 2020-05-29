@@ -9,13 +9,18 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.Const
@@ -24,9 +29,9 @@ import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
+import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
-import dagger.Lazy
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
@@ -49,6 +54,9 @@ class MainActivity : DaggerAppCompatActivity() {
   lateinit var viewModel: MainViewModel
 
   @Inject
+  lateinit var selectedLiveData: MutableLiveData<Word>
+
+  @Inject
   lateinit var fabVisibility: PublishSubject<Boolean>
 
   private var searchItem: MenuItem? = null
@@ -57,8 +65,22 @@ class MainActivity : DaggerAppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
+    FirebaseInstanceId.getInstance().instanceId
+      .addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+          Logger.e("getInstanceId failed")
+          return@OnCompleteListener
+        }
+
+        val token = task.result?.token
+        Logger.d("FCM Token: $token")
+      })
+
     setSupportActionBar(toolbar)
-    title = getString(R.string.app_name_kh)
+    if (savedInstanceState == null)
+      viewModel.title = getString(R.string.app_name_kh)
+
+    viewModel.titleLiveData.observe(this, Observer(::setTitle))
 
     LiveDataReactiveStreams
       .fromPublisher(
@@ -76,6 +98,9 @@ class MainActivity : DaggerAppCompatActivity() {
     fab.setOnClickListener {
 
       if (searchItem?.isActionViewExpanded == false) {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+          supportFragmentManager.popBackStack()
+        }
         searchItem?.expandActionView()
         supportFragmentManager.beginTransaction()
           .setCustomAnimations(
@@ -93,7 +118,6 @@ class MainActivity : DaggerAppCompatActivity() {
           .commit()
       } else {
         searchItem?.collapseActionView()
-
       }
 
     }
@@ -110,7 +134,45 @@ class MainActivity : DaggerAppCompatActivity() {
     nav_view.setNavigationItemSelectedListener { menu ->
       drawer_layout.closeDrawer(GravityCompat.START)
       if (!menu.isChecked) {
-
+        menu.isChecked = true
+        if (supportFragmentManager.backStackEntryCount > 0) {
+          supportFragmentManager.popBackStack()
+        }
+        when (menu.itemId) {
+          R.id.nav_histories -> {
+            viewModel.title = getString(R.string.histories)
+            supportFragmentManager.beginTransaction()
+              .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+              )
+              .replace(
+                R.id.word_list_container,
+                HistoriesFragment(),
+                Const.HISTORIES_FRAGMENT_TAG
+              )
+              .addToBackStack(null)
+              .commit()
+          }
+//          R.id.nav_bookmarks -> {
+//            supportFragmentManager.beginTransaction()
+//              .setCustomAnimations(
+//                R.anim.fade_in,
+//                R.anim.fade_out,
+//                R.anim.fade_in,
+//                R.anim.fade_out
+//              )
+//              .replace(
+//                R.id.word_list_container,
+//                HistoriesFragment(),
+//                Const.HISTORIES_FRAGMENT_TAG
+//              )
+//              .addToBackStack(null)
+//              .commit()
+//          }
+        }
         return@setNavigationItemSelectedListener true
       }
       return@setNavigationItemSelectedListener false
@@ -174,6 +236,7 @@ class MainActivity : DaggerAppCompatActivity() {
   }
 
   private fun onItemClick(word: Word) {
+    selectedLiveData.value = word
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -200,11 +263,15 @@ class MainActivity : DaggerAppCompatActivity() {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-      data?.let {
-        it.getParcelableExtra<Word>("word")?.let { word ->
-          click.onNext(Event(word))
+    if (requestCode == 0) {
+      if (resultCode == Activity.RESULT_OK) {
+        data?.let {
+          it.getParcelableExtra<Word>("word")?.let { word ->
+            click.onNext(Event(word))
+          }
         }
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        selectedLiveData.value = null
       }
     }
   }
@@ -213,8 +280,43 @@ class MainActivity : DaggerAppCompatActivity() {
     if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
       drawer_layout.closeDrawer(GravityCompat.START)
     } else {
-      super.onBackPressed()
+      if (supportFragmentManager.backStackEntryCount > 0) {
+        viewModel.title = getString(R.string.app_name_kh)
+        nav_view.checkedItem?.isChecked = false
+        super.onBackPressed()
+      } else {
+        val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
+        if (defTmp != null) {
+          supportFragmentManager
+            .beginTransaction()
+            .remove(defTmp)
+            .commit()
+          selectedLiveData.value = null
+        } else {
+          showCloseDialog()
+        }
+      }
+
     }
+  }
+
+  private var closeDialog: AlertDialog? = null
+
+  private fun showCloseDialog() {
+    val builder = AlertDialog.Builder(this)
+    builder.setTitle("Notice!")
+    builder.setMessage("Do you really want to exit?")
+    builder.setNegativeButton("No", null)
+    builder.setPositiveButton("Yes") { _, _ ->
+      finish()
+    }
+    closeDialog = builder.show()
+
+  }
+
+  override fun onPause() {
+    super.onPause()
+    closeDialog?.dismiss()
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -242,6 +344,7 @@ class MainActivity : DaggerAppCompatActivity() {
         if (supportFragmentManager.backStackEntryCount > 0) {
           supportFragmentManager.popBackStack()
         }
+        viewModel.title = getString(R.string.app_name_kh)
         return true
       }
     })

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "836787755721",
+    "firebase_url": "https://utube-dl-app.firebaseio.com",
+    "project_id": "utube-dl-app",
+    "storage_bucket": "utube-dl-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836787755721:android:0196ec9224ccc908648b18",
+        "android_client_info": {
+          "package_name": "com.sovathna.khmerdictionary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836787755721-aa4l9ls5go3m6kcjc0t6vfm0vk9ph74e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwNyKPRd_qjrnJvnHScEMask-Q7X-f5mk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836787755721-aa4l9ls5go3m6kcjc0t6vfm0vk9ph74e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

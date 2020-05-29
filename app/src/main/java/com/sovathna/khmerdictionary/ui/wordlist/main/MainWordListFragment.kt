@@ -1,7 +1,8 @@
 package com.sovathna.khmerdictionary.ui.wordlist.main
 
+import androidx.lifecycle.Observer
+import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.state.MainWordListState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
@@ -15,9 +16,19 @@ class MainWordListFragment :
   @Inject
   lateinit var getWordListIntent: PublishSubject<MainWordListIntent.GetWordList>
 
+  @Inject
+  lateinit var selected: PublishSubject<MainWordListIntent.Selected>
+
   override fun intents(): Observable<MainWordListIntent> =
-    getWordListIntent
-      .cast(MainWordListIntent::class.java)
+    Observable.merge(getWordListIntent, selected)
+
+  override fun onResume() {
+    super.onResume()
+    selectedLiveData.observe(viewLifecycleOwner, Observer {
+      Logger.d("$it")
+      selected.onNext(MainWordListIntent.Selected(it))
+    })
+  }
 
   override fun render(state: MainWordListState) {
     super.render(state)

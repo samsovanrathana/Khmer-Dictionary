@@ -63,7 +63,7 @@ class DefinitionFragment :
   override fun render(state: DefinitionState) {
     with(state) {
       if (isInit) {
-        getDefinitionIntent.onNext(DefinitionIntent.Get(word.id))
+        getDefinitionIntent.onNext(DefinitionIntent.Get(word))
       }
 
       definition?.let {

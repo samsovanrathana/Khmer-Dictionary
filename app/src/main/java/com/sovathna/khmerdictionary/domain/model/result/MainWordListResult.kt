@@ -8,4 +8,8 @@ sealed class MainWordListResult : MviResult {
     val words: List<Word>,
     val isMore: Boolean
   ) : MainWordListResult()
+
+  data class Selected(
+    val word: Word?
+  ) : MainWordListResult()
 }

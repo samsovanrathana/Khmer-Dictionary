@@ -22,6 +22,9 @@ class HistoriesModule {
   fun getHistories() = PublishSubject.create<HistoriesIntent.GetWords>()
 
   @Provides
+  fun update() = PublishSubject.create<HistoriesIntent.Update>()
+
+  @Provides
   fun layoutManager(activity: MainActivity): RecyclerView.LayoutManager =
     LinearLayoutManager(activity)
 
