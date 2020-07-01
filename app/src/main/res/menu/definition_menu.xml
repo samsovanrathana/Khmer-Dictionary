@@ -2,7 +2,6 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
   <item
       android:id="@+id/action_bookmark"
       android:icon="@drawable/round_bookmark_border_white_24"

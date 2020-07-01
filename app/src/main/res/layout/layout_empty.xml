@@ -8,14 +8,15 @@
 
   <androidx.appcompat.widget.AppCompatImageView
       android:id="@+id/empty_img_icon"
-      android:layout_width="100dp"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:adjustViewBounds="true"
       app:layout_constraintBottom_toTopOf="@id/empty_tv_title"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:srcCompat="@drawable/img_empty" />
+      app:srcCompat="@drawable/round_search_white_48"
+      app:tint="@color/colorPrimary" />
 
   <androidx.appcompat.widget.AppCompatTextView
       android:id="@+id/empty_tv_title"
@@ -23,7 +24,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
       android:gravity="center_horizontal"
-      android:text="ពាក្យអីទេ៎ រកមិនឃើញ"
+      android:text="ស្វែងរកពាក្យមិនឃើញ"
       android:textAppearance="@style/TextAppearance.AppCompat.Title"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintBottom_toBottomOf="parent"

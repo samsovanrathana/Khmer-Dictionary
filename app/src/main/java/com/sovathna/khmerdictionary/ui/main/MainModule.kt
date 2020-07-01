@@ -36,4 +36,12 @@ class MainModule {
   @MainScope
   fun searchWordsIntent() = PublishSubject.create<SearchWordsIntent.GetWords>()
 
+  @Provides
+  @MainScope
+  fun bookmarkedLiveData() = MutableLiveData<Boolean>()
+
+  @Provides
+  @MainScope
+  fun menuItemClickLiveData() = MutableLiveData<Event<String>>()
+
 }

@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.app
 
+import com.sovathna.khmerdictionary.di.scope.DefinitionScope
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.di.scope.SplashScope
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
@@ -36,5 +37,6 @@ abstract class AppActivitiesModule {
       DefinitionModule::class
     ]
   )
+  @DefinitionScope
   abstract fun definitionActivity(): DefinitionActivity
 }

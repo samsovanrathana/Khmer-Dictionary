@@ -1,19 +1,24 @@
 package com.sovathna.khmerdictionary.ui.wordlist.search
 
-import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
 import com.sovathna.khmerdictionary.domain.model.state.SearchWordsState
+import com.sovathna.khmerdictionary.ui.main.MainViewModel
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+import javax.inject.Named
 
 class SearchWordsFragment :
   WordListFragment<SearchWordsIntent, SearchWordsState, SearchWordsViewModel>() {
 
   @Inject
   lateinit var getWordsIntent: PublishSubject<SearchWordsIntent.GetWords>
+
+  @Inject
+  @Named("instance")
+  lateinit var mainViewModel: MainViewModel
 
   override fun intents(): Observable<SearchWordsIntent> =
     getWordsIntent
@@ -25,7 +30,7 @@ class SearchWordsFragment :
       if (isInit) {
         getWordsIntent.onNext(
           SearchWordsIntent.GetWords(
-            viewModel.searchTerm,
+            "",
             0,
             Const.PAGE_SIZE,
             true
@@ -38,16 +43,11 @@ class SearchWordsFragment :
   override fun onLoadMore(offset: Int, pageSize: Int) {
     getWordsIntent.onNext(
       SearchWordsIntent.GetWords(
-        viewModel.searchTerm,
+        mainViewModel.searchTerm,
         offset,
         pageSize,
         false
       )
     )
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    Logger.d("destroy search")
   }
 }

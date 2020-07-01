@@ -11,8 +11,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.fragment.MviFragment
+import com.sovathna.androidmvi.livedata.Event
+import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
@@ -31,8 +34,16 @@ class DefinitionFragment :
   @Inject
   lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.Get>
 
+  private var bookmark = PublishSubject.create<DefinitionIntent.Bookmark>()
+
   @Inject
   lateinit var fabVisibility: Lazy<PublishSubject<Boolean>>
+
+  @Inject
+  lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
+
+  @Inject
+  lateinit var menuItemClick: MutableLiveData<Event<String>>
 
   private lateinit var word: Word
 
@@ -57,8 +68,19 @@ class DefinitionFragment :
     }
   }
 
+  override fun onResume() {
+    super.onResume()
+    menuItemClick.observe(viewLifecycleOwner, EventObserver {
+      when (it) {
+        "bookmark" -> {
+          bookmark.onNext(DefinitionIntent.Bookmark(word))
+        }
+      }
+    })
+  }
+
   override fun intents(): Observable<DefinitionIntent> =
-    getDefinitionIntent.cast(DefinitionIntent::class.java)
+    Observable.merge(getDefinitionIntent, bookmark).cast(DefinitionIntent::class.java)
 
   override fun render(state: DefinitionState) {
     with(state) {
@@ -81,6 +103,7 @@ class DefinitionFragment :
           .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
         setTextViewHTML(tv_definition, tmp)
       }
+      bookmarkedLiveData.value = isBookmark == true
     }
   }
 

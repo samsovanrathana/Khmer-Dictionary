@@ -17,8 +17,6 @@ class SearchWordsViewModel @Inject constructor(
   private val interactor: SearchWordsInteractor
 ) : MviViewModel<SearchWordsIntent, SearchWordsResult, SearchWordsState>() {
 
-  var searchTerm = ""
-
   override val reducer =
     BiFunction<SearchWordsState, SearchWordsResult, SearchWordsState> { state, result ->
 

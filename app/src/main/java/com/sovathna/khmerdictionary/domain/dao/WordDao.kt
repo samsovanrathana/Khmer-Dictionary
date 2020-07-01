@@ -8,13 +8,13 @@ import io.reactivex.Single
 
 @Dao
 interface WordDao {
-  @Query("SELECT * FROM dict LIMIT :offset, :pageSize")
+  @Query("SELECT * FROM dict ORDER BY word LIMIT :offset, :pageSize")
   fun getMainWordList(
     offset: Int,
     pageSize: Int
   ): Single<List<WordEntity>>
 
-  @Query("SELECT * FROM dict WHERE word LIKE :filter LIMIT :offset, :pageSize")
+  @Query("SELECT * FROM dict WHERE word LIKE :filter ORDER BY word LIMIT :offset, :pageSize")
   fun getFilterWordList(
     filter: String,
     offset: Int,
