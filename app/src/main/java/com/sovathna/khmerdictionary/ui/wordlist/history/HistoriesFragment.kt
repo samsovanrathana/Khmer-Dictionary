@@ -48,12 +48,9 @@ class HistoriesFragment :
         )
       }
       words?.let {
-        val i = 0
-        if (i >= 0) {
-          rv.postDelayed({
-            rv.smoothScrollToPosition(0)
-          }, 500)
-        }
+          rv.post{
+            rv.scrollToPosition(0)
+          }
       }
     }
   }
