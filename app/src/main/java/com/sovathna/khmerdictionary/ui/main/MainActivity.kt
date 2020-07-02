@@ -258,8 +258,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
   private fun onItemClick(word: Word) {
     Logger.d("click")
-    menu?.setGroupVisible(R.id.group_def, true)
     selectedLiveData.value = word
+    menu?.setGroupVisible(R.id.group_def, definition_container != null && selectedLiveData.value != null)
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -296,6 +296,10 @@ class MainActivity : DaggerAppCompatActivity() {
       } else if (resultCode == Activity.RESULT_CANCELED) {
         selectedLiveData.value = null
       }
+      menu?.setGroupVisible(
+        R.id.group_def,
+        definition_container != null && selectedLiveData.value != null
+      )
     }
   }
 
