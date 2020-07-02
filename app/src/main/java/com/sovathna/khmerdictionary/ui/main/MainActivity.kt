@@ -320,24 +320,6 @@ class MainActivity : DaggerAppCompatActivity() {
           showCloseDialog()
         }
       }
-
-//      if (supportFragmentManager.backStackEntryCount > 0) {
-//        viewModel.title = getString(R.string.app_name_kh)
-//        nav_view.checkedItem?.isChecked = false
-//        super.onBackPressed()
-//      } else {
-//        val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
-//        if (defTmp != null) {
-//          supportFragmentManager
-//            .beginTransaction()
-//            .remove(defTmp)
-//            .commit()
-//          selectedLiveData.value = null
-//        } else {
-//          showCloseDialog()
-//        }
-//      }
-
     }
   }
 
@@ -435,10 +417,13 @@ class MainActivity : DaggerAppCompatActivity() {
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     if (item.itemId == R.id.action_bookmark) {
       menuItemClick.value = Event("bookmark")
+    } else if (item.itemId == R.id.action_zoom_in) {
+      menuItemClick.value = Event("zoom_in")
+    } else if (item.itemId == R.id.action_zoom_out) {
+      menuItemClick.value = Event("zoom_out")
     }
     return super.onOptionsItemSelected(item)
   }
-
 
 }
 

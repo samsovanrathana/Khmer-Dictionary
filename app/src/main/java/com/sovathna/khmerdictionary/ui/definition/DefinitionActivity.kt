@@ -89,9 +89,14 @@ class DefinitionActivity : DaggerAppCompatActivity() {
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    if (item.itemId == android.R.id.home) onBackPressed()
-    else if (item.itemId == R.id.action_bookmark) {
+    if (item.itemId == android.R.id.home) {
+      onBackPressed()
+    } else if (item.itemId == R.id.action_bookmark) {
       menuItemClick.value = Event("bookmark")
+    } else if(item.itemId == R.id.action_zoom_in){
+      menuItemClick.value = Event("zoom_in")
+    }else if(item.itemId == R.id.action_zoom_out){
+      menuItemClick.value = Event("zoom_out")
     }
     return super.onOptionsItemSelected(item)
   }
