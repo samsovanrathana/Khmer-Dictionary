@@ -61,6 +61,12 @@ class MainActivity : DaggerAppCompatActivity() {
   @Inject
   lateinit var fabVisibility: PublishSubject<Boolean>
 
+  @Inject
+  lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
+
+  @Inject
+  lateinit var menuItemClick: MutableLiveData<Event<String>>
+
   private var menu: Menu? = null
   private var searchItem: MenuItem? = null
 
@@ -84,6 +90,27 @@ class MainActivity : DaggerAppCompatActivity() {
       viewModel.title = getString(R.string.app_name_kh)
 
     viewModel.titleLiveData.observe(this, Observer(::setTitle))
+
+    bookmarkedLiveData.observe(this, Observer { isBookmark ->
+      menu?.findItem(R.id.action_bookmark)?.let { item ->
+        when {
+          isBookmark -> {
+            item.title = "លុបការរក្សាទុក"
+            item.icon = ContextCompat.getDrawable(
+              this,
+              R.drawable.round_bookmark_white_24
+            )
+          }
+          else -> {
+            item.title = "រក្សាទុក"
+            item.icon = ContextCompat.getDrawable(
+              this,
+              R.drawable.round_bookmark_border_white_24
+            )
+          }
+        }
+      }
+    })
 
     LiveDataReactiveStreams
       .fromPublisher(
@@ -405,13 +432,13 @@ class MainActivity : DaggerAppCompatActivity() {
     return true
   }
 
-//  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//    if (item.itemId == android.R.id.home) {
-//      onBackPressed()
-//    }
-//    LogUtil.i("options click")
-//    return super.onOptionsItemSelected(item)
-//  }
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    if (item.itemId == R.id.action_bookmark) {
+      menuItemClick.value = Event("bookmark")
+    }
+    return super.onOptionsItemSelected(item)
+  }
+
 
 }
 
