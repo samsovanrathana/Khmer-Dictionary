@@ -2,6 +2,8 @@ package com.sovathna.khmerdictionary.ui.main
 
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionModule
+import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksFragment
+import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksModule
 import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
 import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesModule
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
@@ -33,6 +35,13 @@ abstract class MainFragmentsModule {
     ]
   )
   abstract fun historiesFragment(): HistoriesFragment
+
+  @ContributesAndroidInjector(
+    modules = [
+      BookmarksModule::class
+    ]
+  )
+  abstract fun bookmarksFragment(): BookmarksFragment
 
   @ContributesAndroidInjector(
     modules = [

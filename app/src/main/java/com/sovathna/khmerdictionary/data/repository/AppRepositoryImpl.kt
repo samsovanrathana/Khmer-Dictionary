@@ -45,6 +45,15 @@ class AppRepositoryImpl @Inject constructor(
       .toObservable()
   }
 
+  override fun getBookmarks(offset: Int, pageSize: Int): Observable<List<Word>> {
+    return bookmarkDao
+      .all(offset, pageSize)
+      .map { entities ->
+        entities.map { entity -> entity.toWord() }
+      }
+      .toObservable()
+  }
+
   override fun getSearchWords(
     searchTerm: String,
     offset: Int,

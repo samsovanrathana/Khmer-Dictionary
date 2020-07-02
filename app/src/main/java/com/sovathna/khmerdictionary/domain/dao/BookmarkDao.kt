@@ -9,7 +9,7 @@ import io.reactivex.Single
 
 @Dao
 interface BookmarkDao {
-  @Query("SELECT * FROM bookmark ORDER BY id DESC LIMIT :offset, :pageSize")
+  @Query("SELECT * FROM bookmark ORDER BY uid DESC LIMIT :offset, :pageSize")
   fun all(
     offset: Int,
     pageSize: Int
@@ -20,12 +20,12 @@ interface BookmarkDao {
     word: BookmarkEntity
   ): Single<Long>
 
-  @Query("SELECT * FROM bookmark WHERE word_id=:wordId")
+  @Query("SELECT * FROM bookmark WHERE id=:wordId")
   fun get(
     wordId: Long
   ): Single<BookmarkEntity>
 
-  @Query("DELETE FROM bookmark WHERE word_id=:wordId")
+  @Query("DELETE FROM bookmark WHERE id=:wordId")
   fun delete(
     wordId: Long
   ): Single<Int>

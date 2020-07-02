@@ -26,6 +26,11 @@ interface AppRepository {
     pageSize: Int
   ): Observable<List<Word>>
 
+  fun getBookmarks(
+    offset: Int,
+    pageSize: Int
+  ): Observable<List<Word>>
+
   fun getDefinition(
     id: Long
   ): Observable<Definition>

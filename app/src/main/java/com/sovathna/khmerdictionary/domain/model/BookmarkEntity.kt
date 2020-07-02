@@ -5,13 +5,15 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "bookmark", indices = [Index(value = ["word_id"], unique = true)])
+@Entity(tableName = "bookmark", indices = [Index(value = ["id"], unique = true)])
 data class BookmarkEntity(
   @ColumnInfo(name = "word")
   val word: String,
-  @ColumnInfo(name = "word_id")
-  val wordId: Long,
-  @PrimaryKey(autoGenerate = true)
   @ColumnInfo(name = "id")
-  val id: Long = 0
-)
+  val id: Long,
+  @PrimaryKey(autoGenerate = true)
+  @ColumnInfo(name = "uid")
+  val uid: Long = 0
+) {
+  fun toWord() = Word(id, word)
+}

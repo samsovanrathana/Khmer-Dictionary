@@ -4,8 +4,8 @@ import android.content.Context
 import com.sovathna.khmerdictionary.data.DataModule
 import com.sovathna.khmerdictionary.vm.ViewModelsModule
 import com.sovathna.khmerdictionary.vmfactory.ViewModelFactoryModule
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import javax.inject.Singleton
 
 @Module(
@@ -16,8 +16,9 @@ import javax.inject.Singleton
     ViewModelFactoryModule::class
   ]
 )
-abstract class AppModule {
-  @Binds
+object AppModule {
+  @Provides
+  @JvmStatic
   @Singleton
-  abstract fun context(app: AndroidApp): Context
+  fun context(app: AndroidApp): Context = app
 }

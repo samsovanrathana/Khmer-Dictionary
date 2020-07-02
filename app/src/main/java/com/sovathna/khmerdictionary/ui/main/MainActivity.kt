@@ -14,7 +14,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -27,8 +26,10 @@ import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
+import com.sovathna.khmerdictionary.listener.DrawerListener
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
+import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksFragment
 import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
@@ -37,6 +38,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -59,6 +61,7 @@ class MainActivity : DaggerAppCompatActivity() {
   @Inject
   lateinit var fabVisibility: PublishSubject<Boolean>
 
+  private var menu: Menu? = null
   private var searchItem: MenuItem? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +102,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
       if (searchItem?.isActionViewExpanded == false) {
         if (supportFragmentManager.backStackEntryCount > 0) {
+          viewModel.title = getString(R.string.app_name_kh)
+          nav_view.checkedItem?.isChecked = false
           supportFragmentManager.popBackStack()
         }
         searchItem?.expandActionView()
@@ -156,40 +161,29 @@ class MainActivity : DaggerAppCompatActivity() {
               .addToBackStack(null)
               .commit()
           }
-//          R.id.nav_bookmarks -> {
-//            supportFragmentManager.beginTransaction()
-//              .setCustomAnimations(
-//                R.anim.fade_in,
-//                R.anim.fade_out,
-//                R.anim.fade_in,
-//                R.anim.fade_out
-//              )
-//              .replace(
-//                R.id.word_list_container,
-//                HistoriesFragment(),
-//                Const.HISTORIES_FRAGMENT_TAG
-//              )
-//              .addToBackStack(null)
-//              .commit()
-//          }
+          R.id.nav_bookmarks -> {
+            viewModel.title = getString(R.string.bookmarks)
+            supportFragmentManager.beginTransaction()
+              .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+              )
+              .replace(
+                R.id.word_list_container,
+                BookmarksFragment(),
+                Const.BOOKMARKS_FRAGMENT_TAG
+              )
+              .addToBackStack(null)
+              .commit()
+          }
         }
         return@setNavigationItemSelectedListener true
       }
       return@setNavigationItemSelectedListener false
     }
-    drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
-      override fun onDrawerStateChanged(newState: Int) {
-
-      }
-
-      override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-
-      }
-
-      override fun onDrawerClosed(drawerView: View) {
-
-      }
-
+    drawer_layout.addDrawerListener(object : DrawerListener() {
       override fun onDrawerOpened(drawerView: View) {
         if (searchItem?.isActionViewExpanded == true) {
           searchItem?.collapseActionView()
@@ -236,6 +230,8 @@ class MainActivity : DaggerAppCompatActivity() {
   }
 
   private fun onItemClick(word: Word) {
+    Logger.d("click")
+    menu?.setGroupVisible(R.id.group_def, true)
     selectedLiveData.value = word
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
@@ -280,22 +276,40 @@ class MainActivity : DaggerAppCompatActivity() {
     if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
       drawer_layout.closeDrawer(GravityCompat.START)
     } else {
-      if (supportFragmentManager.backStackEntryCount > 0) {
-        viewModel.title = getString(R.string.app_name_kh)
-        nav_view.checkedItem?.isChecked = false
-        super.onBackPressed()
+      val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
+      if (defTmp != null) {
+        menu?.setGroupVisible(R.id.group_def, false)
+        supportFragmentManager
+          .beginTransaction()
+          .remove(defTmp)
+          .commit()
+        selectedLiveData.value = null
       } else {
-        val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
-        if (defTmp != null) {
-          supportFragmentManager
-            .beginTransaction()
-            .remove(defTmp)
-            .commit()
-          selectedLiveData.value = null
+        if (supportFragmentManager.backStackEntryCount > 0) {
+          viewModel.title = getString(R.string.app_name_kh)
+          nav_view.checkedItem?.isChecked = false
+          super.onBackPressed()
         } else {
           showCloseDialog()
         }
       }
+
+//      if (supportFragmentManager.backStackEntryCount > 0) {
+//        viewModel.title = getString(R.string.app_name_kh)
+//        nav_view.checkedItem?.isChecked = false
+//        super.onBackPressed()
+//      } else {
+//        val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
+//        if (defTmp != null) {
+//          supportFragmentManager
+//            .beginTransaction()
+//            .remove(defTmp)
+//            .commit()
+//          selectedLiveData.value = null
+//        } else {
+//          showCloseDialog()
+//        }
+//      }
 
     }
   }
@@ -311,7 +325,6 @@ class MainActivity : DaggerAppCompatActivity() {
       finish()
     }
     closeDialog = builder.show()
-
   }
 
   override fun onPause() {
@@ -321,6 +334,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.main, menu)
+    this.menu = menu
+
+    menu?.setGroupVisible(
+      R.id.group_def,
+      definition_container != null && selectedLiveData.value != null
+    )
+
     searchItem = menu?.findItem(R.id.action_search)
     searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
       override fun onMenuItemActionExpand(item: MenuItem?): Boolean {

@@ -29,6 +29,11 @@ abstract class InteractorModule {
   ): HistoriesInteractor
 
   @Binds
+  abstract fun bookmarksInteractor(
+    impl: BookmarksInteractorImpl
+  ): BookmarksInteractor
+
+  @Binds
   abstract fun definitionInteractor(
     impl: DefinitionInteractorImpl
   ): DefinitionInteractor

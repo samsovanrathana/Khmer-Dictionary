@@ -5,6 +5,7 @@ import com.sovathna.khmerdictionary.di.ViewModelKey
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionViewModel
 import com.sovathna.khmerdictionary.ui.main.MainViewModel
 import com.sovathna.khmerdictionary.ui.splash.SplashViewModel
+import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksViewModel
 import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesViewModel
 import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListViewModel
 import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsViewModel
@@ -47,6 +48,13 @@ abstract class ViewModelsModule {
   @ViewModelKey(HistoriesViewModel::class)
   abstract fun historiesViewModel(
     vm: HistoriesViewModel
+  ): ViewModel
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(BookmarksViewModel::class)
+  abstract fun bookmarksViewModel(
+    vm: BookmarksViewModel
   ): ViewModel
 
   @Binds
