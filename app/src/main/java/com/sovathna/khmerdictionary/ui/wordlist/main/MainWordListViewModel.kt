@@ -53,7 +53,6 @@ class MainWordListViewModel @Inject constructor(
     MutableLiveData<MainWordListState>().apply {
       intents
         .compose(interactor.intentsProcessor)
-        .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe { disposables.add(it) }
         .toFlowable(BackpressureStrategy.BUFFER)
         .scan(MainWordListState(), reducer)

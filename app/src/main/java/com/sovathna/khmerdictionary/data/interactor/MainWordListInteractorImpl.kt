@@ -13,22 +13,19 @@ class MainWordListInteractorImpl @Inject constructor(
 ) : MainWordListInteractor() {
   override val getWordList =
     ObservableTransformer<MainWordListIntent.GetWordList, MainWordListResult> {
-      it
-        .flatMap { intent ->
-          repository
-            .getMainWordList(intent.offset, intent.pageSize)
-            .subscribeOn(Schedulers.io())
-            .map { words ->
-              MainWordListResult.Success(
-                words,
-                words.size >= intent.pageSize
-              )
-            }
-            .subscribeOn(Schedulers.computation())
-        }
+      it.flatMap { intent ->
+        repository
+          .getMainWordList(intent.offset, intent.pageSize)
+          .subscribeOn(Schedulers.io())
+          .map { words ->
+            MainWordListResult.Success(words, words.size >= intent.pageSize)
+          }
+          .subscribeOn(Schedulers.computation())
+      }
     }
 
-  override val selected = ObservableTransformer<MainWordListIntent.Selected, MainWordListResult> {
-    it.map { intent -> MainWordListResult.Selected(intent.word) }
-  }
+  override val selected =
+    ObservableTransformer<MainWordListIntent.Selected, MainWordListResult> {
+      it.map { intent -> MainWordListResult.Selected(intent.word) }
+    }
 }

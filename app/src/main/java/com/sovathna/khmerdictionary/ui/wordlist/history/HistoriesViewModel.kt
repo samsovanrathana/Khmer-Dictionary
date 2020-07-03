@@ -2,6 +2,8 @@ package com.sovathna.khmerdictionary.ui.wordlist.history
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.sovathna.androidmvi.Logger
+import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
@@ -9,13 +11,12 @@ import com.sovathna.khmerdictionary.domain.model.result.HistoriesResult
 import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.wordlist.WordItem
 import io.reactivex.BackpressureStrategy
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import javax.inject.Inject
 
 class HistoriesViewModel @Inject constructor(
   private val interactor: HistoriesInteractor
-) : MviViewModel<HistoriesIntent, HistoriesResult, HistoriesState>() {
+) : MviViewModel<MviIntent, HistoriesResult, HistoriesState>() {
 
   override val reducer =
     BiFunction<HistoriesState, HistoriesResult, HistoriesState> { state, result ->
@@ -41,6 +42,19 @@ class HistoriesViewModel @Inject constructor(
               add(0, tmp)
             }
           })
+        is HistoriesResult.Selected -> {
+          Logger.d("result ${result.word}")
+          state.copy(words = state.words?.toMutableList()?.apply {
+            forEachIndexed { i, v ->
+              if (v.isSelected) this[i] = this[i].copy(isSelected = false)
+            }
+            result.word?.let {
+              val index = indexOfFirst { item -> item.word.id == it.id }
+              if (index >= 0)
+                this[index] = this[index].copy(isSelected = true)
+            }
+          })
+        }
       }
     }
 
@@ -48,7 +62,6 @@ class HistoriesViewModel @Inject constructor(
     MutableLiveData<HistoriesState>().apply {
       intents
         .compose(interactor.intentsProcessor)
-        .observeOn(AndroidSchedulers.mainThread())
         .doOnSubscribe { disposables.add(it) }
         .toFlowable(BackpressureStrategy.BUFFER)
         .scan(HistoriesState(), reducer)

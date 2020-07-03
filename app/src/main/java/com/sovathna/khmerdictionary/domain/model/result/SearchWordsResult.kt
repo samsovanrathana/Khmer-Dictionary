@@ -9,4 +9,8 @@ sealed class SearchWordsResult : MviResult {
     val isMore: Boolean,
     val isReset: Boolean
   ) : SearchWordsResult()
+
+  data class Selected(
+    val word: Word?
+  ) : SearchWordsResult()
 }

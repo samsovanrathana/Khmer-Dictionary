@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
 import dagger.Module
 import dagger.Provides
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Named
 
@@ -26,11 +28,11 @@ class MainModule {
 
   @Provides
   @MainScope
-  fun fab() = PublishSubject.create<Boolean>()
+  fun selectedItemSubject() = BehaviorSubject.create<MainWordListIntent.Selected>()
 
   @Provides
   @MainScope
-  fun selectedLiveData() = MutableLiveData<Word>()
+  fun fab() = PublishSubject.create<Boolean>()
 
   @Provides
   @MainScope

@@ -2,6 +2,7 @@ package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.result.HistoriesResult
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
 import io.reactivex.ObservableTransformer
@@ -28,7 +29,13 @@ class HistoriesInteractorImpl @Inject constructor(
         }
     }
 
-  override val update = ObservableTransformer<HistoriesIntent.Update, HistoriesResult> {
-    it.map { intent -> HistoriesResult.Update(intent.word) }
-  }
+  override val update =
+    ObservableTransformer<HistoriesIntent.Update, HistoriesResult> {
+      it.map { intent -> HistoriesResult.Update(intent.word) }
+    }
+
+  override val selected =
+    ObservableTransformer<MainWordListIntent.Selected, HistoriesResult> {
+      it.map { intent -> HistoriesResult.Selected(intent.word) }
+    }
 }

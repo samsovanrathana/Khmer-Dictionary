@@ -1,6 +1,7 @@
 package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.khmerdictionary.domain.interactor.SearchWordsInteractor
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
 import com.sovathna.khmerdictionary.domain.model.result.SearchWordsResult
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
@@ -27,5 +28,9 @@ class SearchWordsInteractorImpl @Inject constructor(
             }
             .subscribeOn(Schedulers.computation())
         }
+    }
+  override val selected =
+    ObservableTransformer<MainWordListIntent.Selected, SearchWordsResult> {
+      it.map { intent -> SearchWordsResult.Selected(intent.word) }
     }
 }

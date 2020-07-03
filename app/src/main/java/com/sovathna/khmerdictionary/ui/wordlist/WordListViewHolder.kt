@@ -13,9 +13,16 @@ class WordListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
   fun bindView(item: WordItem) {
     if (item.isSelected) {
       tvName.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorPrimary))
+      tvName.setBackgroundColor(
+        ContextCompat.getColor(
+          itemView.context,
+          R.color.color_item_bg_selected
+        )
+      )
       divider.visibility = View.GONE
     } else {
       tvName.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+      tvName.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.color_item_bg))
       divider.visibility = View.VISIBLE
     }
     tvName.text = item.word.name

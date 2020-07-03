@@ -1,22 +1,25 @@
 package com.sovathna.khmerdictionary.ui.wordlist.bookmark
 
+import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.state.BookmarksState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
 class BookmarksFragment :
-  WordListFragment<BookmarksIntent, BookmarksState, BookmarksViewModel>() {
+  WordListFragment<MviIntent, BookmarksState, BookmarksViewModel>() {
 
   @Inject
   lateinit var getBookmarks: PublishSubject<BookmarksIntent.GetWords>
 
-  override fun intents(): Observable<BookmarksIntent> =
-    getBookmarks.cast(BookmarksIntent::class.java)
+  override fun intents(): Observable<MviIntent> =
+    Observable.merge(
+      getBookmarks,
+      selectedItemSubject
+    )
 
   override fun render(state: BookmarksState) {
     super.render(state)
@@ -28,11 +31,6 @@ class BookmarksFragment :
             Const.PAGE_SIZE
           )
         )
-      }
-      words?.let {
-        rv.post {
-          rv.scrollToPosition(0)
-        }
       }
     }
   }

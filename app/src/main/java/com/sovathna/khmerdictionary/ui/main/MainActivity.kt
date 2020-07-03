@@ -25,6 +25,7 @@ import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
 import com.sovathna.khmerdictionary.listener.DrawerListener
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
@@ -35,6 +36,7 @@ import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
 import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.BackpressureStrategy
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -56,9 +58,6 @@ class MainActivity : DaggerAppCompatActivity() {
   lateinit var viewModel: MainViewModel
 
   @Inject
-  lateinit var selectedLiveData: MutableLiveData<Word>
-
-  @Inject
   lateinit var fabVisibility: PublishSubject<Boolean>
 
   @Inject
@@ -66,6 +65,9 @@ class MainActivity : DaggerAppCompatActivity() {
 
   @Inject
   lateinit var menuItemClick: MutableLiveData<Event<String>>
+
+  @Inject
+  lateinit var selectedItemSubject: BehaviorSubject<MainWordListIntent.Selected>
 
   private var menu: Menu? = null
   private var searchItem: MenuItem? = null
@@ -122,8 +124,7 @@ class MainActivity : DaggerAppCompatActivity() {
       )
       .observe(this, EventObserver {
         onItemClick(it)
-      }
-      )
+      })
 
     fab.setOnClickListener {
 
@@ -149,7 +150,11 @@ class MainActivity : DaggerAppCompatActivity() {
           .addToBackStack(null)
           .commit()
       } else {
-        searchItem?.collapseActionView()
+        val searchView = searchItem?.actionView as? SearchView
+        searchView?.let {
+          if (it.query.isNotEmpty()) it.setQuery("", false)
+          else searchItem?.collapseActionView()
+        }
       }
 
     }
@@ -257,9 +262,11 @@ class MainActivity : DaggerAppCompatActivity() {
   }
 
   private fun onItemClick(word: Word) {
-    Logger.d("click")
-    selectedLiveData.value = word
-    menu?.setGroupVisible(R.id.group_def, definition_container != null && selectedLiveData.value != null)
+    selectedItemSubject.onNext(MainWordListIntent.Selected(word))
+    menu?.setGroupVisible(
+      R.id.group_def,
+      definition_container != null && selectedItemSubject.value?.word != null
+    )
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -294,11 +301,11 @@ class MainActivity : DaggerAppCompatActivity() {
           }
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
-        selectedLiveData.value = null
+        selectedItemSubject.onNext(MainWordListIntent.Selected(null))
       }
       menu?.setGroupVisible(
         R.id.group_def,
-        definition_container != null && selectedLiveData.value != null
+        definition_container != null && selectedItemSubject.value?.word != null
       )
     }
   }
@@ -307,19 +314,19 @@ class MainActivity : DaggerAppCompatActivity() {
     if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
       drawer_layout.closeDrawer(GravityCompat.START)
     } else {
-      val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
-      if (defTmp != null) {
-        menu?.setGroupVisible(R.id.group_def, false)
-        supportFragmentManager
-          .beginTransaction()
-          .remove(defTmp)
-          .commit()
-        selectedLiveData.value = null
+      if (supportFragmentManager.backStackEntryCount > 0) {
+        viewModel.title = getString(R.string.app_name_kh)
+        nav_view.checkedItem?.isChecked = false
+        super.onBackPressed()
       } else {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-          viewModel.title = getString(R.string.app_name_kh)
-          nav_view.checkedItem?.isChecked = false
-          super.onBackPressed()
+        val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
+        if (defTmp != null) {
+          menu?.setGroupVisible(R.id.group_def, false)
+          supportFragmentManager
+            .beginTransaction()
+            .remove(defTmp)
+            .commit()
+          selectedItemSubject.onNext(MainWordListIntent.Selected(null))
         } else {
           showCloseDialog()
         }
@@ -351,7 +358,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     menu?.setGroupVisible(
       R.id.group_def,
-      definition_container != null && selectedLiveData.value != null
+      definition_container != null && selectedItemSubject.value?.word != null
     )
 
     searchItem = menu?.findItem(R.id.action_search)

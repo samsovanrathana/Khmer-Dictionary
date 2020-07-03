@@ -3,7 +3,6 @@ package com.sovathna.khmerdictionary.ui.wordlist
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.fragment.MviFragment
@@ -14,7 +13,9 @@ import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.state.WordListState
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
@@ -37,10 +38,10 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
   private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
 
   @Inject
-  protected lateinit var selectedLiveData: MutableLiveData<Word>
+  protected lateinit var click: PublishSubject<Event<Word>>
 
   @Inject
-  protected lateinit var click: PublishSubject<Event<Word>>
+  protected lateinit var selectedItemSubject: BehaviorSubject<MainWordListIntent.Selected>
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -65,6 +66,9 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
             with(adapter.currentList[index]) {
               if (!isSelected) click.onNext(Event(word))
             }
+          }
+          selectedItemSubject.value?.word?.let {
+            selectedItemSubject.onNext(MainWordListIntent.Selected(it))
           }
         } else {
           adapter.setOnItemClickListener(null)

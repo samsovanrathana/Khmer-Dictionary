@@ -2,18 +2,20 @@ package com.sovathna.khmerdictionary.ui.wordlist.history
 
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.Observer
+import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.wordlist.WordListFragment
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
 class HistoriesFragment :
-  WordListFragment<HistoriesIntent, HistoriesState, HistoriesViewModel>() {
+  WordListFragment<MviIntent, HistoriesState, HistoriesViewModel>() {
 
   @Inject
   lateinit var getHistories: PublishSubject<HistoriesIntent.GetWords>
@@ -21,10 +23,11 @@ class HistoriesFragment :
   @Inject
   lateinit var update: PublishSubject<HistoriesIntent.Update>
 
-  override fun intents(): Observable<HistoriesIntent> =
+  override fun intents(): Observable<MviIntent> =
     Observable.merge(
       getHistories,
-      update
+      update,
+      selectedItemSubject
     )
 
   override fun onResume() {
@@ -48,9 +51,9 @@ class HistoriesFragment :
         )
       }
       words?.let {
-          rv.post{
-            rv.scrollToPosition(0)
-          }
+        rv.post {
+          rv.scrollToPosition(0)
+        }
       }
     }
   }

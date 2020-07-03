@@ -2,6 +2,7 @@ package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.khmerdictionary.domain.interactor.BookmarksInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.result.BookmarksResult
 import com.sovathna.khmerdictionary.domain.repository.AppRepository
 import io.reactivex.ObservableTransformer
@@ -26,5 +27,10 @@ class BookmarksInteractorImpl @Inject constructor(
             }
             .subscribeOn(Schedulers.computation())
         }
+    }
+
+  override val selected =
+    ObservableTransformer<MainWordListIntent.Selected, BookmarksResult> {
+      it.map { intent -> BookmarksResult.Selected(intent.word) }
     }
 }

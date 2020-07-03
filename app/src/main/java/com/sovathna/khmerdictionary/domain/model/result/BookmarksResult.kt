@@ -9,4 +9,8 @@ sealed class BookmarksResult : MviResult {
     val isMore: Boolean
   ) : BookmarksResult()
 
+  data class Selected(
+    val word: Word?
+  ) : BookmarksResult()
+
 }

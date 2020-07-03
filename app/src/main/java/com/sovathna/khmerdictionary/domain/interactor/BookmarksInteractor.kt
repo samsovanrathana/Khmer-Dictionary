@@ -1,22 +1,33 @@
 package com.sovathna.khmerdictionary.domain.interactor
 
 import com.sovathna.androidmvi.domain.MviInteractor
+import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.result.BookmarksResult
+import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 
 abstract class BookmarksInteractor :
-  MviInteractor<BookmarksIntent, BookmarksResult>() {
+  MviInteractor<MviIntent, BookmarksResult>() {
 
   abstract val getWords:
       ObservableTransformer<BookmarksIntent.GetWords, BookmarksResult>
 
+  abstract val selected:
+      ObservableTransformer<MainWordListIntent.Selected, BookmarksResult>
+
   override val intentsProcessor =
-    ObservableTransformer<BookmarksIntent, BookmarksResult> {
+    ObservableTransformer<MviIntent, BookmarksResult> {
       it.publish { intent ->
-        intent
-          .ofType(BookmarksIntent.GetWords::class.java)
-          .compose(getWords)
+        Observable.merge(
+          intent
+            .ofType(BookmarksIntent.GetWords::class.java)
+            .compose(getWords),
+          intent
+            .ofType(MainWordListIntent.Selected::class.java)
+            .compose(selected)
+        )
       }
     }
 }

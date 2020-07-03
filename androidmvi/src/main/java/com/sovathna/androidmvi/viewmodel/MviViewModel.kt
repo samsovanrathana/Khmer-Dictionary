@@ -17,7 +17,7 @@ abstract class MviViewModel<I : MviIntent, R : MviResult, S : MviState> :
   protected val intents = PublishSubject.create<I>()
 
   override fun init(intents: Observable<I>) {
-    intents.subscribe(this.intents)
+    intents.replay(1).autoConnect(0).subscribe(this.intents)
   }
 
   protected abstract val reducer: BiFunction<S, R, S>
