@@ -12,6 +12,7 @@ import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
+import com.sovathna.khmerdictionary.data.local.AppPreferences
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
 import com.sovathna.khmerdictionary.domain.model.state.WordListState
@@ -43,6 +44,9 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
   @Inject
   protected lateinit var selectedItemSubject: BehaviorSubject<MainWordListIntent.Selected>
 
+  @Inject
+  protected lateinit var appPref: AppPreferences
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     layoutManager = layoutManagerProvider.get() as LinearLayoutManager
@@ -64,7 +68,9 @@ abstract class WordListFragment<I : MviIntent, S : MviState, VM : BaseViewModel<
         if (words?.isNotEmpty() == true) {
           adapter.setOnItemClickListener { index ->
             with(adapter.currentList[index]) {
-              if (!isSelected) click.onNext(Event(word))
+              if (!isSelected) {
+                click.onNext(Event(word))
+              }
             }
           }
           selectedItemSubject.value?.word?.let {

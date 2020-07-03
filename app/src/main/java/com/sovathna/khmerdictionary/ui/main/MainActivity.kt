@@ -17,8 +17,6 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
@@ -76,22 +74,20 @@ class MainActivity : DaggerAppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    FirebaseInstanceId.getInstance().instanceId
-      .addOnCompleteListener(OnCompleteListener { task ->
-        if (!task.isSuccessful) {
-          Logger.e("getInstanceId failed")
-          return@OnCompleteListener
-        }
-
-        val token = task.result?.token
-        Logger.d("FCM Token: $token")
-      })
+//    FirebaseInstanceId.getInstance().instanceId
+//      .addOnCompleteListener(OnCompleteListener { task ->
+//        if (!task.isSuccessful) {
+//          Logger.e("getInstanceId failed")
+//          return@OnCompleteListener
+//        }
+//
+//        val token = task.result?.token
+//        Logger.d("FCM Token: $token")
+//      })
 
     setSupportActionBar(toolbar)
     if (savedInstanceState == null)
       viewModel.title = getString(R.string.app_name_kh)
-
-    viewModel.titleLiveData.observe(this, Observer(::setTitle))
 
     bookmarkedLiveData.observe(this, Observer { isBookmark ->
       menu?.findItem(R.id.action_bookmark)?.let { item ->
@@ -131,8 +127,7 @@ class MainActivity : DaggerAppCompatActivity() {
       if (searchItem?.isActionViewExpanded == false) {
         if (supportFragmentManager.backStackEntryCount > 0) {
           viewModel.title = getString(R.string.app_name_kh)
-          nav_view.checkedItem?.isChecked = false
-          supportFragmentManager.popBackStack()
+          super.onBackPressed()
         }
         searchItem?.expandActionView()
         supportFragmentManager.beginTransaction()
@@ -173,7 +168,7 @@ class MainActivity : DaggerAppCompatActivity() {
       if (!menu.isChecked) {
         menu.isChecked = true
         if (supportFragmentManager.backStackEntryCount > 0) {
-          supportFragmentManager.popBackStack()
+          super.onBackPressed()
         }
         when (menu.itemId) {
           R.id.nav_histories -> {
@@ -211,9 +206,8 @@ class MainActivity : DaggerAppCompatActivity() {
               .commit()
           }
         }
-        return@setNavigationItemSelectedListener true
       }
-      return@setNavigationItemSelectedListener false
+      true
     }
     drawer_layout.addDrawerListener(object : DrawerListener() {
       override fun onDrawerOpened(drawerView: View) {
@@ -254,6 +248,16 @@ class MainActivity : DaggerAppCompatActivity() {
         if (it) fab.show() else fab.hide()
       })
 
+    viewModel.titleLiveData.observe(this, Observer {
+      if (it == getString(R.string.app_name_kh)) {
+        nav_view.checkedItem?.isChecked = false
+      }
+      nav_view.checkedItem?.isChecked?.let {
+        Logger.d("is item checked $it")
+      }
+      title = it
+    })
+
   }
 
   override fun setTitle(title: CharSequence?) {
@@ -263,10 +267,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
   private fun onItemClick(word: Word) {
     selectedItemSubject.onNext(MainWordListIntent.Selected(word))
-    menu?.setGroupVisible(
-      R.id.group_def,
-      definition_container != null && selectedItemSubject.value?.word != null
-    )
+    setDefMenuItemsVisible(definition_container != null && selectedItemSubject.value?.word != null)
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -302,11 +303,8 @@ class MainActivity : DaggerAppCompatActivity() {
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
         selectedItemSubject.onNext(MainWordListIntent.Selected(null))
+        setDefMenuItemsVisible(false)
       }
-      menu?.setGroupVisible(
-        R.id.group_def,
-        definition_container != null && selectedItemSubject.value?.word != null
-      )
     }
   }
 
@@ -316,12 +314,11 @@ class MainActivity : DaggerAppCompatActivity() {
     } else {
       if (supportFragmentManager.backStackEntryCount > 0) {
         viewModel.title = getString(R.string.app_name_kh)
-        nav_view.checkedItem?.isChecked = false
         super.onBackPressed()
       } else {
         val defTmp = supportFragmentManager.findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
         if (defTmp != null) {
-          menu?.setGroupVisible(R.id.group_def, false)
+          setDefMenuItemsVisible(false)
           supportFragmentManager
             .beginTransaction()
             .remove(defTmp)
@@ -352,14 +349,15 @@ class MainActivity : DaggerAppCompatActivity() {
     closeDialog?.dismiss()
   }
 
+  private fun setDefMenuItemsVisible(isVisible: Boolean) {
+    menu?.setGroupVisible(R.id.group_def, isVisible)
+  }
+
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.main, menu)
     this.menu = menu
 
-    menu?.setGroupVisible(
-      R.id.group_def,
-      definition_container != null && selectedItemSubject.value?.word != null
-    )
+    setDefMenuItemsVisible(definition_container != null && selectedItemSubject.value?.word != null)
 
     searchItem = menu?.findItem(R.id.action_search)
     searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {

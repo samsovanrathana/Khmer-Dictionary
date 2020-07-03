@@ -2,11 +2,9 @@ package com.sovathna.khmerdictionary.ui.wordlist.history
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
-import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.result.HistoriesResult
 import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.wordlist.WordItem
@@ -43,7 +41,6 @@ class HistoriesViewModel @Inject constructor(
             }
           })
         is HistoriesResult.Selected -> {
-          Logger.d("result ${result.word}")
           state.copy(words = state.words?.toMutableList()?.apply {
             forEachIndexed { i, v ->
               if (v.isSelected) this[i] = this[i].copy(isSelected = false)

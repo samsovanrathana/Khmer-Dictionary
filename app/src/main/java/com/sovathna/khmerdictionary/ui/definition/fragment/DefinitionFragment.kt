@@ -17,6 +17,7 @@ import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.R
+import com.sovathna.khmerdictionary.data.local.AppPreferences
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
@@ -45,10 +46,10 @@ class DefinitionFragment :
   @Inject
   lateinit var menuItemClick: MutableLiveData<Event<String>>
 
-  private lateinit var word: Word
+  @Inject
+  lateinit var appPref: AppPreferences
 
-  private var nameTextSize = 18.0F
-  private var textSize = 14.0F
+  private lateinit var word: Word
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -59,9 +60,9 @@ class DefinitionFragment :
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-
-    tv_name.textSize = nameTextSize
+    val textSize = appPref.getTextSize()
     tv_definition.textSize = textSize
+    tv_name.textSize = textSize + 8.0F
 
     if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       nsv.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
@@ -77,33 +78,29 @@ class DefinitionFragment :
   override fun onResume() {
     super.onResume()
     menuItemClick.observe(viewLifecycleOwner, EventObserver {
-      Logger.d("$it ${tv_definition.textSize}")
       when (it) {
         "bookmark" -> {
           bookmark.onNext(DefinitionIntent.Bookmark(word))
         }
         "zoom_in" -> {
-          if (textSize < 40.0F) {
-            textSize += 2.0F
-            nameTextSize += 2.0F
-          }
+          val textSize = appPref.incrementTextSize()
           tv_definition.textSize = textSize
-          tv_name.textSize = nameTextSize
+          tv_name.textSize = textSize + 8.0F
         }
         "zoom_out" -> {
-          if (textSize > 14.0F){
-            textSize -= 2.0F
-            nameTextSize -= 2.0F
-          }
+          val textSize = appPref.decrementTextSize()
           tv_definition.textSize = textSize
-          tv_name.textSize = nameTextSize
+          tv_name.textSize = textSize + 8.0F
         }
       }
     })
   }
 
   override fun intents(): Observable<DefinitionIntent> =
-    Observable.merge(getDefinitionIntent, bookmark).cast(DefinitionIntent::class.java)
+    Observable.merge(
+      getDefinitionIntent,
+      bookmark
+    )
 
   override fun render(state: DefinitionState) {
     with(state) {
