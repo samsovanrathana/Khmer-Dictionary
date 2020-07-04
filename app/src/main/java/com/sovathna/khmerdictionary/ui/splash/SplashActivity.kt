@@ -14,20 +14,17 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.android.synthetic.main.layout_download.view.*
 import kotlinx.android.synthetic.main.layout_error.view.*
-import javax.inject.Inject
 
 class SplashActivity :
   MviActivity<SplashIntent, SplashState, SplashViewModel>(
     R.layout.activity_splash
   ) {
-  @Inject
-  lateinit var checkDatabase: PublishSubject<SplashIntent.CheckDatabase>
+  private val checkDatabase = PublishSubject.create<SplashIntent.CheckDatabase>()
 
   override fun intents(): Observable<SplashIntent> =
     checkDatabase.cast(SplashIntent::class.java)
 
   override fun render(state: SplashState) {
-//    LogUtil.i("state: $state")
     with(state) {
       if (isInit) {
         checkDatabase

@@ -5,15 +5,11 @@ import com.sovathna.khmerdictionary.domain.model.Word
 
 sealed class DefinitionIntent : MviIntent {
 
-  data class MenuItemClick(
-    val index: Int
-  ) : DefinitionIntent()
-
-  data class Get(
+  data class GetDefinition(
     val word: Word
   ) : DefinitionIntent()
 
-  data class Bookmark(
+  data class AddDeleteBookmark(
     val word: Word
   ) : DefinitionIntent()
 }

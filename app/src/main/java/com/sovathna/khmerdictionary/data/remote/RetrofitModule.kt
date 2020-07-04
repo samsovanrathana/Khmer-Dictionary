@@ -35,8 +35,7 @@ class RetrofitModule {
   fun downloadRetrofit(
     baseUrl: String,
     client: OkHttpClient,
-    callAdapterFactory: CallAdapter.Factory,
-    converterFactory: Converter.Factory
+    callAdapterFactory: CallAdapter.Factory
   ): Retrofit =
     Retrofit
       .Builder()

@@ -10,7 +10,7 @@ import io.reactivex.Single
 @Dao
 interface HistoryDao {
   @Query("SELECT * FROM history ORDER BY uid DESC LIMIT :offset, :pageSize")
-  fun all(
+  fun get(
     offset: Int,
     pageSize: Int
   ): Single<List<HistoryEntity>>

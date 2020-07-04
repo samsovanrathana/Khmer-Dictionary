@@ -5,10 +5,10 @@ import com.sovathna.khmerdictionary.di.ViewModelKey
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionViewModel
 import com.sovathna.khmerdictionary.ui.main.MainViewModel
 import com.sovathna.khmerdictionary.ui.splash.SplashViewModel
-import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksViewModel
-import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesViewModel
-import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListViewModel
-import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsViewModel
+import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksViewModel
+import com.sovathna.khmerdictionary.ui.words.history.HistoriesViewModel
+import com.sovathna.khmerdictionary.ui.words.main.WordsViewModel
+import com.sovathna.khmerdictionary.ui.words.search.SearchesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -31,16 +31,16 @@ abstract class ViewModelsModule {
 
   @Binds
   @IntoMap
-  @ViewModelKey(MainWordListViewModel::class)
-  abstract fun wordListViewModel(
-    vm: MainWordListViewModel
+  @ViewModelKey(WordsViewModel::class)
+  abstract fun wordsViewModel(
+    vm: WordsViewModel
   ): ViewModel
 
   @Binds
   @IntoMap
-  @ViewModelKey(SearchWordsViewModel::class)
+  @ViewModelKey(SearchesViewModel::class)
   abstract fun searchWordsViewModel(
-    vm: SearchWordsViewModel
+    vm: SearchesViewModel
   ): ViewModel
 
   @Binds

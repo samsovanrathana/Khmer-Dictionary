@@ -9,11 +9,7 @@ sealed class HistoriesResult : MviResult {
     val isMore: Boolean
   ) : HistoriesResult()
 
-  data class Update(
-    val word: Word
-  ) : HistoriesResult()
-
-  data class Selected(
+  data class SelectWordSuccess(
     val word: Word?
   ) : HistoriesResult()
 }

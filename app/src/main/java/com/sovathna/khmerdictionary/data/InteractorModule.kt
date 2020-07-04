@@ -15,13 +15,13 @@ abstract class InteractorModule {
 
   @Binds
   abstract fun mainWordListInteractor(
-    impl: MainWordListInteractorImpl
-  ): MainWordListInteractor
+    impl: WordsInteractorImpl
+  ): WordsInteractor
 
   @Binds
   abstract fun searchWordsInteractor(
-    impl: SearchWordsInteractorImpl
-  ): SearchWordsInteractor
+    impl: SearchesInteractorImpl
+  ): SearchesInteractor
 
   @Binds
   abstract fun historiesInteractor(

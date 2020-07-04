@@ -10,7 +10,7 @@ import io.reactivex.Single
 @Dao
 interface BookmarkDao {
   @Query("SELECT * FROM bookmark ORDER BY uid DESC LIMIT :offset, :pageSize")
-  fun all(
+  fun get(
     offset: Int,
     pageSize: Int
   ): Single<List<BookmarkEntity>>

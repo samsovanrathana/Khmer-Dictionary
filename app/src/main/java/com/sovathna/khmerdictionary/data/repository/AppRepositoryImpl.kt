@@ -21,9 +21,9 @@ class AppRepositoryImpl @Inject constructor(
   private val historyDao = local.historyDao()
   private val bookmarkDao = local.bookmarkDao()
 
-  override fun getMainWordList(offset: Int, pageSize: Int): Observable<List<Word>> {
+  override fun getWords(offset: Int, pageSize: Int): Observable<List<Word>> {
     return wordDao
-      .getMainWordList(offset, pageSize)
+      .get(offset, pageSize)
       .map { entities ->
         entities.map { entity -> entity.toWord() }
       }
@@ -38,7 +38,7 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun getHistories(offset: Int, pageSize: Int): Observable<List<Word>> {
     return historyDao
-      .all(offset, pageSize)
+      .get(offset, pageSize)
       .map { entities ->
         entities.map { entity -> entity.toWord() }
       }
@@ -47,20 +47,20 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun getBookmarks(offset: Int, pageSize: Int): Observable<List<Word>> {
     return bookmarkDao
-      .all(offset, pageSize)
+      .get(offset, pageSize)
       .map { entities ->
         entities.map { entity -> entity.toWord() }
       }
       .toObservable()
   }
 
-  override fun getSearchWords(
+  override fun getSearches(
     searchTerm: String,
     offset: Int,
     pageSize: Int
   ): Observable<List<Word>> {
     return wordDao
-      .getFilterWordList("$searchTerm%", offset, pageSize)
+      .search("$searchTerm%", offset, pageSize)
       .map { entities ->
         entities.map { entity -> entity.toWord() }
       }
@@ -69,7 +69,7 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun getDefinition(id: Long): Observable<Definition> =
     wordDao
-      .getDefinition(id)
+      .get(id)
       .map { Definition(it.word, it.definition) }
       .toObservable()
 

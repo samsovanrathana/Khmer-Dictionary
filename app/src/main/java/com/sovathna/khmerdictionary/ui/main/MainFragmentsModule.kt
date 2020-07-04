@@ -2,14 +2,14 @@ package com.sovathna.khmerdictionary.ui.main
 
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionModule
-import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksFragment
-import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksModule
-import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
-import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesModule
-import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
-import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListModule
-import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
-import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsModule
+import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksFragment
+import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksModule
+import com.sovathna.khmerdictionary.ui.words.history.HistoriesFragment
+import com.sovathna.khmerdictionary.ui.words.history.HistoriesModule
+import com.sovathna.khmerdictionary.ui.words.main.WordsFragment
+import com.sovathna.khmerdictionary.ui.words.main.WordsModule
+import com.sovathna.khmerdictionary.ui.words.search.SearchesFragment
+import com.sovathna.khmerdictionary.ui.words.search.SearchesModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -17,17 +17,17 @@ import dagger.android.ContributesAndroidInjector
 abstract class MainFragmentsModule {
   @ContributesAndroidInjector(
     modules = [
-      MainWordListModule::class
+      WordsModule::class
     ]
   )
-  abstract fun mainWordListFragment(): MainWordListFragment
+  abstract fun mainWordListFragment(): WordsFragment
 
   @ContributesAndroidInjector(
     modules = [
-      SearchWordsModule::class
+      SearchesModule::class
     ]
   )
-  abstract fun searchWordsFragment(): SearchWordsFragment
+  abstract fun searchWordsFragment(): SearchesFragment
 
   @ContributesAndroidInjector(
     modules = [

@@ -1,7 +1,6 @@
 package com.sovathna.khmerdictionary.domain.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import com.sovathna.khmerdictionary.domain.model.WordEntity
 import io.reactivex.Single
@@ -9,31 +8,26 @@ import io.reactivex.Single
 @Dao
 interface WordDao {
   @Query("SELECT * FROM dict ORDER BY word LIMIT :offset, :pageSize")
-  fun getMainWordList(
+  fun get(
     offset: Int,
     pageSize: Int
   ): Single<List<WordEntity>>
 
   @Query("SELECT * FROM dict WHERE word LIKE :filter ORDER BY word LIMIT :offset, :pageSize")
-  fun getFilterWordList(
+  fun search(
     filter: String,
     offset: Int,
     pageSize: Int
   ): Single<List<WordEntity>>
 
   @Query("SELECT * FROM dict WHERE id = :id")
-  fun getDefinition(
+  fun get(
     id: Long
   ): Single<WordEntity>
 
-  @Insert
-  fun inserts(
-    words: List<WordEntity>
-  ): Single<List<Long>>
-
-  @Query("SELECT * FROM dict WHERE id IN(:ids)")
-  fun gets(
-    ids: List<Long>
-  ): Single<List<WordEntity>>
+//  @Insert
+//  fun inserts(
+//    words: List<WordEntity>
+//  ): Single<List<Long>>
 
 }

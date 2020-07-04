@@ -9,7 +9,7 @@ sealed class BookmarksResult : MviResult {
     val isMore: Boolean
   ) : BookmarksResult()
 
-  data class Selected(
+  data class SelectWordSuccess(
     val word: Word?
   ) : BookmarksResult()
 

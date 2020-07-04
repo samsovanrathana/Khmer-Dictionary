@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.data.interactor
 
+import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
@@ -7,6 +8,7 @@ import com.sovathna.khmerdictionary.domain.model.result.SplashResult
 import com.sovathna.khmerdictionary.domain.service.DownloadService
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.File
@@ -33,10 +35,12 @@ class SplashInteractorImpl @Inject constructor(
               } else {
                 downloadService
                   .download(Const.RAW_DB_URL)
+                  .doOnError { Logger.e(it) }
                   .subscribeOn(Schedulers.io())
                   .flatMap { response ->
                     saveZip(response, intent.db, intent.tmpDb)
                   }
+                  .onErrorReturn { SplashResult.Fail(it) }
                   .startWith(SplashResult.Downloading(0, 0))
               }
             }

@@ -17,21 +17,20 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
-import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
+import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
 import com.sovathna.khmerdictionary.listener.DrawerListener
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
-import com.sovathna.khmerdictionary.ui.wordlist.bookmark.BookmarksFragment
-import com.sovathna.khmerdictionary.ui.wordlist.history.HistoriesFragment
-import com.sovathna.khmerdictionary.ui.wordlist.main.MainWordListFragment
-import com.sovathna.khmerdictionary.ui.wordlist.search.SearchWordsFragment
+import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksFragment
+import com.sovathna.khmerdictionary.ui.words.history.HistoriesFragment
+import com.sovathna.khmerdictionary.ui.words.main.WordsFragment
+import com.sovathna.khmerdictionary.ui.words.search.SearchesFragment
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.BehaviorSubject
@@ -46,10 +45,10 @@ import javax.inject.Named
 class MainActivity : DaggerAppCompatActivity() {
 
   @Inject
-  lateinit var click: PublishSubject<Event<Word>>
+  lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
   @Inject
-  lateinit var search: PublishSubject<SearchWordsIntent.GetWords>
+  lateinit var searchesIntent: PublishSubject<SearchesIntent.GetWords>
 
   @Inject
   @Named("instance")
@@ -62,10 +61,10 @@ class MainActivity : DaggerAppCompatActivity() {
   lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
 
   @Inject
-  lateinit var menuItemClick: MutableLiveData<Event<String>>
+  lateinit var menuItemClickLiveData: MutableLiveData<Event<String>>
 
   @Inject
-  lateinit var selectedItemSubject: BehaviorSubject<MainWordListIntent.Selected>
+  lateinit var selectWordSubject: BehaviorSubject<WordsIntent.SelectWord>
 
   private var menu: Menu? = null
   private var searchItem: MenuItem? = null
@@ -112,7 +111,7 @@ class MainActivity : DaggerAppCompatActivity() {
 
     LiveDataReactiveStreams
       .fromPublisher(
-        click
+        clickWordSubject
           .throttleFirst(200, TimeUnit.MILLISECONDS)
           .replay(1)
           .autoConnect(0)
@@ -139,7 +138,7 @@ class MainActivity : DaggerAppCompatActivity() {
           )
           .replace(
             R.id.word_list_container,
-            SearchWordsFragment(),
+            SearchesFragment(),
             Const.SEARCH_WORDS_FRAGMENT_TAG
           )
           .addToBackStack(null)
@@ -222,17 +221,16 @@ class MainActivity : DaggerAppCompatActivity() {
         .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
         .replace(
           R.id.word_list_container,
-          MainWordListFragment(),
+          WordsFragment(),
           Const.WORD_LIST_FRAGMENT_TAG
         )
         .commit()
     } else {
       supportFragmentManager
-        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)
-        ?.let {
+        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)?.let {
           it.arguments?.let { args ->
             args.getParcelable<Word>("word")?.let { word ->
-              click.onNext(Event(word))
+              clickWordSubject.onNext(Event(word))
             }
           }
           supportFragmentManager
@@ -243,7 +241,10 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     LiveDataReactiveStreams
-      .fromPublisher(fabVisibility.toFlowable(BackpressureStrategy.BUFFER))
+      .fromPublisher(
+        fabVisibility
+          .toFlowable(BackpressureStrategy.BUFFER)
+      )
       .observe(this, Observer {
         if (it) fab.show() else fab.hide()
       })
@@ -251,9 +252,6 @@ class MainActivity : DaggerAppCompatActivity() {
     viewModel.titleLiveData.observe(this, Observer {
       if (it == getString(R.string.app_name_kh)) {
         nav_view.checkedItem?.isChecked = false
-      }
-      nav_view.checkedItem?.isChecked?.let {
-        Logger.d("is item checked $it")
       }
       title = it
     })
@@ -266,8 +264,8 @@ class MainActivity : DaggerAppCompatActivity() {
   }
 
   private fun onItemClick(word: Word) {
-    selectedItemSubject.onNext(MainWordListIntent.Selected(word))
-    setDefMenuItemsVisible(definition_container != null && selectedItemSubject.value?.word != null)
+    selectWordSubject.onNext(WordsIntent.SelectWord(word))
+    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -298,11 +296,11 @@ class MainActivity : DaggerAppCompatActivity() {
       if (resultCode == Activity.RESULT_OK) {
         data?.let {
           it.getParcelableExtra<Word>("word")?.let { word ->
-            click.onNext(Event(word))
+            clickWordSubject.onNext(Event(word))
           }
         }
       } else if (resultCode == Activity.RESULT_CANCELED) {
-        selectedItemSubject.onNext(MainWordListIntent.Selected(null))
+        selectWordSubject.onNext(WordsIntent.SelectWord(null))
         setDefMenuItemsVisible(false)
       }
     }
@@ -323,7 +321,7 @@ class MainActivity : DaggerAppCompatActivity() {
             .beginTransaction()
             .remove(defTmp)
             .commit()
-          selectedItemSubject.onNext(MainWordListIntent.Selected(null))
+          selectWordSubject.onNext(WordsIntent.SelectWord(null))
         } else {
           showCloseDialog()
         }
@@ -357,7 +355,7 @@ class MainActivity : DaggerAppCompatActivity() {
     menuInflater.inflate(R.menu.main, menu)
     this.menu = menu
 
-    setDefMenuItemsVisible(definition_container != null && selectedItemSubject.value?.word != null)
+    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
 
     searchItem = menu?.findItem(R.id.action_search)
     searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -404,8 +402,8 @@ class MainActivity : DaggerAppCompatActivity() {
         val searchTerm = newText?.trim() ?: ""
         if (searchTerm != viewModel.searchTerm) {
           viewModel.searchTerm = searchTerm
-          search.onNext(
-            SearchWordsIntent.GetWords(
+          searchesIntent.onNext(
+            SearchesIntent.GetWords(
               viewModel.searchTerm,
               0,
               Const.PAGE_SIZE,
@@ -425,11 +423,11 @@ class MainActivity : DaggerAppCompatActivity() {
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     if (item.itemId == R.id.action_bookmark) {
-      menuItemClick.value = Event("bookmark")
+      menuItemClickLiveData.value = Event("bookmark")
     } else if (item.itemId == R.id.action_zoom_in) {
-      menuItemClick.value = Event("zoom_in")
+      menuItemClickLiveData.value = Event("zoom_in")
     } else if (item.itemId == R.id.action_zoom_out) {
-      menuItemClick.value = Event("zoom_out")
+      menuItemClickLiveData.value = Event("zoom_out")
     }
     return super.onOptionsItemSelected(item)
   }

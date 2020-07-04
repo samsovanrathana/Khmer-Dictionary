@@ -20,9 +20,4 @@ class SplashModule {
   ): SplashViewModel =
     ViewModelProvider(activity, factory)[SplashViewModel::class.java]
 
-  @Provides
-  @SplashScope
-  fun checkDatabaseIntent(): PublishSubject<SplashIntent.CheckDatabase> =
-    PublishSubject.create()
-
 }

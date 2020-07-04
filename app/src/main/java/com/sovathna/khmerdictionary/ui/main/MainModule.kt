@@ -2,11 +2,12 @@ package com.sovathna.khmerdictionary.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.MainWordListIntent
-import com.sovathna.khmerdictionary.domain.model.intent.SearchWordsIntent
+import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
+import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
 import dagger.Module
 import dagger.Provides
 import io.reactivex.subjects.BehaviorSubject
@@ -24,19 +25,19 @@ class MainModule {
 
   @Provides
   @MainScope
-  fun click() = PublishSubject.create<Event<Word>>()
+  fun clickWordSubject() = PublishSubject.create<Event<Word>>()
 
   @Provides
   @MainScope
-  fun selectedItemSubject() = BehaviorSubject.create<MainWordListIntent.Selected>()
+  fun selectWordSubject() = BehaviorSubject.create<WordsIntent.SelectWord>()
 
   @Provides
   @MainScope
-  fun fab() = PublishSubject.create<Boolean>()
+  fun fabVisibilitySubject() = PublishSubject.create<Boolean>()
 
   @Provides
   @MainScope
-  fun searchWordsIntent() = PublishSubject.create<SearchWordsIntent.GetWords>()
+  fun searchWordsIntent() = PublishSubject.create<SearchesIntent.GetWords>()
 
   @Provides
   @MainScope
@@ -45,5 +46,9 @@ class MainModule {
   @Provides
   @MainScope
   fun menuItemClickLiveData() = MutableLiveData<Event<String>>()
+
+  @Provides
+  @MainScope
+  fun recycledViewPool() = RecyclerView.RecycledViewPool()
 
 }

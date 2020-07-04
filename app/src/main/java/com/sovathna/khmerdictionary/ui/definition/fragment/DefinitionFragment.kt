@@ -33,9 +33,9 @@ class DefinitionFragment :
   ) {
 
   @Inject
-  lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.Get>
+  lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.GetDefinition>
 
-  private var bookmark = PublishSubject.create<DefinitionIntent.Bookmark>()
+  private var bookmark = PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
 
   @Inject
   lateinit var fabVisibility: Lazy<PublishSubject<Boolean>>
@@ -55,6 +55,7 @@ class DefinitionFragment :
     super.onCreate(savedInstanceState)
     arguments?.let {
       word = it.getParcelable("word")!!
+      fabVisibility.get().onNext(true)
     }
   }
 
@@ -80,7 +81,7 @@ class DefinitionFragment :
     menuItemClick.observe(viewLifecycleOwner, EventObserver {
       when (it) {
         "bookmark" -> {
-          bookmark.onNext(DefinitionIntent.Bookmark(word))
+          bookmark.onNext(DefinitionIntent.AddDeleteBookmark(word))
         }
         "zoom_in" -> {
           val textSize = appPref.incrementTextSize()
@@ -105,7 +106,7 @@ class DefinitionFragment :
   override fun render(state: DefinitionState) {
     with(state) {
       if (isInit) {
-        getDefinitionIntent.onNext(DefinitionIntent.Get(word))
+        getDefinitionIntent.onNext(DefinitionIntent.GetDefinition(word))
       }
 
       definition?.let {

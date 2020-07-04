@@ -10,21 +10,21 @@ abstract class DefinitionInteractor :
   MviInteractor<DefinitionIntent, DefinitionResult>() {
 
   abstract val getDefinition:
-      ObservableTransformer<DefinitionIntent.Get, DefinitionResult>
+      ObservableTransformer<DefinitionIntent.GetDefinition, DefinitionResult>
 
-  abstract val bookmark:
-      ObservableTransformer<DefinitionIntent.Bookmark, DefinitionResult>
+  abstract val addDeleteBookmark:
+      ObservableTransformer<DefinitionIntent.AddDeleteBookmark, DefinitionResult>
 
   override val intentsProcessor =
     ObservableTransformer<DefinitionIntent, DefinitionResult> {
       it.publish { intent ->
         Observable.merge(
           intent
-            .ofType(DefinitionIntent.Get::class.java)
+            .ofType(DefinitionIntent.GetDefinition::class.java)
             .compose(getDefinition),
           intent
-            .ofType(DefinitionIntent.Bookmark::class.java)
-            .compose(bookmark)
+            .ofType(DefinitionIntent.AddDeleteBookmark::class.java)
+            .compose(addDeleteBookmark)
         )
       }
     }
