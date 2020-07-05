@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.words.history
 
+import androidx.core.view.postDelayed
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
@@ -32,7 +33,7 @@ class HistoriesFragment :
         )
       }
       words?.let {
-        rv.post {
+        rv.postDelayed(400) {
           rv.smoothScrollToPosition(0)
         }
       }

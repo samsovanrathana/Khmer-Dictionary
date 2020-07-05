@@ -14,12 +14,12 @@ abstract class InteractorModule {
   ): SplashInteractor
 
   @Binds
-  abstract fun mainWordListInteractor(
+  abstract fun wordsInteractor(
     impl: WordsInteractorImpl
   ): WordsInteractor
 
   @Binds
-  abstract fun searchWordsInteractor(
+  abstract fun searchesInteractor(
     impl: SearchesInteractorImpl
   ): SearchesInteractor
 
