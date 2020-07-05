@@ -2,6 +2,7 @@ package com.sovathna.khmerdictionary.ui.definition.fragment
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.DefinitionInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
@@ -23,9 +24,13 @@ class DefinitionViewModel @Inject constructor(
             isInit = false,
             definition = result.definition
           )
-        is DefinitionResult.BookmarkSuccess -> state.copy(
+        is DefinitionResult.CheckBookmarkSuccess -> state.copy(
           isInit = false,
           isBookmark = result.isBookmark
+        )
+        is DefinitionResult.BookmarkSuccess -> state.copy(
+          isBookmark = result.isBookmark,
+          isBookmarkEvent = Event(result.isBookmark)
         )
         is DefinitionResult.AddHistorySuccess -> state
       }

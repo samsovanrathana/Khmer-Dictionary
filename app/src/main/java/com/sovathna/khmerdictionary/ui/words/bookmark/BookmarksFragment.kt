@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.words.bookmark
 
+import androidx.core.view.postDelayed
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
@@ -7,16 +8,22 @@ import com.sovathna.khmerdictionary.domain.model.state.BookmarksState
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_word_list.*
+import javax.inject.Inject
 
 class BookmarksFragment :
   AbstractWordsFragment<MviIntent, BookmarksState, BookmarksViewModel>() {
 
   private val getBookmarks = PublishSubject.create<BookmarksIntent.GetWords>()
 
+  @Inject
+  lateinit var bookmarkMenuItemClickSubject: PublishSubject<BookmarksIntent.UpdateBookmark>
+
   override fun intents(): Observable<MviIntent> =
     Observable.merge(
       getBookmarks,
-      selectWordIntent
+      selectWordIntent,
+      bookmarkMenuItemClickSubject
     )
 
   override fun render(state: BookmarksState) {
@@ -29,6 +36,11 @@ class BookmarksFragment :
             Const.PAGE_SIZE
           )
         )
+      }
+      isScrollToTop?.getContentIfNotHandled()?.let {
+        rv.postDelayed(400) {
+          rv.smoothScrollToPosition(0)
+        }
       }
     }
   }

@@ -13,4 +13,8 @@ sealed class BookmarksResult : MviResult {
     val word: Word?
   ) : BookmarksResult()
 
+  data class UpdateBookmarkSuccess(
+    val word: Word,
+    val isBookmark: Boolean
+  ) : BookmarksResult()
 }

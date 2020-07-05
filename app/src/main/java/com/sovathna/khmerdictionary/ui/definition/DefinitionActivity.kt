@@ -56,6 +56,7 @@ class DefinitionActivity : DaggerAppCompatActivity() {
 
     bookmarkedLiveData.observe(this, Observer { isBookmark ->
       menu?.findItem(R.id.action_bookmark)?.let { item ->
+        item.isVisible = true
         when {
           isBookmark -> {
             item.title = "លុបការរក្សាទុក"
@@ -93,9 +94,9 @@ class DefinitionActivity : DaggerAppCompatActivity() {
       onBackPressed()
     } else if (item.itemId == R.id.action_bookmark) {
       menuItemClick.value = Event("bookmark")
-    } else if(item.itemId == R.id.action_zoom_in){
+    } else if (item.itemId == R.id.action_zoom_in) {
       menuItemClick.value = Event("zoom_in")
-    }else if(item.itemId == R.id.action_zoom_out){
+    } else if (item.itemId == R.id.action_zoom_out) {
       menuItemClick.value = Event("zoom_out")
     }
     return super.onOptionsItemSelected(item)

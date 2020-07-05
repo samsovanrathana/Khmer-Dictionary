@@ -6,6 +6,7 @@
       android:id="@+id/action_bookmark"
       android:icon="@drawable/round_bookmark_border_white_24"
       android:title="រក្សាទុក"
+      android:visible="false"
       app:showAsAction="always" />
   <item
       android:id="@+id/action_zoom_out"

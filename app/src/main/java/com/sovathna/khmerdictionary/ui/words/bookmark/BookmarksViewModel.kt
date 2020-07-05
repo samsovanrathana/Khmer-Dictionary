@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.ui.words.bookmark
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.BookmarksInteractor
 import com.sovathna.khmerdictionary.domain.model.result.BookmarksResult
@@ -43,6 +44,17 @@ class BookmarksViewModel @Inject constructor(
                 this[index] = this[index].copy(isSelected = true)
             }
           })
+        }
+        is BookmarksResult.UpdateBookmarkSuccess -> {
+          state.copy(
+            words = state.words?.toMutableList()?.apply {
+              find { it.word.id == result.word.id }?.let { remove(it) }
+              if (result.isBookmark) {
+                add(0, WordItem(result.word, true))
+              }
+            },
+            isScrollToTop = if (result.isBookmark) Event(Unit) else null
+          )
         }
       }
     }

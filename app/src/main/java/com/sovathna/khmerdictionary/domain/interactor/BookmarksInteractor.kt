@@ -17,6 +17,9 @@ abstract class BookmarksInteractor :
   abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, BookmarksResult>
 
+  abstract val updateBookmark:
+      ObservableTransformer<BookmarksIntent.UpdateBookmark, BookmarksResult>
+
   override val intentsProcessor =
     ObservableTransformer<MviIntent, BookmarksResult> {
       it.publish { intent ->
@@ -26,7 +29,10 @@ abstract class BookmarksInteractor :
             .compose(getWords),
           intent
             .ofType(WordsIntent.SelectWord::class.java)
-            .compose(selectWord)
+            .compose(selectWord),
+          intent
+            .ofType(BookmarksIntent.UpdateBookmark::class.java)
+            .compose(updateBookmark)
         )
       }
     }

@@ -15,7 +15,4 @@ class DefinitionModule {
   fun viewModel(fragment: DefinitionFragment, factory: ViewModelProvider.Factory) =
     ViewModelProvider(fragment, factory)[DefinitionViewModel::class.java]
 
-  @Provides
-  fun getDefinitionIntent() = PublishSubject.create<DefinitionIntent.GetDefinition>()
-
 }

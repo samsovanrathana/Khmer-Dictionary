@@ -33,4 +33,9 @@ class BookmarksInteractorImpl @Inject constructor(
     ObservableTransformer<WordsIntent.SelectWord, BookmarksResult> {
       it.map { intent -> BookmarksResult.SelectWordSuccess(intent.word) }
     }
+
+  override val updateBookmark =
+    ObservableTransformer<BookmarksIntent.UpdateBookmark, BookmarksResult> {
+      it.map { intent -> BookmarksResult.UpdateBookmarkSuccess(intent.word, intent.isBookmark) }
+    }
 }

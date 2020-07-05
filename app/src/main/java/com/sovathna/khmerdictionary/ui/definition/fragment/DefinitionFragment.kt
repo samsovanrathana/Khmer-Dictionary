@@ -19,6 +19,7 @@ import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.data.local.AppPreferences
 import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import dagger.Lazy
@@ -32,13 +33,12 @@ class DefinitionFragment :
     R.layout.fragment_definition
   ) {
 
-  @Inject
-  lateinit var getDefinitionIntent: PublishSubject<DefinitionIntent.GetDefinition>
+  private val getDefinitionIntent = PublishSubject.create<DefinitionIntent.GetDefinition>()
 
-  private var bookmark = PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
+  private val addDeleteBookmarkIntent = PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
 
   @Inject
-  lateinit var fabVisibility: Lazy<PublishSubject<Boolean>>
+  lateinit var fabVisibilitySubject: Lazy<PublishSubject<Boolean>>
 
   @Inject
   lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
@@ -49,13 +49,16 @@ class DefinitionFragment :
   @Inject
   lateinit var appPref: AppPreferences
 
+  @Inject
+  lateinit var bookmarkMenuItemClickSubject: PublishSubject<BookmarksIntent.UpdateBookmark>
+
   private lateinit var word: Word
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     arguments?.let {
       word = it.getParcelable("word")!!
-      fabVisibility.get().onNext(true)
+      fabVisibilitySubject.get().onNext(true)
     }
   }
 
@@ -68,9 +71,9 @@ class DefinitionFragment :
     if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       nsv.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
         if (scrollY < oldScrollY) {
-          fabVisibility.get().onNext(true)
+          fabVisibilitySubject.get().onNext(true)
         } else if (scrollY > oldScrollY) {
-          fabVisibility.get().onNext(false)
+          fabVisibilitySubject.get().onNext(false)
         }
       }
     }
@@ -81,7 +84,7 @@ class DefinitionFragment :
     menuItemClick.observe(viewLifecycleOwner, EventObserver {
       when (it) {
         "bookmark" -> {
-          bookmark.onNext(DefinitionIntent.AddDeleteBookmark(word))
+          addDeleteBookmarkIntent.onNext(DefinitionIntent.AddDeleteBookmark(word))
         }
         "zoom_in" -> {
           val textSize = appPref.incrementTextSize()
@@ -100,7 +103,7 @@ class DefinitionFragment :
   override fun intents(): Observable<DefinitionIntent> =
     Observable.merge(
       getDefinitionIntent,
-      bookmark
+      addDeleteBookmarkIntent
     )
 
   override fun render(state: DefinitionState) {
@@ -124,7 +127,12 @@ class DefinitionFragment :
           .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
         setTextViewHTML(tv_definition, tmp)
       }
-      bookmarkedLiveData.value = isBookmark == true
+      isBookmark?.let {
+        bookmarkedLiveData.value = it
+      }
+      isBookmarkEvent?.getContentIfNotHandled()?.let {
+        bookmarkMenuItemClickSubject.onNext(BookmarksIntent.UpdateBookmark(word, it))
+      }
     }
   }
 

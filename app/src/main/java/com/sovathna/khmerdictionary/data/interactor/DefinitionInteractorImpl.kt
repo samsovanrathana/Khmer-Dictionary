@@ -25,7 +25,7 @@ class DefinitionInteractorImpl @Inject constructor(
                 .map(DefinitionResult::Success),
               repository
                 .checkBookmark(intent.word.id)
-                .map(DefinitionResult::BookmarkSuccess),
+                .map(DefinitionResult::CheckBookmarkSuccess),
               repository
                 .addHistory(intent.word)
                 .map(DefinitionResult::AddHistorySuccess)
