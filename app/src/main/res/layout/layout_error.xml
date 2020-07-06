@@ -12,7 +12,7 @@
       android:layout_height="wrap_content"
       android:gravity="center_horizontal"
       android:text="មានបញ្ហាទាញយកទិន្នន័យ"
-      android:textAppearance="@style/TextAppearance.AppCompat.Title"
+      android:textAppearance="@style/TextAppearance.AppCompat.Medium"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintBottom_toTopOf="@id/le_btn_retry"
       app:layout_constraintTop_toTopOf="parent"
