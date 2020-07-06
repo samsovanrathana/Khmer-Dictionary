@@ -1,18 +1,23 @@
 package com.sovathna.khmerdictionary.ui.words.bookmark
 
 import androidx.core.view.postDelayed
+import androidx.fragment.app.viewModels
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.state.BookmarksState
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class BookmarksFragment :
   AbstractWordsFragment<MviIntent, BookmarksState, BookmarksViewModel>() {
+
+  override val viewModel: BookmarksViewModel by viewModels()
 
   private val getBookmarks = PublishSubject.create<BookmarksIntent.GetWords>()
 

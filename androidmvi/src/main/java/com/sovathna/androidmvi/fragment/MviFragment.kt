@@ -5,23 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
-import dagger.android.support.DaggerFragment
 import io.reactivex.Observable
-import javax.inject.Inject
-import javax.inject.Named
 
 abstract class MviFragment
 <I : MviIntent, S : MviState, VM : BaseViewModel<I, S>>(
   @LayoutRes private val layoutRes: Int
-) : DaggerFragment() {
+) : Fragment() {
 
-  @Inject
-  @Named("instance")
-  protected lateinit var viewModel: VM
+  protected abstract val viewModel: VM
 
   abstract fun intents(): Observable<I>
 

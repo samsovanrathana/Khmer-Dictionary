@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.words.bookmark
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
@@ -11,9 +12,8 @@ import com.sovathna.khmerdictionary.domain.model.state.BookmarksState
 import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
-import javax.inject.Inject
 
-class BookmarksViewModel @Inject constructor(
+class BookmarksViewModel @ViewModelInject constructor(
   private val interactor: BookmarksInteractor
 ) : MviViewModel<MviIntent, BookmarksResult, BookmarksState>() {
 

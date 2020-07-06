@@ -3,22 +3,28 @@ package com.sovathna.khmerdictionary.ui.splash
 import android.content.Intent
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.sovathna.androidmvi.activity.MviActivity
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
 import com.sovathna.khmerdictionary.domain.model.state.SplashState
 import com.sovathna.khmerdictionary.ui.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.android.synthetic.main.layout_download.view.*
 import kotlinx.android.synthetic.main.layout_error.view.*
 
+@AndroidEntryPoint
 class SplashActivity :
   MviActivity<SplashIntent, SplashState, SplashViewModel>(
     R.layout.activity_splash
   ) {
+
+  override val viewModel: SplashViewModel by viewModels()
+
   private val checkDatabase = PublishSubject.create<SplashIntent.CheckDatabase>()
 
   override fun intents(): Observable<SplashIntent> =

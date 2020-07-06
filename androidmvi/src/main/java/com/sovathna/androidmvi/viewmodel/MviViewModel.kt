@@ -1,6 +1,5 @@
 package com.sovathna.androidmvi.viewmodel
 
-import androidx.lifecycle.ViewModel
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.result.MviResult
 import com.sovathna.androidmvi.state.MviState
@@ -10,8 +9,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 
 abstract class MviViewModel<I : MviIntent, R : MviResult, S : MviState> :
-  ViewModel(),
-  BaseViewModel<I, S> {
+  BaseViewModel<I, S>() {
 
   protected val disposables = CompositeDisposable()
   protected val intents = PublishSubject.create<I>()

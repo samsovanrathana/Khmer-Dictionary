@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.definition.fragment
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.livedata.Event
@@ -10,9 +11,8 @@ import com.sovathna.khmerdictionary.domain.model.result.DefinitionResult
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
-import javax.inject.Inject
 
-class DefinitionViewModel @Inject constructor(
+class DefinitionViewModel @ViewModelInject constructor(
   private val interactor: DefinitionInteractor
 ) : MviViewModel<DefinitionIntent, DefinitionResult, DefinitionState>() {
 

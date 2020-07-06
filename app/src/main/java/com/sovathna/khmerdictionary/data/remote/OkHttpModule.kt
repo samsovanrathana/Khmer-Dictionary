@@ -2,12 +2,15 @@ package com.sovathna.khmerdictionary.data.remote
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-class OkHttpModule {
+@InstallIn(ApplicationComponent::class)
+object OkHttpModule {
 
   @Provides
   @Singleton

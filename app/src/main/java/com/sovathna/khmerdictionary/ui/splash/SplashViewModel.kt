@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.splash
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.livedata.Event
@@ -11,9 +12,8 @@ import com.sovathna.khmerdictionary.domain.model.state.SplashState
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import javax.inject.Inject
 
-class SplashViewModel @Inject constructor(
+class SplashViewModel @ViewModelInject constructor(
   private val interactor: SplashInteractor
 ) : MviViewModel<SplashIntent, SplashResult, SplashState>() {
 

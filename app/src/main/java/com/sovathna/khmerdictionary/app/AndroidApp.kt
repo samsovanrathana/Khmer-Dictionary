@@ -1,17 +1,13 @@
 package com.sovathna.khmerdictionary.app
 
+import android.app.Application
 import android.content.Context
 import androidx.multidex.MultiDex
 import com.sovathna.androidmvi.Logger
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
+import dagger.hilt.android.HiltAndroidApp
 
-class AndroidApp : DaggerApplication() {
-
-  override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
-    DaggerAppComponent
-      .factory()
-      .create(this)
+@HiltAndroidApp
+class AndroidApp : Application() {
 
   override fun attachBaseContext(base: Context?) {
     super.attachBaseContext(base)

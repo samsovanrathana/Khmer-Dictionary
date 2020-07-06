@@ -9,8 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SearchView
@@ -36,7 +38,7 @@ import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksFragment
 import com.sovathna.khmerdictionary.ui.words.history.HistoriesFragment
 import com.sovathna.khmerdictionary.ui.words.main.WordsFragment
 import com.sovathna.khmerdictionary.ui.words.search.SearchesFragment
-import dagger.android.support.DaggerAppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -47,17 +49,16 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
 
-class MainActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+  private val viewModel: MainViewModel by viewModels()
 
   @Inject
   lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
   @Inject
   lateinit var searchesIntent: PublishSubject<SearchesIntent.GetWords>
-
-  @Inject
-  @Named("instance")
-  lateinit var viewModel: MainViewModel
 
   @Inject
   lateinit var fabVisibility: PublishSubject<Boolean>

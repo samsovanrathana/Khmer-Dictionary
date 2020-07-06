@@ -7,14 +7,18 @@ import com.sovathna.khmerdictionary.data.local.AppDatabase
 import com.sovathna.khmerdictionary.data.local.LocalDatabase
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 @Module
-class LocalModule {
+@InstallIn(ApplicationComponent::class)
+object LocalModule {
 
   @Provides
   @Singleton
-  fun appDatabase(context: Context): AppDatabase =
+  fun appDatabase(@ApplicationContext context: Context): AppDatabase =
     Room
       .databaseBuilder(
         context,
@@ -26,7 +30,7 @@ class LocalModule {
 
   @Provides
   @Singleton
-  fun localDatabase(context: Context): LocalDatabase =
+  fun localDatabase(@ApplicationContext context: Context): LocalDatabase =
     Room
       .databaseBuilder(
         context,

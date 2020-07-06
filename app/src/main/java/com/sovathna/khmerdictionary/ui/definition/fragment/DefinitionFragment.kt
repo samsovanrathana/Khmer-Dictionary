@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.Logger
 import com.sovathna.androidmvi.fragment.MviFragment
@@ -23,15 +24,19 @@ import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
 import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
 import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_definition.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class DefinitionFragment :
   MviFragment<DefinitionIntent, DefinitionState, DefinitionViewModel>(
     R.layout.fragment_definition
   ) {
+
+  override val viewModel: DefinitionViewModel by viewModels()
 
   private val getDefinitionIntent = PublishSubject.create<DefinitionIntent.GetDefinition>()
 

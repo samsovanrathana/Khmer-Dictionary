@@ -2,6 +2,8 @@ package com.sovathna.khmerdictionary.data.remote
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import retrofit2.CallAdapter
 import retrofit2.Converter
@@ -11,7 +13,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
-class RetrofitModule {
+@InstallIn(ApplicationComponent::class)
+object RetrofitModule {
 
   @Provides
   @Singleton

@@ -1,10 +1,8 @@
 package com.sovathna.khmerdictionary.ui.main
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.livedata.Event
-import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
@@ -12,57 +10,55 @@ import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
 import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.scopes.ActivityScoped
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Named
 
 @Module
+@InstallIn(ActivityComponent::class)
 class MainModule {
 
   @Provides
-  @Named("instance")
-  @MainScope
-  fun viewModel(activity: MainActivity, factory: ViewModelProvider.Factory) =
-    ViewModelProvider(activity, factory)[MainViewModel::class.java]
-
-  @Provides
-  @MainScope
+  @ActivityScoped
   fun clickWordSubject() = PublishSubject.create<Event<Word>>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun selectWordSubject() = BehaviorSubject.create<WordsIntent.SelectWord>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun fabVisibilitySubject() = PublishSubject.create<Boolean>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun searchWordsIntent() = PublishSubject.create<SearchesIntent.GetWords>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun bookmarkedLiveData() = MutableLiveData<Boolean>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun menuItemClickLiveData() = MutableLiveData<Event<String>>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun recycledViewPool() = RecyclerView.RecycledViewPool()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun clearHistoriesIntent() = PublishSubject.create<HistoriesIntent.ClearHistories>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   fun clearBookmarksIntent() = PublishSubject.create<BookmarksIntent.ClearBookmarks>()
 
   @Provides
-  @MainScope
+  @ActivityScoped
   @Named("clear_menu")
   fun clearMenuItemLiveData() = MutableLiveData<Boolean>()
 

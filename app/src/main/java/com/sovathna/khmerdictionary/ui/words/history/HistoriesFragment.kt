@@ -1,19 +1,23 @@
 package com.sovathna.khmerdictionary.ui.words.history
 
 import androidx.core.view.postDelayed
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.viewModels
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class HistoriesFragment :
   AbstractWordsFragment<MviIntent, HistoriesState, HistoriesViewModel>() {
+
+  override val viewModel: HistoriesViewModel by viewModels()
 
   private val getHistories = PublishSubject.create<HistoriesIntent.GetWords>()
 

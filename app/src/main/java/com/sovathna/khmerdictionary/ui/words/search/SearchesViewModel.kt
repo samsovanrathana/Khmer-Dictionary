@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.words.search
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
@@ -10,9 +11,8 @@ import com.sovathna.khmerdictionary.domain.model.state.SearchWordsState
 import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
-import javax.inject.Inject
 
-class SearchesViewModel @Inject constructor(
+class SearchesViewModel @ViewModelInject constructor(
   private val interactor: SearchesInteractor
 ) : MviViewModel<MviIntent, SearchesResult, SearchWordsState>() {
 

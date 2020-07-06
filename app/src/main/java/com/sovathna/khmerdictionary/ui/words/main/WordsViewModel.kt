@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.ui.words.main
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.viewmodel.MviViewModel
@@ -10,9 +11,8 @@ import com.sovathna.khmerdictionary.domain.model.state.WordsState
 import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
-import javax.inject.Inject
 
-class WordsViewModel @Inject constructor(
+class WordsViewModel @ViewModelInject constructor(
   private val interactor: WordsInteractor
 ) : MviViewModel<WordsIntent, WordsResult, WordsState>() {
 
