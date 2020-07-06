@@ -26,4 +26,10 @@
         android:title="ពង្រីក"
         app:showAsAction="always" />
   </group>
+  <item
+      android:id="@+id/action_clear"
+      android:icon="@drawable/round_clear_white_24"
+      android:title="លុបពាក្យចេញពីបញ្ជី"
+      android:visible="false"
+      app:showAsAction="always" />
 </menu>

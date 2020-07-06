@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.di.scope.MainScope
 import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
 import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
 import dagger.Module
@@ -50,5 +52,18 @@ class MainModule {
   @Provides
   @MainScope
   fun recycledViewPool() = RecyclerView.RecycledViewPool()
+
+  @Provides
+  @MainScope
+  fun clearHistoriesIntent() = PublishSubject.create<HistoriesIntent.ClearHistories>()
+
+  @Provides
+  @MainScope
+  fun clearBookmarksIntent() = PublishSubject.create<BookmarksIntent.ClearBookmarks>()
+
+  @Provides
+  @MainScope
+  @Named("clear_menu")
+  fun clearMenuItemLiveData() = MutableLiveData<Boolean>()
 
 }

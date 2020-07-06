@@ -48,4 +48,6 @@ interface AppRepository {
   ): Observable<Int>
 
   fun clearHistories(): Observable<Int>
+
+  fun clearBookmarks(): Observable<Int>
 }

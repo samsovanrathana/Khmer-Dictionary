@@ -38,4 +38,14 @@ class BookmarksInteractorImpl @Inject constructor(
     ObservableTransformer<BookmarksIntent.UpdateBookmark, BookmarksResult> {
       it.map { intent -> BookmarksResult.UpdateBookmarkSuccess(intent.word, intent.isBookmark) }
     }
+
+  override val clearBookmark =
+    ObservableTransformer<BookmarksIntent.ClearBookmarks, BookmarksResult> {
+      it.flatMap {
+        repository
+          .clearBookmarks()
+          .subscribeOn(Schedulers.io())
+          .map { BookmarksResult.ClearBookmarkSuccess }
+      }
+    }
 }

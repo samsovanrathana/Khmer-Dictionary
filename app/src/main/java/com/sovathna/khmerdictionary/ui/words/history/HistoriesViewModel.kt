@@ -34,17 +34,19 @@ class HistoriesViewModel @Inject constructor(
           )
         is HistoriesResult.SelectWordSuccess -> {
           state.copy(words = state.words?.toMutableList()?.apply {
-            forEachIndexed { i, v ->
-              if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-            }
-            result.word?.let { word ->
-
-              val index = indexOfFirst { item -> item.word.id == word.id }
-              if (index > 0) {
-                val tmp = this.removeAt(index)
-                add(0, tmp)
+            if (isNotEmpty()) {
+              forEachIndexed { i, v ->
+                if (v.isSelected) this[i] = this[i].copy(isSelected = false)
               }
-              this[0] = this[0].copy(isSelected = true)
+              result.word?.let { word ->
+
+                val index = indexOfFirst { item -> item.word.id == word.id }
+                if (index > 0) {
+                  val tmp = this.removeAt(index)
+                  add(0, tmp)
+                }
+                this[0] = this[0].copy(isSelected = true)
+              }
             }
           })
         }

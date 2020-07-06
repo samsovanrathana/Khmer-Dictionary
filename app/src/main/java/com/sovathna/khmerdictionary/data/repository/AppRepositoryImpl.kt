@@ -94,4 +94,9 @@ class AppRepositoryImpl @Inject constructor(
       .clear()
       .toObservable()
 
+  override fun clearBookmarks(): Observable<Int> =
+    bookmarkDao
+      .clear()
+      .toObservable()
+
 }

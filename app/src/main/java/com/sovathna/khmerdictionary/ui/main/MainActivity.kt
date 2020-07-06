@@ -4,12 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -22,8 +25,10 @@ import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
+import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.listener.DrawerListener
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
@@ -65,6 +70,16 @@ class MainActivity : DaggerAppCompatActivity() {
 
   @Inject
   lateinit var selectWordSubject: BehaviorSubject<WordsIntent.SelectWord>
+
+  @Inject
+  @Named("clear_menu")
+  lateinit var clearMenuItemLiveData: MutableLiveData<Boolean>
+
+  @Inject
+  lateinit var clearHistoriesIntent: PublishSubject<HistoriesIntent.ClearHistories>
+
+  @Inject
+  lateinit var clearBookmarksIntent: PublishSubject<BookmarksIntent.ClearBookmarks>
 
   private var menu: Menu? = null
   private var searchItem: MenuItem? = null
@@ -249,6 +264,10 @@ class MainActivity : DaggerAppCompatActivity() {
         if (it) fab.show() else fab.hide()
       })
 
+    clearMenuItemLiveData.observe(this, Observer {
+      menu?.findItem(R.id.action_clear)?.isVisible = it
+    })
+
     viewModel.titleLiveData.observe(this, Observer {
       if (it == getString(R.string.app_name_kh)) {
         nav_view.checkedItem?.isChecked = false
@@ -333,18 +352,29 @@ class MainActivity : DaggerAppCompatActivity() {
 
   private fun showCloseDialog() {
     val builder = AlertDialog.Builder(this)
-    builder.setTitle("Notice!")
-    builder.setMessage("Do you really want to exit?")
-    builder.setNegativeButton("No", null)
-    builder.setPositiveButton("Yes") { _, _ ->
-      finish()
+    val v = LayoutInflater.from(this)
+      .inflate(R.layout.dialog_clear_words, null, false)
+    v.findViewById<AppCompatTextView>(R.id.tv_title)?.text = "បិទកម្មវិធី!"
+    v.findViewById<AppCompatTextView>(R.id.tv_description)?.text =
+      "តើអ្នកពិតជាយល់ព្រមចាកចេញពីកម្មវិធីមែនទេ?"
+    v.findViewById<AppCompatButton>(R.id.btn_cancel)?.setOnClickListener {
+      closeDialog?.dismiss()
     }
+    v.findViewById<AppCompatButton>(R.id.btn_clear)?.let {
+      it.setOnClickListener {
+        closeDialog?.dismiss()
+        finish()
+      }
+    }
+    builder.setView(v)
     closeDialog = builder.show()
+
   }
 
   override fun onPause() {
     super.onPause()
     closeDialog?.dismiss()
+    clearDialog?.dismiss()
   }
 
   private fun setDefMenuItemsVisible(isVisible: Boolean) {
@@ -354,7 +384,7 @@ class MainActivity : DaggerAppCompatActivity() {
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.main, menu)
     this.menu = menu
-
+    menu?.findItem(R.id.action_clear)?.isVisible = clearMenuItemLiveData.value == true
     setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
 
     searchItem = menu?.findItem(R.id.action_search)
@@ -428,8 +458,30 @@ class MainActivity : DaggerAppCompatActivity() {
       menuItemClickLiveData.value = Event("zoom_in")
     } else if (item.itemId == R.id.action_zoom_out) {
       menuItemClickLiveData.value = Event("zoom_out")
+    } else if (item.itemId == R.id.action_clear) {
+      showClearDialog()
     }
     return super.onOptionsItemSelected(item)
+  }
+
+  private var clearDialog: AlertDialog? = null
+
+  protected fun showClearDialog() {
+    val builder = AlertDialog.Builder(this)
+    val v = LayoutInflater.from(this)
+      .inflate(R.layout.dialog_clear_words, null, false)
+    v.findViewById<AppCompatButton>(R.id.btn_cancel)?.setOnClickListener {
+      clearDialog?.dismiss()
+    }
+    v.findViewById<AppCompatButton>(R.id.btn_clear)?.setOnClickListener {
+      clearDialog?.dismiss()
+      clearHistoriesIntent.onNext(HistoriesIntent.ClearHistories)
+      clearBookmarksIntent.onNext(BookmarksIntent.ClearBookmarks)
+      bookmarkedLiveData.value = false
+
+    }
+    builder.setView(v)
+    clearDialog = builder.show()
   }
 
 }

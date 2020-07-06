@@ -13,4 +13,6 @@ sealed class BookmarksIntent : MviIntent {
     val word: Word,
     val isBookmark: Boolean
   ) : BookmarksIntent()
+
+  object ClearBookmarks : BookmarksIntent()
 }

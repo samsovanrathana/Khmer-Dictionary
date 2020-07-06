@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.ui.words
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.fragment.MviFragment
@@ -20,6 +21,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
+import javax.inject.Named
 
 abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewModel<I, S>> :
   MviFragment<I, S, VM>(
@@ -48,6 +50,10 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
 
+  @Inject
+  @Named("clear_menu")
+  protected lateinit var clearMenuItemLiveData: MutableLiveData<Boolean>
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     layoutManager = LinearLayoutManager(requireContext())
@@ -60,6 +66,11 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
         fabVisibilitySubject.onNext(dy <= 0)
       }
     })
+  }
+
+  override fun onPause() {
+    super.onPause()
+    clearMenuItemLiveData.value = false
   }
 
   override fun render(state: S) {
@@ -116,5 +127,4 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
       rv?.viewTreeObserver?.removeOnScrollChangedListener(it)
     }
   }
-
 }

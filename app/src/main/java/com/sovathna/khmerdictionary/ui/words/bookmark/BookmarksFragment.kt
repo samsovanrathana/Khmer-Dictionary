@@ -19,10 +19,14 @@ class BookmarksFragment :
   @Inject
   lateinit var bookmarkMenuItemClickSubject: PublishSubject<BookmarksIntent.UpdateBookmark>
 
+  @Inject
+  lateinit var clearBookmarks: PublishSubject<BookmarksIntent.ClearBookmarks>
+
   override fun intents(): Observable<MviIntent> =
     Observable.merge(
       getBookmarks,
       selectWordIntent,
+      clearBookmarks,
       bookmarkMenuItemClickSubject
     )
 
@@ -37,6 +41,7 @@ class BookmarksFragment :
           )
         )
       }
+      clearMenuItemLiveData.value = words?.isNotEmpty() == true
       isScrollToTop?.getContentIfNotHandled()?.let {
         rv.postDelayed(400) {
           rv.smoothScrollToPosition(0)

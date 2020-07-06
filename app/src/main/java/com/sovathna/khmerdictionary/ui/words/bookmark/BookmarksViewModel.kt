@@ -33,19 +33,21 @@ class BookmarksViewModel @Inject constructor(
             },
             isMore = result.isMore
           )
-        is BookmarksResult.SelectWordSuccess -> {
+        is BookmarksResult.SelectWordSuccess ->
           state.copy(words = state.words?.toMutableList()?.apply {
-            forEachIndexed { i, v ->
-              if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-            }
-            result.word?.let {
-              val index = indexOfFirst { item -> item.word.id == it.id }
-              if (index >= 0)
-                this[index] = this[index].copy(isSelected = true)
+            if (isNotEmpty()) {
+              forEachIndexed { i, v ->
+                if (v.isSelected) this[i] = this[i].copy(isSelected = false)
+              }
+              result.word?.let {
+                val index = indexOfFirst { item -> item.word.id == it.id }
+                if (index >= 0)
+                  this[index] = this[index].copy(isSelected = true)
+              }
             }
           })
-        }
-        is BookmarksResult.UpdateBookmarkSuccess -> {
+
+        is BookmarksResult.UpdateBookmarkSuccess ->
           state.copy(
             words = state.words?.toMutableList()?.apply {
               find { it.word.id == result.word.id }?.let { remove(it) }
@@ -55,7 +57,10 @@ class BookmarksViewModel @Inject constructor(
             },
             isScrollToTop = if (result.isBookmark) Event(Unit) else null
           )
-        }
+        is BookmarksResult.ClearBookmarkSuccess ->
+          state.copy(
+            words = emptyList()
+          )
       }
     }
 
