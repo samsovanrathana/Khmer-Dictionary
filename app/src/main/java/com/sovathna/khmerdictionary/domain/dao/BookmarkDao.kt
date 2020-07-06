@@ -29,4 +29,7 @@ interface BookmarkDao {
   fun delete(
     wordId: Long
   ): Single<Int>
+
+  @Query("DELETE FROM bookmark")
+  fun clear(): Single<Int>
 }

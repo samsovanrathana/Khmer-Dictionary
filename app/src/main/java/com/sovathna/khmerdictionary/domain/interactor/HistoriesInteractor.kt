@@ -17,6 +17,9 @@ abstract class HistoriesInteractor :
   abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, HistoriesResult>
 
+  abstract val clearHistories:
+      ObservableTransformer<HistoriesIntent.ClearHistories, HistoriesResult>
+
   override val intentsProcessor =
     ObservableTransformer<MviIntent, HistoriesResult> {
       it.publish { intent ->
@@ -26,7 +29,10 @@ abstract class HistoriesInteractor :
             .compose(getWords),
           intent
             .ofType(WordsIntent.SelectWord::class.java)
-            .compose(selectWord)
+            .compose(selectWord),
+          intent
+            .ofType(HistoriesIntent.ClearHistories::class.java)
+            .compose(clearHistories)
         )
       }
     }

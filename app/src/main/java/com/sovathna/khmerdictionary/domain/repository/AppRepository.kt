@@ -46,4 +46,6 @@ interface AppRepository {
   fun deleteBookmark(
     id: Long
   ): Observable<Int>
+
+  fun clearHistories(): Observable<Int>
 }

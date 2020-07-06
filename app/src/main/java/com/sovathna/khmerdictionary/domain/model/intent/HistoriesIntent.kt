@@ -7,4 +7,6 @@ sealed class HistoriesIntent : MviIntent {
     val offset: Int,
     val pageSize: Int
   ) : HistoriesIntent()
+
+  object ClearHistories : HistoriesIntent()
 }

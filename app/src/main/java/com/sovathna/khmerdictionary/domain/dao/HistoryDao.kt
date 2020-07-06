@@ -20,4 +20,7 @@ interface HistoryDao {
     word: HistoryEntity
   ): Single<Long>
 
+  @Query("DELETE FROM history")
+  fun clear(): Single<Int>
+
 }

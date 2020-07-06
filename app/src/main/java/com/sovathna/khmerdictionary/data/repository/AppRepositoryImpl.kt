@@ -89,4 +89,9 @@ class AppRepositoryImpl @Inject constructor(
       .delete(id)
       .toObservable()
 
+  override fun clearHistories(): Observable<Int> =
+    historyDao
+      .clear()
+      .toObservable()
+
 }

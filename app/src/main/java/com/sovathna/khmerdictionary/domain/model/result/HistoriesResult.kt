@@ -12,4 +12,6 @@ sealed class HistoriesResult : MviResult {
   data class SelectWordSuccess(
     val word: Word?
   ) : HistoriesResult()
+
+  object ClearHistoriesSuccess : HistoriesResult()
 }

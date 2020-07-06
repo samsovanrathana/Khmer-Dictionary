@@ -48,6 +48,10 @@ class HistoriesViewModel @Inject constructor(
             }
           })
         }
+        is HistoriesResult.ClearHistoriesSuccess ->
+          state.copy(
+            words = emptyList()
+          )
       }
     }
 
