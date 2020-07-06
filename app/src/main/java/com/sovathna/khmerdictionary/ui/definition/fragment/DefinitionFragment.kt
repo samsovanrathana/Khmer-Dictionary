@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
+import android.text.method.ScrollingMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.URLSpan
+import android.text.style.UnderlineSpan
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
@@ -19,6 +24,7 @@ import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.data.local.AppPreferences
+import com.sovathna.khmerdictionary.domain.model.Definition
 import com.sovathna.khmerdictionary.domain.model.Word
 import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
@@ -28,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_definition.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,6 +46,9 @@ class DefinitionFragment :
   override val viewModel: DefinitionViewModel by viewModels()
 
   private val getDefinitionIntent = PublishSubject.create<DefinitionIntent.GetDefinition>()
+
+  private val getQuickDefinitionIntent =
+    PublishSubject.create<DefinitionIntent.GetQuickDefinition>()
 
   private val addDeleteBookmarkIntent = PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
 
@@ -105,9 +115,15 @@ class DefinitionFragment :
     })
   }
 
+  override fun onPause() {
+    super.onPause()
+    quickDefDialog?.dismiss()
+  }
+
   override fun intents(): Observable<DefinitionIntent> =
     Observable.merge(
       getDefinitionIntent,
+      getQuickDefinitionIntent.throttleFirst(200, TimeUnit.MILLISECONDS),
       addDeleteBookmarkIntent
     )
 
@@ -119,18 +135,7 @@ class DefinitionFragment :
 
       definition?.let {
         tv_name.text = definition.word
-
-        val tmp = definition.definition.replace("<\"", "<a href=\"")
-          .replace("/a", "</a>")
-          .replace("\\n", "<br><br>")
-          .replace(" : ", " : ឧ. ")
-          .replace("ន.", "<span style=\"color:#D50000\">ន.</span>")
-          .replace("កិ. វិ.", "<span style=\"color:#D50000\">កិ. វិ.</span>")
-          .replace("កិ.វិ.", "<span style=\"color:#D50000\">កិ.វិ.</span>")
-          .replace("កិ.", "<span style=\"color:#D50000\">កិ.</span>")
-          .replace("និ.", "<span style=\"color:#D50000\">និ.</span>")
-          .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
-        setTextViewHTML(tv_definition, tmp)
+        setTextViewHTML(tv_definition, definition.definition)
       }
       isBookmark?.let {
         bookmarkedLiveData.value = it
@@ -138,7 +143,43 @@ class DefinitionFragment :
       isBookmarkEvent?.getContentIfNotHandled()?.let {
         bookmarkMenuItemClickSubject.onNext(BookmarksIntent.UpdateBookmark(word, it))
       }
+
+      quickDef?.getContentIfNotHandled()?.let {
+        showQuickDefDialog(it)
+      }
     }
+  }
+
+
+  private var quickDefDialog: AlertDialog? = null
+
+  private fun showQuickDefDialog(def: Definition) {
+    val builder = AlertDialog.Builder(requireContext())
+    val v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_definition, null, false)
+    v.findViewById<AppCompatTextView>(R.id.tv_name)?.let {
+      it.text = def.word
+    }
+    v.findViewById<AppCompatTextView>(R.id.tv_definition)?.let {
+//      it.text = def.definition
+      setQuickTextViewHTML(it, def.definition)
+      it.movementMethod = ScrollingMovementMethod.getInstance()
+    }
+    builder.setView(v)
+    quickDefDialog = builder.show()
+//    quickDefDialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+//    quickDefDialog?.show()
+  }
+
+  private fun setTextViewHTML(text: TextView, html: String) {
+    val sequence: CharSequence = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    val strBuilder = SpannableStringBuilder(sequence)
+    val urls =
+      strBuilder.getSpans(0, sequence.length, URLSpan::class.java)
+    for (span in urls) {
+      makeLinkClickable(strBuilder, span)
+    }
+    text.text = strBuilder
+    text.movementMethod = LinkMovementMethod.getInstance()
   }
 
   private fun makeLinkClickable(
@@ -155,22 +196,40 @@ class DefinitionFragment :
 
       override fun onClick(widget: View) {
         Logger.d("click: ${span?.url}")
+        span?.url?.let {
+          getQuickDefinitionIntent.onNext(DefinitionIntent.GetQuickDefinition(it.toLong()))
+        }
       }
     }
     strBuilder.setSpan(clickable, start, end, flags)
     strBuilder.removeSpan(span)
   }
 
-  private fun setTextViewHTML(text: TextView, html: String) {
+  private fun setQuickTextViewHTML(text: TextView, html: String) {
     val sequence: CharSequence = HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
     val strBuilder = SpannableStringBuilder(sequence)
     val urls =
       strBuilder.getSpans(0, sequence.length, URLSpan::class.java)
     for (span in urls) {
-      makeLinkClickable(strBuilder, span)
+      removeUnderline(strBuilder, span)
     }
     text.text = strBuilder
-    text.movementMethod = LinkMovementMethod.getInstance()
+  }
+
+  private fun removeUnderline(
+    strBuilder: SpannableStringBuilder,
+    span: URLSpan?
+  ) {
+    val start = strBuilder.getSpanStart(span)
+    val end = strBuilder.getSpanEnd(span)
+    val flags = strBuilder.getSpanFlags(span)
+    val clickable = object : UnderlineSpan() {
+      override fun updateDrawState(ds: TextPaint) {
+        ds.isUnderlineText = false
+      }
+    }
+    strBuilder.setSpan(clickable, start, end, flags)
+    strBuilder.removeSpan(span)
   }
 
 }

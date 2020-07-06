@@ -24,6 +24,10 @@ class DefinitionViewModel @ViewModelInject constructor(
             isInit = false,
             definition = result.definition
           )
+        is DefinitionResult.QuickSuccess ->
+          state.copy(
+            quickDef = Event(result.definition)
+          )
         is DefinitionResult.CheckBookmarkSuccess -> state.copy(
           isInit = false,
           isBookmark = result.isBookmark

@@ -8,6 +8,10 @@ sealed class DefinitionResult : MviResult {
     val definition: Definition
   ) : DefinitionResult()
 
+  data class QuickSuccess(
+    val definition: Definition
+  ) : DefinitionResult()
+
   data class CheckBookmarkSuccess(
     val isBookmark: Boolean
   ) : DefinitionResult()

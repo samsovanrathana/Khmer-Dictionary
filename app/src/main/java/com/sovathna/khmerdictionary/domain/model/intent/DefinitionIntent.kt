@@ -9,6 +9,10 @@ sealed class DefinitionIntent : MviIntent {
     val word: Word
   ) : DefinitionIntent()
 
+  data class GetQuickDefinition(
+    val id: Long
+  ) : DefinitionIntent()
+
   data class AddDeleteBookmark(
     val word: Word
   ) : DefinitionIntent()

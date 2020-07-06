@@ -70,7 +70,21 @@ class AppRepositoryImpl @Inject constructor(
   override fun getDefinition(id: Long): Observable<Definition> =
     wordDao
       .get(id)
-      .map { Definition(it.word, it.definition) }
+      .map {
+        Definition(
+          it.word,
+          it.definition.replace("<\"", "<a href=\"")
+            .replace("/a", "</a>")
+            .replace("\\n", "<br><br>")
+            .replace(" : ", " : ឧ. ")
+            .replace("ន.", "<span style=\"color:#D50000\">ន.</span>")
+            .replace("កិ. វិ.", "<span style=\"color:#D50000\">កិ. វិ.</span>")
+            .replace("កិ.វិ.", "<span style=\"color:#D50000\">កិ.វិ.</span>")
+            .replace("កិ.", "<span style=\"color:#D50000\">កិ.</span>")
+            .replace("និ.", "<span style=\"color:#D50000\">និ.</span>")
+            .replace("គុ.", "<span style=\"color:#D50000\">គុ.</span>")
+        )
+      }
       .toObservable()
 
   override fun checkBookmark(id: Long): Observable<Boolean> =

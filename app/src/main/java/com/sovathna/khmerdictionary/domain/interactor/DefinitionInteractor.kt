@@ -15,6 +15,9 @@ abstract class DefinitionInteractor :
   abstract val addDeleteBookmark:
       ObservableTransformer<DefinitionIntent.AddDeleteBookmark, DefinitionResult>
 
+  abstract val getQuickDefinition:
+      ObservableTransformer<DefinitionIntent.GetQuickDefinition, DefinitionResult>
+
   override val intentsProcessor =
     ObservableTransformer<DefinitionIntent, DefinitionResult> {
       it.publish { intent ->
@@ -24,7 +27,10 @@ abstract class DefinitionInteractor :
             .compose(getDefinition),
           intent
             .ofType(DefinitionIntent.AddDeleteBookmark::class.java)
-            .compose(addDeleteBookmark)
+            .compose(addDeleteBookmark),
+          intent
+            .ofType(DefinitionIntent.GetQuickDefinition::class.java)
+            .compose(getQuickDefinition)
         )
       }
     }
