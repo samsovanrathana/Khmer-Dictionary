@@ -1,9 +1,6 @@
 package com.sovathna.androidmvi.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,7 +12,7 @@ import io.reactivex.Observable
 abstract class MviFragment
 <I : MviIntent, S : MviState, VM : BaseViewModel<I, S>>(
   @LayoutRes private val layoutRes: Int
-) : Fragment() {
+) : Fragment(layoutRes) {
 
   protected abstract val viewModel: VM
 
@@ -30,15 +27,7 @@ abstract class MviFragment
 
   override fun onResume() {
     super.onResume()
-    viewModel.stateLiveData
-      .observe(viewLifecycleOwner, Observer(this::render))
+    viewModel.stateLiveData.observe(viewLifecycleOwner, Observer(this::render))
   }
-
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? =
-    inflater.inflate(layoutRes, container, false)
 
 }

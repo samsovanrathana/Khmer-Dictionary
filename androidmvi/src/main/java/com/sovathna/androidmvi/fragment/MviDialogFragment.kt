@@ -28,8 +28,8 @@ abstract class MviDialogFragment<I : MviIntent, S : MviState, VM : BaseViewModel
     viewModel.init(intents())
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+  override fun onResume() {
+    super.onResume()
     viewModel.stateLiveData.observe(viewLifecycleOwner, Observer(this::render))
   }
 

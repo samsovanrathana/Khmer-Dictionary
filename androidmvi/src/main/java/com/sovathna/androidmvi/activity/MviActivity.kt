@@ -11,7 +11,7 @@ import io.reactivex.Observable
 
 abstract class MviActivity<I : MviIntent, S : MviState, VM : BaseViewModel<I, S>>(
   @LayoutRes private val layoutRes: Int
-) : AppCompatActivity() {
+) : AppCompatActivity(layoutRes) {
 
   protected abstract val viewModel: VM
 
@@ -21,7 +21,6 @@ abstract class MviActivity<I : MviIntent, S : MviState, VM : BaseViewModel<I, S>
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(layoutRes)
 
     viewModel.init(intents())
     viewModel.stateLiveData.observe(this, Observer(this::render))
