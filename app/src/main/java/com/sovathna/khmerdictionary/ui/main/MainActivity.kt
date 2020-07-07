@@ -467,7 +467,7 @@ class MainActivity : AppCompatActivity() {
 
   private var clearDialog: AlertDialog? = null
 
-  protected fun showClearDialog() {
+  private fun showClearDialog() {
     val builder = AlertDialog.Builder(this)
     val v = LayoutInflater.from(this)
       .inflate(R.layout.dialog_clear_words, null, false)
@@ -476,9 +476,12 @@ class MainActivity : AppCompatActivity() {
     }
     v.findViewById<AppCompatButton>(R.id.btn_clear)?.setOnClickListener {
       clearDialog?.dismiss()
-      clearHistoriesIntent.onNext(HistoriesIntent.ClearHistories)
-      clearBookmarksIntent.onNext(BookmarksIntent.ClearBookmarks)
-      bookmarkedLiveData.value = false
+      if (viewModel.title == getString(R.string.histories)) {
+        clearHistoriesIntent.onNext(HistoriesIntent.ClearHistories)
+      } else if (viewModel.title == getString(R.string.bookmarks)) {
+        clearBookmarksIntent.onNext(BookmarksIntent.ClearBookmarks)
+        bookmarkedLiveData.value = false
+      }
 
     }
     builder.setView(v)

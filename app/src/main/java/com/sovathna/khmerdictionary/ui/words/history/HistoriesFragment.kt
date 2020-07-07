@@ -1,6 +1,5 @@
 package com.sovathna.khmerdictionary.ui.words.history
 
-import androidx.core.view.postDelayed
 import androidx.fragment.app.viewModels
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
@@ -10,7 +9,6 @@ import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_word_list.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,9 +42,6 @@ class HistoriesFragment :
       }
       words?.let {
         clearMenuItemLiveData.value = it.isNotEmpty()
-        rv.postDelayed(400) {
-          rv.smoothScrollToPosition(0)
-        }
       }
     }
   }

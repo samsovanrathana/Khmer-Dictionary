@@ -1,5 +1,6 @@
 package com.sovathna.khmerdictionary.data.interactor
 
+import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
 import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
@@ -30,7 +31,10 @@ class HistoriesInteractorImpl @Inject constructor(
 
   override val selectWord =
     ObservableTransformer<WordsIntent.SelectWord, HistoriesResult> {
-      it.map { intent -> HistoriesResult.SelectWordSuccess(intent.word) }
+      it.map {intent ->
+        Logger.d("Select word: ${intent.word}")
+           HistoriesResult.SelectWordSuccess(intent.word)
+      }
     }
 
   override val clearHistories =

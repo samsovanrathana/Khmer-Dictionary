@@ -90,8 +90,10 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
               clickWordSubject.onNext(Event(item.word))
             }
           }
-          selectWordIntent.value?.word?.let {
-            selectWordIntent.onNext(WordsIntent.SelectWord(it))
+          loadSuccess?.getContentIfNotHandled()?.let{
+            selectWordIntent.value?.word?.let {
+              selectWordIntent.onNext(WordsIntent.SelectWord(it))
+            }
           }
         } else {
           adapter.setOnItemClickListener(null)

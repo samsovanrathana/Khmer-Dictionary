@@ -4,6 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.SearchesInteractor
 import com.sovathna.khmerdictionary.domain.model.result.SearchesResult
@@ -31,7 +32,8 @@ class SearchesViewModel @ViewModelInject constructor(
                 addAll(result.words.map { WordItem(it) })
               }
             },
-            isMore = result.isMore
+            isMore = result.isMore,
+            loadSuccess = Event(Unit)
           )
         is SearchesResult.SelectWordSuccess -> {
           state.copy(words = state.words?.toMutableList()?.apply {

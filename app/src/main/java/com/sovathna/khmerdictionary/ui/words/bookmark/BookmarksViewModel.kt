@@ -31,7 +31,8 @@ class BookmarksViewModel @ViewModelInject constructor(
                 addAll(result.words.map { WordItem(it) })
               }
             },
-            isMore = result.isMore
+            isMore = result.isMore,
+            loadSuccess = Event(Unit)
           )
         is BookmarksResult.SelectWordSuccess ->
           state.copy(words = state.words?.toMutableList()?.apply {
@@ -54,8 +55,7 @@ class BookmarksViewModel @ViewModelInject constructor(
               if (result.isBookmark) {
                 add(0, WordItem(result.word, true))
               }
-            },
-            isScrollToTop = if (result.isBookmark) Event(Unit) else null
+            }
           )
         is BookmarksResult.ClearBookmarkSuccess ->
           state.copy(

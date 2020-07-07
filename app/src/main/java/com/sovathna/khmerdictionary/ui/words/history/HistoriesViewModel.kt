@@ -4,6 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
+import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
 import com.sovathna.khmerdictionary.domain.model.result.HistoriesResult
@@ -30,25 +31,28 @@ class HistoriesViewModel @ViewModelInject constructor(
                 addAll(result.words.map { WordItem(it) })
               }
             },
-            isMore = result.isMore
+            isMore = result.isMore,
+            loadSuccess = Event(Unit)
           )
         is HistoriesResult.SelectWordSuccess -> {
-          state.copy(words = state.words?.toMutableList()?.apply {
-            if (isNotEmpty()) {
-              forEachIndexed { i, v ->
-                if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-              }
-              result.word?.let { word ->
-
-                val index = indexOfFirst { item -> item.word.id == word.id }
-                if (index > 0) {
-                  val tmp = this.removeAt(index)
-                  add(0, tmp)
+          state.copy(
+            words = state.words?.toMutableList()?.apply {
+              if (isNotEmpty()) {
+                forEachIndexed { i, v ->
+                  if (v.isSelected) this[i] = this[i].copy(isSelected = false)
                 }
-                this[0] = this[0].copy(isSelected = true)
+                result.word?.let { word ->
+
+                  val index = indexOfFirst { item -> item.word.id == word.id }
+                  if (index > 0) {
+                    val tmp = this.removeAt(index)
+                    add(0, tmp)
+                  }
+                  this[0] = this[0].copy(isSelected = true)
+                }
               }
             }
-          })
+          )
         }
         is HistoriesResult.ClearHistoriesSuccess ->
           state.copy(

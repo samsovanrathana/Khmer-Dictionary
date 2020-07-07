@@ -7,5 +7,5 @@ data class BookmarksState(
   override val isInit: Boolean = true,
   override val isMore: Boolean = false,
   override val words: List<WordItem>? = null,
-  val isScrollToTop: Event<Unit>? = null
+  override val loadSuccess: Event<Unit>? = null
 ) : AbstractWordsState()
