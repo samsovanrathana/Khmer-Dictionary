@@ -22,16 +22,17 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.material.navigation.NavigationView
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
-import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
-import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.listener.DrawerListener
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
+import com.sovathna.khmerdictionary.model.intent.SearchesIntent
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.ui.definition.DefinitionActivity
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
 import com.sovathna.khmerdictionary.ui.words.bookmark.BookmarksFragment
@@ -51,17 +52,23 @@ import javax.inject.Named
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+  @Inject
+  lateinit var searchesIntent: PublishSubject<SearchesIntent.GetWords>
 
-  private val viewModel: MainViewModel by viewModels()
+  @Inject
+  lateinit var clearHistoriesIntent: PublishSubject<HistoriesIntent.ClearHistories>
+
+  @Inject
+  lateinit var clearBookmarksIntent: PublishSubject<BookmarksIntent.ClearBookmarks>
 
   @Inject
   lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
   @Inject
-  lateinit var searchesIntent: PublishSubject<SearchesIntent.GetWords>
+  lateinit var fabVisibilitySubject: PublishSubject<Boolean>
 
   @Inject
-  lateinit var fabVisibility: PublishSubject<Boolean>
+  lateinit var selectWordSubject: BehaviorSubject<WordsIntent.SelectWord>
 
   @Inject
   lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
@@ -70,20 +77,15 @@ class MainActivity : AppCompatActivity() {
   lateinit var menuItemClickLiveData: MutableLiveData<Event<String>>
 
   @Inject
-  lateinit var selectWordSubject: BehaviorSubject<WordsIntent.SelectWord>
-
-  @Inject
   @Named("clear_menu")
   lateinit var clearMenuItemLiveData: MutableLiveData<Boolean>
 
-  @Inject
-  lateinit var clearHistoriesIntent: PublishSubject<HistoriesIntent.ClearHistories>
-
-  @Inject
-  lateinit var clearBookmarksIntent: PublishSubject<BookmarksIntent.ClearBookmarks>
+  private val viewModel: MainViewModel by viewModels()
 
   private var menu: Menu? = null
   private var searchItem: MenuItem? = null
+  private var closeDialog: AlertDialog? = null
+  private var clearDialog: AlertDialog? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -101,73 +103,43 @@ class MainActivity : AppCompatActivity() {
 //      })
 
     setSupportActionBar(toolbar)
-    if (savedInstanceState == null)
+
+    if (savedInstanceState == null) {
       viewModel.title = getString(R.string.app_name_kh)
-
-    bookmarkedLiveData.observe(this, Observer { isBookmark ->
-      menu?.findItem(R.id.action_bookmark)?.let { item ->
-        when {
-          isBookmark -> {
-            item.title = "លុបការរក្សាទុក"
-            item.icon = ContextCompat.getDrawable(
-              this,
-              R.drawable.round_bookmark_white_24
-            )
+      supportFragmentManager.beginTransaction()
+        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        .replace(
+          R.id.word_list_container,
+          WordsFragment(),
+          Const.WORD_LIST_FRAGMENT_TAG
+        )
+        .commit()
+    } else {
+      supportFragmentManager
+        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)?.let {
+          it.arguments?.let { args ->
+            args.getParcelable<Word>("word")?.let { word ->
+              clickWordSubject.onNext(Event(word))
+            }
           }
-          else -> {
-            item.title = "រក្សាទុក"
-            item.icon = ContextCompat.getDrawable(
-              this,
-              R.drawable.round_bookmark_border_white_24
-            )
-          }
+          supportFragmentManager
+            .beginTransaction()
+            .remove(it)
+            .commit()
         }
-      }
-    })
-
-    LiveDataReactiveStreams
-      .fromPublisher(
-        clickWordSubject
-          .throttleFirst(200, TimeUnit.MILLISECONDS)
-          .replay(1)
-          .autoConnect(0)
-          .toFlowable(BackpressureStrategy.BUFFER)
-      )
-      .observe(this, EventObserver {
-        onItemClick(it)
-      })
-
-    fab.setOnClickListener {
-
-      if (searchItem?.isActionViewExpanded == false) {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-          viewModel.title = getString(R.string.app_name_kh)
-          super.onBackPressed()
-        }
-        searchItem?.expandActionView()
-        supportFragmentManager.beginTransaction()
-          .setCustomAnimations(
-            R.anim.fade_in,
-            R.anim.fade_out,
-            R.anim.fade_in,
-            R.anim.fade_out
-          )
-          .replace(
-            R.id.word_list_container,
-            SearchesFragment(),
-            Const.SEARCH_WORDS_FRAGMENT_TAG
-          )
-          .addToBackStack(null)
-          .commit()
-      } else {
-        val searchView = searchItem?.actionView as? SearchView
-        searchView?.let {
-          if (it.query.isNotEmpty()) it.setQuery("", false)
-          else searchItem?.collapseActionView()
-        }
-      }
-
     }
+
+    bookmarkedLiveData.observe(this, bookmarkMenuItemObserver)
+
+    LiveDataReactiveStreams.fromPublisher(
+      clickWordSubject
+        .throttleFirst(200, TimeUnit.MILLISECONDS)
+        .replay(1)
+        .autoConnect(0)
+        .toFlowable(BackpressureStrategy.BUFFER)
+    ).observe(this, EventObserver(::onItemClickObserver))
+
+    fab.setOnClickListener(fabClickListener)
 
     val drawerToggle = ActionBarDrawerToggle(
       this,
@@ -178,7 +150,63 @@ class MainActivity : AppCompatActivity() {
     )
     drawerToggle.syncState()
 
-    nav_view.setNavigationItemSelectedListener { menu ->
+    nav_view.setNavigationItemSelectedListener(navMenuItemClickListener)
+    drawer_layout.addDrawerListener(object : DrawerListener() {
+      override fun onDrawerOpened(drawerView: View) {
+        if (searchItem?.isActionViewExpanded == true) {
+          searchItem?.collapseActionView()
+        }
+      }
+    })
+
+    LiveDataReactiveStreams.fromPublisher(
+      fabVisibilitySubject.toFlowable(BackpressureStrategy.BUFFER)
+    ).observe(this, Observer { if (it) fab.show() else fab.hide() })
+
+    clearMenuItemLiveData.observe(this, Observer {
+      menu?.findItem(R.id.action_clear)?.isVisible = it
+    })
+
+    viewModel.titleLiveData.observe(this, Observer {
+      title = it
+      nav_view.checkedItem?.isChecked = it != getString(R.string.app_name_kh)
+
+    })
+
+  }
+
+  override fun setTitle(title: CharSequence?) {
+    super.setTitle(null)
+    tv_title?.text = title
+  }
+
+  private fun setDefMenuItemsVisible(isVisible: Boolean) {
+    menu?.setGroupVisible(R.id.group_def, isVisible)
+  }
+
+  private val bookmarkMenuItemObserver = Observer<Boolean> { isBookmark ->
+    menu?.findItem(R.id.action_bookmark)?.let { item ->
+      when {
+        isBookmark -> {
+          item.setTitle(R.string.delete_bookmark)
+          item.icon = ContextCompat.getDrawable(
+            this,
+            R.drawable.round_bookmark_white_24
+          )
+        }
+        else -> {
+          item.setTitle(R.string.add_bookmark)
+          item.icon = ContextCompat.getDrawable(
+            this,
+            R.drawable.round_bookmark_border_white_24
+          )
+        }
+      }
+    }
+  }
+
+  private val navMenuItemClickListener =
+    NavigationView.OnNavigationItemSelectedListener { menu ->
       drawer_layout.closeDrawer(GravityCompat.START)
       if (!menu.isChecked) {
         menu.isChecked = true
@@ -224,66 +252,38 @@ class MainActivity : AppCompatActivity() {
       }
       true
     }
-    drawer_layout.addDrawerListener(object : DrawerListener() {
-      override fun onDrawerOpened(drawerView: View) {
-        if (searchItem?.isActionViewExpanded == true) {
-          searchItem?.collapseActionView()
-        }
-      }
-    })
 
-    if (savedInstanceState == null) {
+  private val fabClickListener = View.OnClickListener {
+    if (searchItem?.isActionViewExpanded == false) {
+      if (supportFragmentManager.backStackEntryCount > 0) {
+        viewModel.title = getString(R.string.app_name_kh)
+        super.onBackPressed()
+      }
+      searchItem?.expandActionView()
       supportFragmentManager.beginTransaction()
-        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        .setCustomAnimations(
+          R.anim.fade_in,
+          R.anim.fade_out,
+          R.anim.fade_in,
+          R.anim.fade_out
+        )
         .replace(
           R.id.word_list_container,
-          WordsFragment(),
-          Const.WORD_LIST_FRAGMENT_TAG
+          SearchesFragment(),
+          Const.SEARCH_WORDS_FRAGMENT_TAG
         )
+        .addToBackStack(null)
         .commit()
     } else {
-      supportFragmentManager
-        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)?.let {
-          it.arguments?.let { args ->
-            args.getParcelable<Word>("word")?.let { word ->
-              clickWordSubject.onNext(Event(word))
-            }
-          }
-          supportFragmentManager
-            .beginTransaction()
-            .remove(it)
-            .commit()
-        }
-    }
-
-    LiveDataReactiveStreams
-      .fromPublisher(
-        fabVisibility
-          .toFlowable(BackpressureStrategy.BUFFER)
-      )
-      .observe(this, Observer {
-        if (it) fab.show() else fab.hide()
-      })
-
-    clearMenuItemLiveData.observe(this, Observer {
-      menu?.findItem(R.id.action_clear)?.isVisible = it
-    })
-
-    viewModel.titleLiveData.observe(this, Observer {
-      if (it == getString(R.string.app_name_kh)) {
-        nav_view.checkedItem?.isChecked = false
+      val searchView = searchItem?.actionView as? SearchView
+      searchView?.let {
+        if (it.query.isNotEmpty()) it.setQuery("", false)
+        else searchItem?.collapseActionView()
       }
-      title = it
-    })
-
+    }
   }
 
-  override fun setTitle(title: CharSequence?) {
-    super.setTitle(null)
-    tv_title?.text = title
-  }
-
-  private fun onItemClick(word: Word) {
+  private fun onItemClickObserver(word: Word) {
     selectWordSubject.onNext(WordsIntent.SelectWord(word))
     setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -349,43 +349,20 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private var closeDialog: AlertDialog? = null
-
-  private fun showCloseDialog() {
-    val builder = AlertDialog.Builder(this)
-    val v = LayoutInflater.from(this)
-      .inflate(R.layout.dialog_clear_words, null, false)
-    v.findViewById<AppCompatTextView>(R.id.tv_title)?.text = "បិទកម្មវិធី!"
-    v.findViewById<AppCompatTextView>(R.id.tv_description)?.text =
-      "តើអ្នកពិតជាយល់ព្រមចាកចេញពីកម្មវិធីមែនទេ?"
-    v.findViewById<AppCompatButton>(R.id.btn_cancel)?.setOnClickListener {
-      closeDialog?.dismiss()
-    }
-    v.findViewById<AppCompatButton>(R.id.btn_clear)?.let {
-      it.setOnClickListener {
-        closeDialog?.dismiss()
-        finish()
-      }
-    }
-    builder.setView(v)
-    closeDialog = builder.show()
-
-  }
-
   override fun onPause() {
     super.onPause()
     closeDialog?.dismiss()
     clearDialog?.dismiss()
   }
 
-  private fun setDefMenuItemsVisible(isVisible: Boolean) {
-    menu?.setGroupVisible(R.id.group_def, isVisible)
-  }
-
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.main, menu)
     this.menu = menu
+
+    // Set clear menu item based on which fragment has it
     menu?.findItem(R.id.action_clear)?.isVisible = clearMenuItemLiveData.value == true
+
+    // Set definition menu items visibility
     setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
 
     searchItem = menu?.findItem(R.id.action_search)
@@ -417,7 +394,7 @@ class MainActivity : AppCompatActivity() {
     })
 
     val searchView = searchItem!!.actionView as SearchView
-    searchView.queryHint = "ស្វែងរកពាក្យ"
+    searchView.queryHint = getString(R.string.search_hint)
     supportFragmentManager.findFragmentByTag(Const.SEARCH_WORDS_FRAGMENT_TAG)?.let {
       searchItem?.expandActionView()
       searchView.setQuery(viewModel.searchTerm, true)
@@ -465,7 +442,25 @@ class MainActivity : AppCompatActivity() {
     return super.onOptionsItemSelected(item)
   }
 
-  private var clearDialog: AlertDialog? = null
+  private fun showCloseDialog() {
+    val builder = AlertDialog.Builder(this)
+    val v = LayoutInflater.from(this)
+      .inflate(R.layout.dialog_clear_words, null, false)
+    v.findViewById<AppCompatTextView>(R.id.tv_title)?.setText(R.string.close_title)
+    v.findViewById<AppCompatTextView>(R.id.tv_description)?.setText(R.string.close_message)
+    v.findViewById<AppCompatButton>(R.id.btn_cancel)?.setOnClickListener {
+      closeDialog?.dismiss()
+    }
+    v.findViewById<AppCompatButton>(R.id.btn_clear)?.let {
+      it.setOnClickListener {
+        closeDialog?.dismiss()
+        finish()
+      }
+    }
+    builder.setView(v)
+    closeDialog = builder.show()
+
+  }
 
   private fun showClearDialog() {
     val builder = AlertDialog.Builder(this)

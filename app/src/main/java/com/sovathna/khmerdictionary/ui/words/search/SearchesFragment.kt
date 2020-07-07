@@ -4,8 +4,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
-import com.sovathna.khmerdictionary.domain.model.state.SearchWordsState
+import com.sovathna.khmerdictionary.model.intent.SearchesIntent
+import com.sovathna.khmerdictionary.model.state.SearchWordsState
 import com.sovathna.khmerdictionary.ui.main.MainViewModel
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
 import dagger.hilt.android.AndroidEntryPoint

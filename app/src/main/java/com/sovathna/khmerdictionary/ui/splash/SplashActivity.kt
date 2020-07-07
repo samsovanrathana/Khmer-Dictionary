@@ -7,8 +7,8 @@ import androidx.activity.viewModels
 import com.sovathna.androidmvi.activity.MviActivity
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
-import com.sovathna.khmerdictionary.domain.model.state.SplashState
+import com.sovathna.khmerdictionary.model.intent.SplashIntent
+import com.sovathna.khmerdictionary.model.state.SplashState
 import com.sovathna.khmerdictionary.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
@@ -67,19 +67,19 @@ class SplashActivity :
           if (downloaded != null && total != null) {
             if (downloaded == total) {
               if (total == 0L) {
-                it.ld_tv_title.text = "រៀបចំទាញយកទិន្នន័យ"
-                it.ld_tv_sub_title.text = "កំពុងដំណើរការ..."
+                it.ld_tv_title.setText(R.string.preparing_download)
+                it.ld_tv_sub_title.setText(R.string.loading)
               } else {
-                it.ld_tv_title.text = "ពន្លា និងរក្សាទុកទិន្នន័យ"
-                it.ld_tv_sub_title.text = String.format(
-                  "ទំហំ %s",
+                it.ld_tv_title.setText(R.string.extract_save_data)
+                it.ld_tv_sub_title.text = getString(
+                  R.string.downloading_unknown,
                   getFileSize(total)
                 )
               }
             } else {
-              it.ld_tv_title.text = "ទាញយកទិន្នន័យ"
-              it.ld_tv_sub_title.text = String.format(
-                "ទំហំ %s នៃ %s",
+              it.ld_tv_title.setText(R.string.download)
+              it.ld_tv_sub_title.text = getString(
+                R.string.downloading_known,
                 getFileSize(downloaded),
                 getFileSize(total)
               )
@@ -87,8 +87,8 @@ class SplashActivity :
             it.ld_pb.max = total.toInt()
             it.ld_pb.progress = downloaded.toInt()
           } else {
-            it.ld_tv_title.text = "រៀបចំទាញយកទិន្នន័យ"
-            it.ld_tv_sub_title.text = "កំពុងដំណើរការ..."
+            it.ld_tv_title.setText(R.string.preparing_download)
+            it.ld_tv_sub_title.setText(R.string.loading)
           }
         }
       }
@@ -132,13 +132,16 @@ class SplashActivity :
   }
 
   override fun onBackPressed() {
-    super.onBackPressed()
-    Toast
-      .makeText(
-        this,
-        "បានអីមកវិញហ្នុង?",
-        Toast.LENGTH_SHORT
-      )
-      .show()
+    if (viewModel.stateLiveData.value?.error != null) {
+      super.onBackPressed()
+    } else {
+      Toast
+        .makeText(
+          this,
+          R.string.please_wait,
+          Toast.LENGTH_SHORT
+        )
+        .show()
+    }
   }
 }

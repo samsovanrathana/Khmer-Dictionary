@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
-import com.sovathna.khmerdictionary.domain.interactor.DefinitionInteractor
-import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
-import com.sovathna.khmerdictionary.domain.model.result.DefinitionResult
-import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
+import com.sovathna.khmerdictionary.data.interactor.base.DefinitionInteractor
+import com.sovathna.khmerdictionary.model.intent.DefinitionIntent
+import com.sovathna.khmerdictionary.model.result.DefinitionResult
+import com.sovathna.khmerdictionary.model.state.DefinitionState
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
 

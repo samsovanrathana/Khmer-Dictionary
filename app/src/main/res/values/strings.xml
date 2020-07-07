@@ -1,19 +1,39 @@
 <resources>
-    <string name="app_name_kh">វចនានុក្រមខ្មែរ</string>
-    <string name="app_name">Khmer Dictionary</string>
-    <string name="nav_close">Close Drawer</string>
-    <string name="nav_open">Open Drawer</string>
+  <string name="app_name_kh">វចនានុក្រមខ្មែរ</string>
+  <string name="app_name">Khmer Dictionary</string>
+  <string name="nav_close">Close Drawer</string>
+  <string name="nav_open">Open Drawer</string>
 
-    <string name="bookmarks">បញ្ជីពាក្យរក្សាទុក</string>
-    <string name="histories">បញ្ជីពាក្យធ្លាប់មើល</string>
-    <string name="search_hint">ស្វែងរកពាក្យ</string>\
-    <string name="close">បិទ</string>
-    <string name="exit">ចាកចេញ</string>
-    <string name="delete">លុប</string>
+  <string name="download">ទាញយកទិន្នន័យ</string>
+  <string name="preparing_download">រៀបចំទាញយកទិន្នន័យ</string>
+  <string name="loading">កំពុងដំណើរការ…</string>
+  <string name="extract_save_data">ពន្លា និងរក្សាទុកទិន្នន័យ</string>
+  <string name="downloading_unknown">កំពុងទាញយក %s</string>
+  <string name="downloading_known">កំពុងទាញយក %s នៃ %s</string>
+  <string name="please_wait">កំពុងទាញយកទិន្នន័យ សូមរង់ចាំ…</string>
+  <string name="error_download">មានបញ្ហាទាញយកទិន្នន័យ</string>
+  <string name="try_again">ព្យាយាមម្ដងទៀត</string>
 
-    <string name="bookmark">រក្សាទុក</string>
-    <string name="delete_bookmark">លុបការរក្សាទុក</string>
-    <string name="zoom_in">ពង្រីក</string>
-    <string name="zoom_out">បង្រួម</string>
-    <string name="app_version_place_holder">ជំនាន់កម្មវិធី %s</string>
+  <string name="search_hint">ស្វែងរកពាក្យ</string>
+
+  <string name="close_title">បិទកម្មវិធី!</string>
+  <string name="close_message">តើអ្នកពិតជាយល់ព្រមចាកចេញពីកម្មវិធីមែនទេ?</string>
+
+  <string name="app_version_place_holder">ជំនាន់កម្មវិធី %s</string>
+  <string name="bookmarks">បញ្ជីពាក្យរក្សាទុក</string>
+  <string name="histories">បញ្ជីពាក្យធ្លាប់មើល</string>
+
+  <string name="add_bookmark">រក្សាទុក</string>
+  <string name="delete_bookmark">លុបការរក្សាទុក</string>
+  <string name="zoom_in">ពង្រីក</string>
+  <string name="zoom_out">បង្រួម</string>
+  <string name="clear">លុបពាក្យចេញពីបញ្ជី</string>
+
+  <string name="confirm">យល់ព្រម</string>
+  <string name="cancel">បោះបង់</string>
+
+  <string name="empty">មិនមានពាក្យនៅក្នុងបញ្ជី</string>
+
+  <string name="clear_title">លុបពាក្យចេញពីបញ្ជី!</string>
+  <string name="clear_message">តើអ្នកពិតជាយល់ព្រមលុបពាក្យទាំងអស់ ចេញពីបញ្ជីនេះមែនទេ? អ្នកនឹងមិនអាចយកពាក្យមកវិញបានទេ ក្រោយចុចយល់ព្រម។</string>
 </resources>

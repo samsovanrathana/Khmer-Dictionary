@@ -2,13 +2,12 @@ package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.domain.interactor.SplashInteractor
-import com.sovathna.khmerdictionary.domain.model.intent.SplashIntent
-import com.sovathna.khmerdictionary.domain.model.result.SplashResult
-import com.sovathna.khmerdictionary.domain.service.DownloadService
+import com.sovathna.khmerdictionary.data.interactor.base.SplashInteractor
+import com.sovathna.khmerdictionary.model.intent.SplashIntent
+import com.sovathna.khmerdictionary.model.result.SplashResult
+import com.sovathna.khmerdictionary.data.remote.service.DownloadService
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.File
@@ -24,29 +23,25 @@ class SplashInteractorImpl @Inject constructor(
 
   override val checkDatabase =
     ObservableTransformer<SplashIntent.CheckDatabase, SplashResult> {
-      it
-        .flatMap { intent ->
-          Observable
-            .just(intent.db.exists())
-            .flatMap { exists ->
-              if (exists) {
-                Observable
-                  .just(SplashResult.Success)
-              } else {
-                downloadService
-                  .download(Const.RAW_DB_URL)
-                  .doOnError { Logger.e(it) }
-                  .subscribeOn(Schedulers.io())
-                  .flatMap { response ->
-                    saveZip(response, intent.db, intent.tmpDb)
-                  }
-                  .onErrorReturn { SplashResult.Fail(it) }
-                  .startWith(SplashResult.Downloading(0, 0))
-              }
+      it.flatMap { intent ->
+        Observable
+          .just(intent.db.exists())
+          .flatMap { exists ->
+            if (exists) {
+              Observable.just(SplashResult.Success)
+            } else {
+              downloadService
+                .download(Const.RAW_DB_URL)
+                .doOnError { Logger.e(it) }
+                .subscribeOn(Schedulers.io())
+                .flatMap { response ->
+                  saveZip(response, intent.db, intent.tmpDb)
+                }.onErrorReturn { SplashResult.Fail(it) }
+                .startWith(SplashResult.Downloading(0, 0))
             }
-            .onErrorReturn(SplashResult::Fail)
-            .startWith(SplashResult.Progressing)
-        }
+          }.onErrorReturn(SplashResult::Fail)
+          .startWith(SplashResult.Progressing)
+      }
     }
 
   private fun saveZip(
@@ -110,10 +105,9 @@ class SplashInteractorImpl @Inject constructor(
     }.doOnError {
       if (tmpDb.exists()) tmpDb.delete()
       if (db.exists()) db.delete()
-    }
-      .doOnDispose {
-        if (tmpDb.exists()) tmpDb.delete()
-        if (db.exists()) db.delete()
-      }.subscribeOn(Schedulers.io())
+    }.doOnDispose {
+      if (tmpDb.exists()) tmpDb.delete()
+      if (db.exists()) db.delete()
+    }.subscribeOn(Schedulers.io())
   }
 }

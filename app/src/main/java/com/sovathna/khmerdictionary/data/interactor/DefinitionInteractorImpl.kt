@@ -1,10 +1,10 @@
 package com.sovathna.khmerdictionary.data.interactor
 
-import com.sovathna.khmerdictionary.domain.interactor.DefinitionInteractor
-import com.sovathna.khmerdictionary.domain.model.BookmarkEntity
-import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
-import com.sovathna.khmerdictionary.domain.model.result.DefinitionResult
-import com.sovathna.khmerdictionary.domain.repository.AppRepository
+import com.sovathna.khmerdictionary.data.interactor.base.DefinitionInteractor
+import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import com.sovathna.khmerdictionary.model.intent.DefinitionIntent
+import com.sovathna.khmerdictionary.model.result.DefinitionResult
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
@@ -56,7 +56,12 @@ class DefinitionInteractorImpl @Inject constructor(
                 .map { DefinitionResult.BookmarkSuccess(false) }
             } else {
               repository
-                .addBookmark(BookmarkEntity(intent.word.name, intent.word.id))
+                .addBookmark(
+                  BookmarkEntity(
+                    intent.word.name,
+                    intent.word.id
+                  )
+                )
                 .map { DefinitionResult.BookmarkSuccess(true) }
             }
           }

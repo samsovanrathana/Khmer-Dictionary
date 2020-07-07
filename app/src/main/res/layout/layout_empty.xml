@@ -15,7 +15,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:srcCompat="@drawable/round_search_white_48"
+      app:srcCompat="@drawable/round_search_white_36"
       app:tint="@color/colorPrimary" />
 
   <androidx.appcompat.widget.AppCompatTextView
@@ -24,7 +24,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
       android:gravity="center_horizontal"
-      android:text="មិនមានពាក្យនៅក្នុងបញ្ជី"
+      android:text="@string/empty"
       android:textAppearance="@style/TextAppearance.AppCompat.Medium"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintBottom_toBottomOf="parent"

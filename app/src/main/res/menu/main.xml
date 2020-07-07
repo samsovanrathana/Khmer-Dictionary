@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
   <item
       android:id="@+id/action_search"
       android:icon="@drawable/round_search_white_24"
-      android:title="ស្វែងរកពាក្យ"
+      android:title="@string/search_hint"
       android:visible="false"
       app:actionViewClass="androidx.appcompat.widget.SearchView"
       app:showAsAction="never|collapseActionView" />
@@ -13,23 +14,24 @@
     <item
         android:id="@+id/action_bookmark"
         android:icon="@drawable/round_bookmark_border_white_24"
-        android:title="រក្សាទុក"
-        app:showAsAction="always" />
+        android:title="@string/add_bookmark"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
     <item
         android:id="@+id/action_zoom_out"
         android:icon="@drawable/round_zoom_out_white_24"
-        android:title="បង្រួម"
+        android:title="@string/zoom_out"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_zoom_in"
         android:icon="@drawable/round_zoom_in_white_24"
-        android:title="ពង្រីក"
+        android:title="@string/zoom_in"
         app:showAsAction="always" />
   </group>
   <item
       android:id="@+id/action_clear"
       android:icon="@drawable/round_clear_white_24"
-      android:title="លុបពាក្យចេញពីបញ្ជី"
+      android:title="@string/clear"
       android:visible="false"
       app:showAsAction="always" />
 </menu>

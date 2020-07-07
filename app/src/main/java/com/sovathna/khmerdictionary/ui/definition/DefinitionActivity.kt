@@ -12,7 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.ui.definition.fragment.DefinitionFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -25,7 +25,7 @@ class DefinitionActivity : AppCompatActivity() {
   lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
 
   @Inject
-  lateinit var menuItemClick: MutableLiveData<Event<String>>
+  lateinit var menuItemClickLiveData: MutableLiveData<Event<String>>
 
   private var menu: Menu? = null
 
@@ -95,11 +95,11 @@ class DefinitionActivity : AppCompatActivity() {
     if (item.itemId == android.R.id.home) {
       onBackPressed()
     } else if (item.itemId == R.id.action_bookmark) {
-      menuItemClick.value = Event("bookmark")
+      menuItemClickLiveData.value = Event("bookmark")
     } else if (item.itemId == R.id.action_zoom_in) {
-      menuItemClick.value = Event("zoom_in")
+      menuItemClickLiveData.value = Event("zoom_in")
     } else if (item.itemId == R.id.action_zoom_out) {
-      menuItemClick.value = Event("zoom_out")
+      menuItemClickLiveData.value = Event("zoom_out")
     }
     return super.onOptionsItemSelected(item)
   }

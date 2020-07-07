@@ -23,12 +23,12 @@ import com.sovathna.androidmvi.fragment.MviFragment
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.livedata.EventObserver
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.data.local.AppPreferences
-import com.sovathna.khmerdictionary.domain.model.Definition
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
-import com.sovathna.khmerdictionary.domain.model.intent.DefinitionIntent
-import com.sovathna.khmerdictionary.domain.model.state.DefinitionState
+import com.sovathna.khmerdictionary.data.local.pref.AppPreferences
+import com.sovathna.khmerdictionary.model.Definition
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.model.intent.DefinitionIntent
+import com.sovathna.khmerdictionary.model.state.DefinitionState
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
@@ -45,12 +45,16 @@ class DefinitionFragment :
 
   override val viewModel: DefinitionViewModel by viewModels()
 
-  private val getDefinitionIntent = PublishSubject.create<DefinitionIntent.GetDefinition>()
-
+  private val getDefinitionIntent =
+    PublishSubject.create<DefinitionIntent.GetDefinition>()
   private val getQuickDefinitionIntent =
     PublishSubject.create<DefinitionIntent.GetQuickDefinition>()
+  private val addDeleteBookmarkIntent =
+    PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
 
-  private val addDeleteBookmarkIntent = PublishSubject.create<DefinitionIntent.AddDeleteBookmark>()
+  @Inject
+  lateinit var bookmarkMenuItemClickIntent:
+      PublishSubject<BookmarksIntent.UpdateBookmark>
 
   @Inject
   lateinit var fabVisibilitySubject: Lazy<PublishSubject<Boolean>>
@@ -59,13 +63,10 @@ class DefinitionFragment :
   lateinit var bookmarkedLiveData: MutableLiveData<Boolean>
 
   @Inject
-  lateinit var menuItemClick: MutableLiveData<Event<String>>
+  lateinit var menuItemClickLiveData: MutableLiveData<Event<String>>
 
   @Inject
   lateinit var appPref: AppPreferences
-
-  @Inject
-  lateinit var bookmarkMenuItemClickSubject: PublishSubject<BookmarksIntent.UpdateBookmark>
 
   private lateinit var word: Word
 
@@ -96,7 +97,7 @@ class DefinitionFragment :
 
   override fun onResume() {
     super.onResume()
-    menuItemClick.observe(viewLifecycleOwner, EventObserver {
+    menuItemClickLiveData.observe(viewLifecycleOwner, EventObserver {
       when (it) {
         "bookmark" -> {
           addDeleteBookmarkIntent.onNext(DefinitionIntent.AddDeleteBookmark(word))
@@ -141,7 +142,7 @@ class DefinitionFragment :
         bookmarkedLiveData.value = it
       }
       isBookmarkEvent?.getContentIfNotHandled()?.let {
-        bookmarkMenuItemClickSubject.onNext(BookmarksIntent.UpdateBookmark(word, it))
+        bookmarkMenuItemClickIntent.onNext(BookmarksIntent.UpdateBookmark(word, it))
       }
 
       quickDef?.getContentIfNotHandled()?.let {
@@ -149,7 +150,6 @@ class DefinitionFragment :
       }
     }
   }
-
 
   private var quickDefDialog: AlertDialog? = null
 

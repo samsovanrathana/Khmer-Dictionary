@@ -3,8 +3,8 @@ package com.sovathna.khmerdictionary.ui.words.history
 import androidx.fragment.app.viewModels
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
-import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
+import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
+import com.sovathna.khmerdictionary.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
@@ -17,15 +17,15 @@ class HistoriesFragment :
 
   override val viewModel: HistoriesViewModel by viewModels()
 
-  private val getHistories = PublishSubject.create<HistoriesIntent.GetWords>()
+  private val getHistoriesIntent = PublishSubject.create<HistoriesIntent.GetWords>()
 
   @Inject
-  lateinit var clearHistories: PublishSubject<HistoriesIntent.ClearHistories>
+  lateinit var clearHistoriesIntent: PublishSubject<HistoriesIntent.ClearHistories>
 
   override fun intents(): Observable<MviIntent> =
     Observable.merge(
-      getHistories,
-      clearHistories,
+      getHistoriesIntent,
+      clearHistoriesIntent,
       selectWordIntent
     )
 
@@ -33,7 +33,7 @@ class HistoriesFragment :
     super.render(state)
     with(state) {
       if (isInit) {
-        getHistories.onNext(
+        getHistoriesIntent.onNext(
           HistoriesIntent.GetWords(
             0,
             Const.PAGE_SIZE
@@ -47,7 +47,7 @@ class HistoriesFragment :
   }
 
   override fun onLoadMore(offset: Int, pageSize: Int) {
-    getHistories.onNext(
+    getHistoriesIntent.onNext(
       HistoriesIntent.GetWords(
         offset,
         Const.PAGE_SIZE

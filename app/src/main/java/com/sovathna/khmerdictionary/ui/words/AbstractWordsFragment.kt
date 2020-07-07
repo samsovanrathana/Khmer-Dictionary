@@ -13,10 +13,10 @@ import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.data.local.AppPreferences
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
-import com.sovathna.khmerdictionary.domain.model.state.AbstractWordsState
+import com.sovathna.khmerdictionary.data.local.pref.AppPreferences
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.model.state.AbstractWordsState
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_word_list.*
@@ -27,25 +27,17 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   MviFragment<I, S, VM>(
     R.layout.fragment_word_list
   ) {
-
   @Inject
-  protected lateinit var adapter: WordsAdapter
-
-  private lateinit var layoutManager: LinearLayoutManager
-
-  private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
+  protected lateinit var selectWordIntent: BehaviorSubject<WordsIntent.SelectWord>
 
   @Inject
   protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
   @Inject
-  protected lateinit var selectWordIntent: BehaviorSubject<WordsIntent.SelectWord>
+  protected lateinit var fabVisibilitySubject: PublishSubject<Boolean>
 
   @Inject
   protected lateinit var appPref: AppPreferences
-
-  @Inject
-  protected lateinit var fabVisibilitySubject: PublishSubject<Boolean>
 
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
@@ -54,11 +46,21 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   @Named("clear_menu")
   protected lateinit var clearMenuItemLiveData: MutableLiveData<Boolean>
 
+  private lateinit var adapter: WordsAdapter
+  private lateinit var layoutManager: LinearLayoutManager
+  private var scrollChanged: ViewTreeObserver.OnScrollChangedListener? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    adapter = WordsAdapter()
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    layoutManager = LinearLayoutManager(requireContext())
     rv.setRecycledViewPool(recycledViewPool)
     rv.setHasFixedSize(true)
+
+    layoutManager = LinearLayoutManager(requireContext())
     rv.layoutManager = layoutManager
     rv.adapter = adapter
     rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -90,7 +92,11 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
               clickWordSubject.onNext(Event(item.word))
             }
           }
-          loadSuccess?.getContentIfNotHandled()?.let{
+
+          // Because the first item that selectWordIntent emitted will not work
+          // when list item is null or empty (it finished before items is
+          // successfully retrieved)
+          loadSuccess?.getContentIfNotHandled()?.let {
             selectWordIntent.value?.word?.let {
               selectWordIntent.onNext(WordsIntent.SelectWord(it))
             }

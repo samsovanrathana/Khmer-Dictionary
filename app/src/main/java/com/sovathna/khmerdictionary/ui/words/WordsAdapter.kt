@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.khmerdictionary.R
-import javax.inject.Inject
 
-class WordsAdapter @Inject constructor() :
+class WordsAdapter :
   ListAdapter<WordItem, RecyclerView.ViewHolder>(WordItem.ITEM_CALLBACK) {
 
   private var onItemClick: ((Int, WordItem) -> Unit)? = null

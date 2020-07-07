@@ -4,10 +4,10 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.viewmodel.MviViewModel
-import com.sovathna.khmerdictionary.domain.interactor.WordsInteractor
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
-import com.sovathna.khmerdictionary.domain.model.result.WordsResult
-import com.sovathna.khmerdictionary.domain.model.state.WordsState
+import com.sovathna.khmerdictionary.data.interactor.base.WordsInteractor
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.model.result.WordsResult
+import com.sovathna.khmerdictionary.model.state.WordsState
 import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction

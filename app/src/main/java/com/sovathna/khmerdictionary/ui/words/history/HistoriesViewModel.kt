@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
-import com.sovathna.khmerdictionary.domain.interactor.HistoriesInteractor
-import com.sovathna.khmerdictionary.domain.model.result.HistoriesResult
-import com.sovathna.khmerdictionary.domain.model.state.HistoriesState
+import com.sovathna.khmerdictionary.data.interactor.base.HistoriesInteractor
+import com.sovathna.khmerdictionary.model.result.HistoriesResult
+import com.sovathna.khmerdictionary.model.state.HistoriesState
 import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction

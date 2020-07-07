@@ -1,9 +1,9 @@
 package com.sovathna.khmerdictionary.data.interactor
 
-import com.sovathna.khmerdictionary.domain.interactor.WordsInteractor
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
-import com.sovathna.khmerdictionary.domain.model.result.WordsResult
-import com.sovathna.khmerdictionary.domain.repository.AppRepository
+import com.sovathna.khmerdictionary.data.interactor.base.WordsInteractor
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.model.result.WordsResult
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -19,8 +19,7 @@ class WordsInteractorImpl @Inject constructor(
           .subscribeOn(Schedulers.io())
           .map { words ->
             WordsResult.Success(words, words.size >= intent.pageSize)
-          }
-          .subscribeOn(Schedulers.computation())
+          }.subscribeOn(Schedulers.computation())
       }
     }
 

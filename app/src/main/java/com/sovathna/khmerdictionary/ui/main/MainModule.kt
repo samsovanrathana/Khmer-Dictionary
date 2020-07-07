@@ -3,11 +3,11 @@ package com.sovathna.khmerdictionary.ui.main
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.livedata.Event
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.model.intent.BookmarksIntent
-import com.sovathna.khmerdictionary.domain.model.intent.HistoriesIntent
-import com.sovathna.khmerdictionary.domain.model.intent.SearchesIntent
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.intent.BookmarksIntent
+import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
+import com.sovathna.khmerdictionary.model.intent.SearchesIntent
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

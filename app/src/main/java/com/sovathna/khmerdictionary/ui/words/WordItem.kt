@@ -1,7 +1,7 @@
 package com.sovathna.khmerdictionary.ui.words
 
 import androidx.recyclerview.widget.DiffUtil
-import com.sovathna.khmerdictionary.domain.model.Word
+import com.sovathna.khmerdictionary.model.Word
 
 data class WordItem(
   val word: Word,

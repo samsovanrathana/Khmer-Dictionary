@@ -1,6 +1,6 @@
 package com.sovathna.khmerdictionary.data.remote
 
-import com.sovathna.khmerdictionary.domain.service.DownloadService
+import com.sovathna.khmerdictionary.data.remote.service.DownloadService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

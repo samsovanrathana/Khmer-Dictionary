@@ -1,12 +1,12 @@
 package com.sovathna.khmerdictionary.data.repository
 
-import com.sovathna.khmerdictionary.data.local.AppDatabase
-import com.sovathna.khmerdictionary.data.local.LocalDatabase
-import com.sovathna.khmerdictionary.domain.model.BookmarkEntity
-import com.sovathna.khmerdictionary.domain.model.Definition
-import com.sovathna.khmerdictionary.domain.model.HistoryEntity
-import com.sovathna.khmerdictionary.domain.model.Word
-import com.sovathna.khmerdictionary.domain.repository.AppRepository
+import com.sovathna.khmerdictionary.data.local.db.AppDatabase
+import com.sovathna.khmerdictionary.data.local.db.LocalDatabase
+import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import com.sovathna.khmerdictionary.model.Definition
+import com.sovathna.khmerdictionary.model.entity.HistoryEntity
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,7 +32,12 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun addHistory(word: Word): Observable<Long> {
     return historyDao
-      .add(HistoryEntity(word.name, word.id))
+      .add(
+        HistoryEntity(
+          word.name,
+          word.id
+        )
+      )
       .toObservable()
   }
 

@@ -2,8 +2,8 @@ package com.sovathna.khmerdictionary.ui.words.main
 
 import androidx.fragment.app.viewModels
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.domain.model.intent.WordsIntent
-import com.sovathna.khmerdictionary.domain.model.state.WordsState
+import com.sovathna.khmerdictionary.model.intent.WordsIntent
+import com.sovathna.khmerdictionary.model.state.WordsState
 import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable

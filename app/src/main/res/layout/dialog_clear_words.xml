@@ -13,7 +13,7 @@
       android:layout_marginTop="16dp"
       android:layout_marginEnd="16dp"
       android:maxLines="1"
-      android:text="លុបពាក្យចេញពីបញ្ជី!"
+      android:text="@string/clear_title"
       android:textAppearance="@style/TextAppearance.AppCompat.Title"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +25,7 @@
       android:layout_marginStart="16dp"
       android:layout_marginTop="16dp"
       android:layout_marginEnd="16dp"
-      android:text="តើអ្នកពិតជាយល់ព្រមលុបពាក្យទាំងអស់ ចេញពីបញ្ជីនេះមែនទេ? អ្នកនឹងមិនអាចយកពាក្យមកវិញបានទេ ក្រោយចុចយល់ព្រម។"
+      android:text="@string/clear_message"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
@@ -35,7 +35,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      android:text="យល់ព្រម"
+      android:text="@string/confirm"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tv_description" />
@@ -46,7 +46,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
-      android:text="បោះបង់"
+      android:text="@string/cancel"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintEnd_toStartOf="@id/btn_clear"
       app:layout_constraintTop_toBottomOf="@id/tv_description" />

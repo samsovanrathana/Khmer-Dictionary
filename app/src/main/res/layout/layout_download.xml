@@ -11,7 +11,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center_horizontal"
-      android:text="ទាញយកទិន្នន័យ"
+      android:text="@string/download"
       android:textAppearance="@style/TextAppearance.AppCompat.Title"
       app:fontFamily="@font/kantumruy"
       app:layout_constraintBottom_toTopOf="@id/ld_pb"
