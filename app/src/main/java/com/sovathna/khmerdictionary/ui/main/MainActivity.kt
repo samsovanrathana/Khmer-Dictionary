@@ -104,31 +104,6 @@ class MainActivity : AppCompatActivity() {
 
     setSupportActionBar(toolbar)
 
-    if (savedInstanceState == null) {
-      viewModel.title = getString(R.string.app_name_kh)
-      supportFragmentManager.beginTransaction()
-        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-        .replace(
-          R.id.word_list_container,
-          WordsFragment(),
-          Const.WORD_LIST_FRAGMENT_TAG
-        )
-        .commit()
-    } else {
-      supportFragmentManager
-        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)?.let {
-          it.arguments?.let { args ->
-            args.getParcelable<Word>("word")?.let { word ->
-              clickWordSubject.onNext(Event(word))
-            }
-          }
-          supportFragmentManager
-            .beginTransaction()
-            .remove(it)
-            .commit()
-        }
-    }
-
     bookmarkedLiveData.observe(this, bookmarkMenuItemObserver)
 
     LiveDataReactiveStreams.fromPublisher(
@@ -172,6 +147,31 @@ class MainActivity : AppCompatActivity() {
       nav_view.checkedItem?.isChecked = it != getString(R.string.app_name_kh)
 
     })
+
+    if (savedInstanceState == null) {
+      viewModel.title = getString(R.string.app_name_kh)
+      supportFragmentManager.beginTransaction()
+        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+        .replace(
+          R.id.word_list_container,
+          WordsFragment(),
+          Const.WORD_LIST_FRAGMENT_TAG
+        )
+        .commit()
+    } else {
+      supportFragmentManager
+        .findFragmentByTag(Const.DEFINITION_FRAGMENT_TAG)?.let {
+          it.arguments?.let { args ->
+            args.getParcelable<Word>("word")?.let { word ->
+              clickWordSubject.onNext(Event(word))
+            }
+          }
+          supportFragmentManager
+            .beginTransaction()
+            .remove(it)
+            .commit()
+        }
+    }
 
   }
 
