@@ -33,8 +33,8 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   @Inject
   protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
-  @Inject
-  protected lateinit var fabVisibilitySubject: PublishSubject<Boolean>
+//  @Inject
+//  protected lateinit var fabVisibilitySubject: PublishSubject<Boolean>
 
   @Inject
   protected lateinit var appPref: AppPreferences
@@ -63,11 +63,11 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
     layoutManager = LinearLayoutManager(requireContext())
     rv.layoutManager = layoutManager
     rv.adapter = adapter
-    rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        fabVisibilitySubject.onNext(dy <= 0)
-      }
-    })
+//    rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//        fabVisibilitySubject.onNext(dy <= 0)
+//      }
+//    })
   }
 
   override fun onPause() {
