@@ -27,6 +27,16 @@ android {
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     signingConfig signingConfigs.debug
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments += [
+            "room.schemaLocation"  : "$projectDir/schemas".toString(),
+            "room.incremental"     : "true",
+            "room.expandProjection": "true"
+        ]
+      }
+    }
   }
 
   buildTypes {
@@ -89,6 +99,10 @@ dependencies {
   implementation "com.squareup.okhttp3:okhttp:3.12.0"
 
   implementation "com.jakewharton.timber:timber:4.7.1"
+
+  def paging_version = "3.0.0-alpha02"
+  implementation "androidx.paging:paging-runtime:$paging_version"
+  implementation "androidx.paging:paging-rxjava2:$paging_version"
 
   implementation project(":androidmvi")
 

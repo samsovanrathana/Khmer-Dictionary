@@ -3,8 +3,12 @@ package com.sovathna.khmerdictionary.ui.words.main
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import com.sovathna.androidmvi.viewmodel.MviViewModel
-import com.sovathna.khmerdictionary.data.interactor.base.WordsInteractor
+import com.sovathna.khmerdictionary.data.interactor.WordsPagingInteractorImpl
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.result.WordsResult
 import com.sovathna.khmerdictionary.model.state.WordsState
@@ -13,7 +17,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
 
 class WordsViewModel @ViewModelInject constructor(
-  private val interactor: WordsInteractor
+  private val interactor: WordsPagingInteractorImpl
 ) : MviViewModel<WordsIntent, WordsResult, WordsState>() {
 
   override val reducer =
@@ -45,6 +49,13 @@ class WordsViewModel @ViewModelInject constructor(
             }
           })
         }
+        is WordsResult.PagingSuccess ->
+          state.copy(
+            isInit = false,
+            wordsLiveData = result.wordsPager.liveData
+              .map { it.map { WordItem(it) } }
+              .cachedIn(viewModelScope)
+          )
       }
     }
 

@@ -11,16 +11,16 @@ import io.reactivex.ObservableTransformer
 abstract class BookmarksInteractor :
   MviInteractor<MviIntent, BookmarksResult>() {
 
-  abstract val getWords:
+  protected abstract val getWords:
       ObservableTransformer<BookmarksIntent.GetWords, BookmarksResult>
 
-  abstract val selectWord:
+  protected abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, BookmarksResult>
 
-  abstract val updateBookmark:
+  protected abstract val updateBookmark:
       ObservableTransformer<BookmarksIntent.UpdateBookmark, BookmarksResult>
 
-  abstract val clearBookmark:
+  protected abstract val clearBookmark:
       ObservableTransformer<BookmarksIntent.ClearBookmarks, BookmarksResult>
 
   override val intentsProcessor =

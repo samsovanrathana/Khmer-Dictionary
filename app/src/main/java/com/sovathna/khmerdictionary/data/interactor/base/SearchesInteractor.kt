@@ -11,10 +11,10 @@ import io.reactivex.ObservableTransformer
 abstract class SearchesInteractor :
   MviInteractor<MviIntent, SearchesResult>() {
 
-  abstract val getWords:
+  protected abstract val getWords:
       ObservableTransformer<SearchesIntent.GetWords, SearchesResult>
 
-  abstract val selectWord:
+  protected abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, SearchesResult>
 
   override val intentsProcessor =

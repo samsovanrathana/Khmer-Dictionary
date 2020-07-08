@@ -11,13 +11,13 @@ import io.reactivex.ObservableTransformer
 abstract class HistoriesInteractor :
   MviInteractor<MviIntent, HistoriesResult>() {
 
-  abstract val getWords:
+  protected abstract val getWords:
       ObservableTransformer<HistoriesIntent.GetWords, HistoriesResult>
 
-  abstract val selectWord:
+  protected abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, HistoriesResult>
 
-  abstract val clearHistories:
+  protected abstract val clearHistories:
       ObservableTransformer<HistoriesIntent.ClearHistories, HistoriesResult>
 
   override val intentsProcessor =

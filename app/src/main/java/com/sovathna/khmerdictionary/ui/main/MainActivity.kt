@@ -116,15 +116,6 @@ class MainActivity : AppCompatActivity() {
 
     fab.setOnClickListener(fabClickListener)
 
-    val drawerToggle = ActionBarDrawerToggle(
-      this,
-      drawer_layout,
-      toolbar,
-      R.string.nav_open,
-      R.string.nav_close
-    )
-    drawerToggle.syncState()
-
     nav_view.setNavigationItemSelectedListener(navMenuItemClickListener)
     drawer_layout.addDrawerListener(object : DrawerListener() {
       override fun onDrawerOpened(drawerView: View) {
@@ -173,6 +164,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+  }
+
+  override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
+    val drawerToggle = ActionBarDrawerToggle(
+      this,
+      drawer_layout,
+      toolbar,
+      R.string.nav_open,
+      R.string.nav_close
+    )
+    drawerToggle.syncState()
   }
 
   override fun setTitle(title: CharSequence?) {

@@ -1,19 +1,23 @@
 package com.sovathna.khmerdictionary.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import com.sovathna.khmerdictionary.Const
+import com.sovathna.khmerdictionary.data.interactor.WordsPagingSource
 import com.sovathna.khmerdictionary.data.local.db.AppDatabase
 import com.sovathna.khmerdictionary.data.local.db.LocalDatabase
-import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
-import com.sovathna.khmerdictionary.model.Definition
-import com.sovathna.khmerdictionary.model.entity.HistoryEntity
-import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.data.repository.base.AppRepository
+import com.sovathna.khmerdictionary.model.Definition
+import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import com.sovathna.khmerdictionary.model.entity.HistoryEntity
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AppRepositoryImpl @Inject constructor(
-  db: AppDatabase,
+  private val db: AppDatabase,
   local: LocalDatabase
 ) : AppRepository {
 
@@ -118,4 +122,10 @@ class AppRepositoryImpl @Inject constructor(
       .clear()
       .toObservable()
 
+  override fun getPagingWords(offset: Int): Observable<Pager<Int, Word>> {
+    return Observable.just(Pager(
+      config = PagingConfig(pageSize = Const.PAGE_SIZE),
+      pagingSourceFactory = { WordsPagingSource(db) }
+    ))
+  }
 }

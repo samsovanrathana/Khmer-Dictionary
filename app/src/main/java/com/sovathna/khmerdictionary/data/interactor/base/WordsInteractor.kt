@@ -8,10 +8,10 @@ import io.reactivex.ObservableTransformer
 
 abstract class WordsInteractor : MviInteractor<WordsIntent, WordsResult>() {
 
-  abstract val getWords:
+  protected abstract val getWords:
       ObservableTransformer<WordsIntent.GetWords, WordsResult>
 
-  abstract val selectWord:
+  protected abstract val selectWord:
       ObservableTransformer<WordsIntent.SelectWord, WordsResult>
 
   override val intentsProcessor =

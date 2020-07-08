@@ -7,7 +7,7 @@ import io.reactivex.ObservableTransformer
 
 abstract class SplashInteractor : MviInteractor<SplashIntent, SplashResult>() {
 
-  abstract val checkDatabase:
+  protected abstract val checkDatabase:
       ObservableTransformer<SplashIntent.CheckDatabase, SplashResult>
 
   override val intentsProcessor =

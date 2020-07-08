@@ -1,8 +1,9 @@
 package com.sovathna.khmerdictionary.data.repository.base
 
-import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import androidx.paging.Pager
 import com.sovathna.khmerdictionary.model.Definition
 import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
 import io.reactivex.Observable
 
 interface AppRepository {
@@ -50,4 +51,8 @@ interface AppRepository {
   fun clearHistories(): Observable<Int>
 
   fun clearBookmarks(): Observable<Int>
+
+  fun getPagingWords(
+    offset: Int
+  ): Observable<Pager<Int, Word>>
 }

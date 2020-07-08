@@ -9,13 +9,13 @@ import io.reactivex.ObservableTransformer
 abstract class DefinitionInteractor :
   MviInteractor<DefinitionIntent, DefinitionResult>() {
 
-  abstract val getDefinition:
+  protected abstract val getDefinition:
       ObservableTransformer<DefinitionIntent.GetDefinition, DefinitionResult>
 
-  abstract val addDeleteBookmark:
+  protected abstract val addDeleteBookmark:
       ObservableTransformer<DefinitionIntent.AddDeleteBookmark, DefinitionResult>
 
-  abstract val getQuickDefinition:
+  protected abstract val getQuickDefinition:
       ObservableTransformer<DefinitionIntent.GetQuickDefinition, DefinitionResult>
 
   override val intentsProcessor =
