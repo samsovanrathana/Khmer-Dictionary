@@ -13,14 +13,15 @@ class WordsInteractorImpl @Inject constructor(
 ) : WordsInteractor() {
   override val getWords =
     ObservableTransformer<WordsIntent.GetWords, WordsResult> {
-      it.flatMap { intent ->
-        repository
-          .getWords(intent.offset, intent.pageSize)
-          .subscribeOn(Schedulers.io())
-          .map { words ->
-            WordsResult.Success(words, words.size >= intent.pageSize)
-          }.subscribeOn(Schedulers.computation())
-      }
+      TODO()
+//      it.flatMap { intent ->
+//        repository
+//          .getWords(intent.offset, intent.pageSize)
+//          .subscribeOn(Schedulers.io())
+//          .map { words ->
+//            WordsResult.Success(words, words.size >= intent.pageSize)
+//          }.subscribeOn(Schedulers.computation())
+//      }
     }
 
   override val selectWord =

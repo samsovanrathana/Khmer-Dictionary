@@ -17,7 +17,7 @@ class WordViewHolder(itemView: View, onItemClick: ((Int, WordItem) -> Unit)?) :
   init {
     itemView.setOnClickListener {
       val item = this.item
-      if (onItemClick != null && item != null) onItemClick(adapterPosition, item)
+      if (onItemClick != null && item != null) onItemClick(bindingAdapterPosition, item)
     }
   }
 

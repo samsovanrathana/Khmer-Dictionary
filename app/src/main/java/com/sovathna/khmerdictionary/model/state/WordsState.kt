@@ -7,8 +7,6 @@ import com.sovathna.khmerdictionary.ui.words.WordItem
 
 data class WordsState(
   override val isInit: Boolean = true,
-  override val isMore: Boolean = false,
-  override val words: List<WordItem>? = null,
   override val loadSuccess: Event<Unit>? = null,
-  val wordsLiveData: LiveData<PagingData<WordItem>>? = null
-) : AbstractWordsState()
+  override val wordsLiveData: LiveData<PagingData<WordItem>>? = null
+) : AbstractPagingWordsState()

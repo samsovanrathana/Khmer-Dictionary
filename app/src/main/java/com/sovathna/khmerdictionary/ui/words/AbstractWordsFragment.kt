@@ -33,12 +33,6 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   @Inject
   protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
-//  @Inject
-//  protected lateinit var fabVisibilitySubject: PublishSubject<Boolean>
-
-  @Inject
-  protected lateinit var appPref: AppPreferences
-
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
 

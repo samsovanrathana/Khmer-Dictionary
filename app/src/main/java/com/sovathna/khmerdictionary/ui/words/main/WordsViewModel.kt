@@ -22,30 +22,13 @@ class WordsViewModel @ViewModelInject constructor(
 
   override val reducer =
     BiFunction<WordsState, WordsResult, WordsState> { state, result ->
-
       when (result) {
-        is WordsResult.Success ->
-          state.copy(
-            isInit = false,
-            words =
-            if (state.words == null) {
-              result.words.map { WordItem(it) }
-            } else {
-              state.words.toMutableList().apply {
-                addAll(result.words.map { WordItem(it) })
-              }
-            },
-            isMore = result.isMore
-          )
         is WordsResult.SelectWordSuccess -> {
-          state.copy(words = state.words?.toMutableList()?.apply {
-            forEachIndexed { i, v ->
-              if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-            }
-            result.word?.let {
-              val index = indexOfFirst { item -> item.word.id == it.id }
-              if (index >= 0)
-                this[index] = this[index].copy(isSelected = true)
+          state.copy(wordsLiveData = state.wordsLiveData?.map {
+            it.map { item ->
+              if (item.isSelected && item.word.id != result.word?.id) item.copy(isSelected = false)
+              else if (item.word.id == result.word?.id) item.copy(isSelected = true)
+              else item
             }
           })
         }
