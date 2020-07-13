@@ -13,8 +13,6 @@ import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.data.local.pref.AppPreferences
-import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.state.AbstractWordsState
 import io.reactivex.subjects.BehaviorSubject
@@ -31,7 +29,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   protected lateinit var selectWordIntent: BehaviorSubject<WordsIntent.SelectWord>
 
   @Inject
-  protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
+  protected lateinit var clickWordSubject: PublishSubject<Event<Long>>
 
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
@@ -83,7 +81,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
         if (words?.isNotEmpty() == true) {
           adapter.setOnItemClickListener { _, item ->
             if (!item.isSelected) {
-              clickWordSubject.onNext(Event(item.word))
+              clickWordSubject.onNext(Event(item.id))
             }
           }
 

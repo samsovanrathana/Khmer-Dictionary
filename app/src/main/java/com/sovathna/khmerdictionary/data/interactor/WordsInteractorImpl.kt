@@ -17,7 +17,7 @@ class WordsInteractorImpl @Inject constructor(
     ObservableTransformer<WordsIntent.GetWords, WordsResult> {
       it.flatMap {
         repository
-          .getPagingWords()
+          .getWordsPager()
           .subscribeOn(Schedulers.io())
           .map(WordsResult::PagingSuccess)
       }

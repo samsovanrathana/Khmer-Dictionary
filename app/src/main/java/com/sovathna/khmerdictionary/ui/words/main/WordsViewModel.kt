@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.ui.words.main
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.liveData
@@ -27,6 +28,7 @@ class WordsViewModel @ViewModelInject constructor(
           state.copy(
             isInit = false,
             wordsLiveData = result.wordsPager.liveData
+              .map { it.map { it.toWordItem() } }
               .cachedIn(viewModelScope)
           )
       }

@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.sovathna.khmerdictionary.ui.words.WordItem
 
-@Entity(tableName = "words_ui")
-data class WordUI(
+@Entity(tableName = "bookmarks_ui")
+data class BookmarkUI(
   @PrimaryKey
   val id: Long,
   val name: String,

@@ -7,10 +7,10 @@ import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.model.entity.WordUI
 
 class WordsPagingAdapter :
-  PagingDataAdapter<WordUI, WordPagingViewHolder>(WordUI.ITEM_CALLBACK) {
-  private var onItemClick: ((Int, WordUI) -> Unit)? = null
+  PagingDataAdapter<WordItem, WordPagingViewHolder>(WordItem.ITEM_CALLBACK) {
+  private var onItemClick: ((Int, WordItem) -> Unit)? = null
 
-  fun setOnItemClickListener(onItemClick: ((Int, WordUI) -> Unit)?) {
+  fun setOnItemClickListener(onItemClick: ((Int, WordItem) -> Unit)?) {
     this.onItemClick = onItemClick
   }
 

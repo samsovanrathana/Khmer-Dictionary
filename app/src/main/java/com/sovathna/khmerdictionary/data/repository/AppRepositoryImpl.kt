@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.room.EmptyResultSetException
 import com.sovathna.khmerdictionary.Const
+import com.sovathna.khmerdictionary.data.interactor.HistoriesRemoteMediator
 import com.sovathna.khmerdictionary.data.interactor.WordsRemoteMediator
 import com.sovathna.khmerdictionary.data.local.db.AppDatabase
 import com.sovathna.khmerdictionary.data.local.db.LocalDatabase
@@ -12,6 +13,7 @@ import com.sovathna.khmerdictionary.model.Definition
 import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
 import com.sovathna.khmerdictionary.model.entity.HistoryEntity
+import com.sovathna.khmerdictionary.model.entity.HistoryUI
 import com.sovathna.khmerdictionary.model.entity.WordUI
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -41,22 +43,16 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun addHistory(word: Word): Observable<Long> {
     return historyDao
-      .add(
-        HistoryEntity(
-          word.name,
-          word.id
-        )
-      )
+      .add(HistoryEntity(word.name, word.id))
       .toObservable()
   }
 
-  override fun getHistories(offset: Int, pageSize: Int): Observable<List<Word>> {
-    return historyDao
-      .get(offset, pageSize)
-      .map { entities ->
-        entities.map { entity -> entity.toWord() }
-      }
-      .toObservable()
+  override fun getHistoriesPager(): Observable<Pager<Int, HistoryUI>> {
+    return Observable.just(Pager(
+      config = PagingConfig(pageSize = Const.PAGE_SIZE),
+      remoteMediator = HistoriesRemoteMediator(local),
+      pagingSourceFactory = { local.historyUIDao().get() }
+    ))
   }
 
   override fun getBookmarks(offset: Int, pageSize: Int): Observable<List<Word>> {
@@ -128,7 +124,7 @@ class AppRepositoryImpl @Inject constructor(
       .clear()
       .toObservable()
 
-  override fun getPagingWords(): Observable<Pager<Int, WordUI>> {
+  override fun getWordsPager(): Observable<Pager<Int, WordUI>> {
     return Observable.just(Pager(
       config = PagingConfig(pageSize = Const.PAGE_SIZE),
       remoteMediator = WordsRemoteMediator(db, local),

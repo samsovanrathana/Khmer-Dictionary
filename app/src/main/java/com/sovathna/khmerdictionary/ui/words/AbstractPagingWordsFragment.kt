@@ -12,7 +12,6 @@ import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.R
-import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.state.AbstractPagingWordsState
 import io.reactivex.subjects.BehaviorSubject
@@ -29,7 +28,7 @@ abstract class AbstractPagingWordsFragment<I : MviIntent, S : MviState, VM : Bas
   protected lateinit var selectWordIntent: BehaviorSubject<WordsIntent.SelectWord>
 
   @Inject
-  protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
+  protected lateinit var clickWordSubject: PublishSubject<Event<Long>>
 
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
@@ -46,7 +45,7 @@ abstract class AbstractPagingWordsFragment<I : MviIntent, S : MviState, VM : Bas
     pagingAdapter = WordsPagingAdapter()
     pagingAdapter.setOnItemClickListener { _, item ->
       if (!item.isSelected) {
-        clickWordSubject.onNext(Event(Word(item.id, item.name)))
+        clickWordSubject.onNext(Event(item.id))
       }
     }
   }

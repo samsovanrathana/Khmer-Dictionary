@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import com.sovathna.khmerdictionary.model.Definition
 import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import com.sovathna.khmerdictionary.model.entity.HistoryUI
 import com.sovathna.khmerdictionary.model.entity.WordUI
 import io.reactivex.Observable
 
@@ -23,10 +24,7 @@ interface AppRepository {
     word: Word
   ): Observable<Long>
 
-  fun getHistories(
-    offset: Int,
-    pageSize: Int
-  ): Observable<List<Word>>
+  fun getHistoriesPager(): Observable<Pager<Int, HistoryUI>>
 
   fun getBookmarks(
     offset: Int,
@@ -53,7 +51,7 @@ interface AppRepository {
 
   fun clearBookmarks(): Observable<Int>
 
-  fun getPagingWords(): Observable<Pager<Int, WordUI>>
+  fun getWordsPager(): Observable<Pager<Int, WordUI>>
 
   fun selectWord(id: Long?): Observable<Int>
 }

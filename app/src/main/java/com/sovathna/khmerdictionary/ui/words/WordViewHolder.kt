@@ -37,7 +37,7 @@ class WordViewHolder(itemView: View, onItemClick: ((Int, WordItem) -> Unit)?) :
       tvName.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.color_item_bg))
       divider.visibility = View.VISIBLE
     }
-    tvName.text = item.word.name
+    tvName.text = item.name
   }
 
 }

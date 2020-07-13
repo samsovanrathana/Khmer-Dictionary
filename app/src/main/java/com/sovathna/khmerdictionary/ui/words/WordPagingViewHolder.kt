@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.khmerdictionary.R
 import com.sovathna.khmerdictionary.model.entity.WordUI
 
-class WordPagingViewHolder(itemView: View, onItemClick: ((Int, WordUI) -> Unit)?) :
+class WordPagingViewHolder(itemView: View, onItemClick: ((Int, WordItem) -> Unit)?) :
   RecyclerView.ViewHolder(itemView) {
 
   private val tvName = itemView.findViewById<AppCompatTextView>(R.id.tv_name)
   private val divider = itemView.findViewById<View>(R.id.divider_end)
 
-  private var item: WordUI? = null
+  private var item: WordItem? = null
 
   init {
     itemView.setOnClickListener {
@@ -22,7 +22,7 @@ class WordPagingViewHolder(itemView: View, onItemClick: ((Int, WordUI) -> Unit)?
     }
   }
 
-  fun bindView(item: WordUI) {
+  fun bindView(item: WordItem) {
     this.item = item
     if (item.isSelected) {
       tvName.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorPrimary))

@@ -16,14 +16,9 @@ class HistoriesInteractorImpl @Inject constructor(
     ObservableTransformer<HistoriesIntent.GetWords, HistoriesResult> {
       it.flatMap { intent ->
         repository
-          .getHistories(intent.offset, intent.pageSize)
+          .getHistoriesPager()
           .subscribeOn(Schedulers.io())
-          .map { words ->
-            HistoriesResult.Success(
-              words,
-              words.size >= intent.pageSize
-            )
-          }
+          .map { HistoriesResult.Success(it) }
       }
     }
 
