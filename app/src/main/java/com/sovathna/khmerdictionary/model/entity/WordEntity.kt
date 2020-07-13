@@ -16,4 +16,5 @@ data class WordEntity(
   val id: Long = 0
 ) {
   fun toWord() = Word(id, word)
+  fun toWordUI() = WordUI(id, word)
 }

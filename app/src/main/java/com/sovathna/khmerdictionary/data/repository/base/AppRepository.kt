@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import com.sovathna.khmerdictionary.model.Definition
 import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
+import com.sovathna.khmerdictionary.model.entity.WordUI
 import io.reactivex.Observable
 
 interface AppRepository {
@@ -52,7 +53,7 @@ interface AppRepository {
 
   fun clearBookmarks(): Observable<Int>
 
-  fun getPagingWords(
-    offset: Int
-  ): Observable<Pager<Int, Word>>
+  fun getPagingWords(): Observable<Pager<Int, WordUI>>
+
+  fun selectWord(id: Long?): Observable<Int>
 }

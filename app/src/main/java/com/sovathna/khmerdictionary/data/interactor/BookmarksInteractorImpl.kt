@@ -1,10 +1,10 @@
 package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.khmerdictionary.data.interactor.base.BookmarksInteractor
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import com.sovathna.khmerdictionary.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.result.BookmarksResult
-import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class BookmarksInteractorImpl @Inject constructor(
 
   override val selectWord =
     ObservableTransformer<WordsIntent.SelectWord, BookmarksResult> {
-      it.map { intent -> BookmarksResult.SelectWordSuccess(intent.word) }
+      it.map { intent -> BookmarksResult.SelectWordSuccess }
     }
 
   override val updateBookmark =

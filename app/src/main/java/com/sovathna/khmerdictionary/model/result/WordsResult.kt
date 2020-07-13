@@ -2,14 +2,12 @@ package com.sovathna.khmerdictionary.model.result
 
 import androidx.paging.Pager
 import com.sovathna.androidmvi.result.MviResult
-import com.sovathna.khmerdictionary.model.Word
+import com.sovathna.khmerdictionary.model.entity.WordUI
 
 sealed class WordsResult : MviResult {
   data class PagingSuccess(
-    val wordsPager: Pager<Int, Word>
+    val wordsPager: Pager<Int, WordUI>
   ) : WordsResult()
 
-  data class SelectWordSuccess(
-    val word: Word?
-  ) : WordsResult()
+  object SelectWordSuccess : WordsResult()
 }

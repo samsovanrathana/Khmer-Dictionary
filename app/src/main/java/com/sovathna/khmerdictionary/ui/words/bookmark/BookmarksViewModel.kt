@@ -34,20 +34,7 @@ class BookmarksViewModel @ViewModelInject constructor(
             isMore = result.isMore,
             loadSuccess = Event(Unit)
           )
-        is BookmarksResult.SelectWordSuccess ->
-          state.copy(words = state.words?.toMutableList()?.apply {
-            if (isNotEmpty()) {
-              forEachIndexed { i, v ->
-                if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-              }
-              result.word?.let {
-                val index = indexOfFirst { item -> item.word.id == it.id }
-                if (index >= 0)
-                  this[index] = this[index].copy(isSelected = true)
-              }
-            }
-          })
-
+        is BookmarksResult.SelectWordSuccess -> state
         is BookmarksResult.UpdateBookmarkSuccess ->
           state.copy(
             words = state.words?.toMutableList()?.apply {

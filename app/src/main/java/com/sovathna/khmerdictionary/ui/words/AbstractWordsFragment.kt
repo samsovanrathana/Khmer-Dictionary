@@ -91,7 +91,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
           // when list item is null or empty (it finished before items is
           // successfully retrieved)
           loadSuccess?.getContentIfNotHandled()?.let {
-            selectWordIntent.value?.word?.let {
+            selectWordIntent.value?.id?.let {
               selectWordIntent.onNext(WordsIntent.SelectWord(it))
             }
           }

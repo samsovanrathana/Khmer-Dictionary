@@ -1,31 +1,50 @@
 package com.sovathna.khmerdictionary.data.interactor
 
-import com.sovathna.khmerdictionary.data.interactor.base.WordsInteractor
+import com.sovathna.androidmvi.domain.MviInteractor
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.result.WordsResult
-import com.sovathna.khmerdictionary.data.repository.base.AppRepository
+import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class WordsInteractorImpl @Inject constructor(
   private val repository: AppRepository
-) : WordsInteractor() {
-  override val getWords =
+) : MviInteractor<WordsIntent, WordsResult>() {
+
+  private val getWords =
     ObservableTransformer<WordsIntent.GetWords, WordsResult> {
-      TODO()
-//      it.flatMap { intent ->
-//        repository
-//          .getWords(intent.offset, intent.pageSize)
-//          .subscribeOn(Schedulers.io())
-//          .map { words ->
-//            WordsResult.Success(words, words.size >= intent.pageSize)
-//          }.subscribeOn(Schedulers.computation())
-//      }
+      it.flatMap {
+        repository
+          .getPagingWords()
+          .subscribeOn(Schedulers.io())
+          .map(WordsResult::PagingSuccess)
+      }
     }
 
-  override val selectWord =
+  private val selectWord =
     ObservableTransformer<WordsIntent.SelectWord, WordsResult> {
-      it.map { intent -> WordsResult.SelectWordSuccess(intent.word) }
+      it.flatMap { intent ->
+        repository
+          .selectWord(intent.id)
+          .subscribeOn(Schedulers.io())
+          .map { WordsResult.SelectWordSuccess }
+      }
+    }
+
+  override val intentsProcessor =
+    ObservableTransformer<WordsIntent, WordsResult> {
+      it.publish { intent ->
+        Observable.merge(
+          intent
+            .ofType(WordsIntent.GetWords::class.java)
+            .compose(getWords),
+          intent
+            .ofType(WordsIntent.SelectWord::class.java)
+            .compose(selectWord)
+        )
+
+      }
     }
 }

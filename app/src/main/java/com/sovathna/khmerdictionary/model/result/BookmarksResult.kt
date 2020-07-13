@@ -9,9 +9,7 @@ sealed class BookmarksResult : MviResult {
     val isMore: Boolean
   ) : BookmarksResult()
 
-  data class SelectWordSuccess(
-    val word: Word?
-  ) : BookmarksResult()
+  object SelectWordSuccess : BookmarksResult()
 
   data class UpdateBookmarkSuccess(
     val word: Word,

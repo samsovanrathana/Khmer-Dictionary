@@ -1,10 +1,10 @@
 package com.sovathna.khmerdictionary.data.interactor
 
 import com.sovathna.khmerdictionary.data.interactor.base.HistoriesInteractor
+import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.result.HistoriesResult
-import com.sovathna.khmerdictionary.data.repository.base.AppRepository
 import io.reactivex.ObservableTransformer
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -29,7 +29,7 @@ class HistoriesInteractorImpl @Inject constructor(
 
   override val selectWord =
     ObservableTransformer<WordsIntent.SelectWord, HistoriesResult> {
-      it.map { intent -> HistoriesResult.SelectWordSuccess(intent.word) }
+      it.map { intent -> HistoriesResult.SelectWordSuccess }
     }
 
   override val clearHistories =

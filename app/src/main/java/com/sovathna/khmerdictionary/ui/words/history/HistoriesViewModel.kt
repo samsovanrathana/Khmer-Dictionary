@@ -34,26 +34,7 @@ class HistoriesViewModel @ViewModelInject constructor(
             isMore = result.isMore,
             loadSuccess = Event(Unit)
           )
-        is HistoriesResult.SelectWordSuccess -> {
-          state.copy(
-            words = state.words?.toMutableList()?.apply {
-              if (isNotEmpty()) {
-                forEachIndexed { i, v ->
-                  if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-                }
-                result.word?.let { word ->
-
-                  val index = indexOfFirst { item -> item.word.id == word.id }
-                  if (index > 0) {
-                    val tmp = this.removeAt(index)
-                    add(0, tmp)
-                  }
-                  this[0] = this[0].copy(isSelected = true)
-                }
-              }
-            }
-          )
-        }
+        is HistoriesResult.SelectWordSuccess -> state
         is HistoriesResult.ClearHistoriesSuccess ->
           state.copy(
             words = emptyList()

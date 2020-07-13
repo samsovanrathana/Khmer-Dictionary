@@ -10,7 +10,5 @@ sealed class SearchesResult : MviResult {
     val isReset: Boolean
   ) : SearchesResult()
 
-  data class SelectWordSuccess(
-    val word: Word?
-  ) : SearchesResult()
+  object SelectWordSuccess : SearchesResult()
 }

@@ -35,18 +35,7 @@ class SearchesViewModel @ViewModelInject constructor(
             isMore = result.isMore,
             loadSuccess = Event(Unit)
           )
-        is SearchesResult.SelectWordSuccess -> {
-          state.copy(words = state.words?.toMutableList()?.apply {
-            forEachIndexed { i, v ->
-              if (v.isSelected) this[i] = this[i].copy(isSelected = false)
-            }
-            result.word?.let {
-              val index = indexOfFirst { item -> item.word.id == it.id }
-              if (index >= 0)
-                this[index] = this[index].copy(isSelected = true)
-            }
-          })
-        }
+        is SearchesResult.SelectWordSuccess -> state
       }
     }
 

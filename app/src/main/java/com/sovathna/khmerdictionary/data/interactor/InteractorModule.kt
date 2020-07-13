@@ -1,6 +1,5 @@
 package com.sovathna.khmerdictionary.data.interactor
 
-import com.sovathna.khmerdictionary.data.interactor.*
 import com.sovathna.khmerdictionary.data.interactor.base.*
 import dagger.Binds
 import dagger.Module
@@ -17,12 +16,6 @@ abstract class InteractorModule {
   abstract fun splashInteractor(
     impl: SplashInteractorImpl
   ): SplashInteractor
-
-  @Binds
-  @ActivityRetainedScoped
-  abstract fun wordsInteractor(
-    impl: WordsInteractorImpl
-  ): WordsInteractor
 
   @Binds
   @ActivityRetainedScoped

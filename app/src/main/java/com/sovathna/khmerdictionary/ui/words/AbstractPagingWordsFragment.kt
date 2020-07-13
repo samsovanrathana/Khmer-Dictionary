@@ -46,7 +46,7 @@ abstract class AbstractPagingWordsFragment<I : MviIntent, S : MviState, VM : Bas
     pagingAdapter = WordsPagingAdapter()
     pagingAdapter.setOnItemClickListener { _, item ->
       if (!item.isSelected) {
-        clickWordSubject.onNext(Event(item.word))
+        clickWordSubject.onNext(Event(Word(item.id, item.name)))
       }
     }
   }
@@ -74,7 +74,7 @@ abstract class AbstractPagingWordsFragment<I : MviIntent, S : MviState, VM : Bas
         })
 
         loadSuccess?.getContentIfNotHandled()?.let {
-          selectWordIntent.value?.word?.let {
+          selectWordIntent.value?.id?.let {
             selectWordIntent.onNext(WordsIntent.SelectWord(it))
           }
         }

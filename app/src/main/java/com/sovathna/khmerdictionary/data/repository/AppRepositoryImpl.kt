@@ -2,8 +2,9 @@ package com.sovathna.khmerdictionary.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.room.EmptyResultSetException
 import com.sovathna.khmerdictionary.Const
-import com.sovathna.khmerdictionary.data.interactor.WordsPagingSource
+import com.sovathna.khmerdictionary.data.interactor.WordsRemoteMediator
 import com.sovathna.khmerdictionary.data.local.db.AppDatabase
 import com.sovathna.khmerdictionary.data.local.db.LocalDatabase
 import com.sovathna.khmerdictionary.data.repository.base.AppRepository
@@ -11,19 +12,23 @@ import com.sovathna.khmerdictionary.model.Definition
 import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.entity.BookmarkEntity
 import com.sovathna.khmerdictionary.model.entity.HistoryEntity
+import com.sovathna.khmerdictionary.model.entity.WordUI
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AppRepositoryImpl @Inject constructor(
   private val db: AppDatabase,
-  local: LocalDatabase
+  private val local: LocalDatabase
 ) : AppRepository {
 
   private val wordDao = db.wordDao()
   private val historyDao = local.historyDao()
   private val bookmarkDao = local.bookmarkDao()
+  private val wordUIDao = local.wordUIDao()
 
   override fun getWords(offset: Int, pageSize: Int): Observable<List<Word>> {
     return wordDao
@@ -82,7 +87,8 @@ class AppRepositoryImpl @Inject constructor(
       .map {
         Definition(
           it.word,
-          it.definition.replace("<\"", "<a href=\"")
+          it.definition
+            .replace("<\"", "<a href=\"")
             .replace("/a", "</a>")
             .replace("\\n", "<br><br>")
             .replace(" : ", " : ឧ. ")
@@ -122,10 +128,43 @@ class AppRepositoryImpl @Inject constructor(
       .clear()
       .toObservable()
 
-  override fun getPagingWords(offset: Int): Observable<Pager<Int, Word>> {
+  override fun getPagingWords(): Observable<Pager<Int, WordUI>> {
     return Observable.just(Pager(
       config = PagingConfig(pageSize = Const.PAGE_SIZE),
-      pagingSourceFactory = { WordsPagingSource(db) }
+      remoteMediator = WordsRemoteMediator(db, local),
+      pagingSourceFactory = { local.wordUIDao().get() }
     ))
+  }
+
+  override fun selectWord(id: Long?): Observable<Int> {
+    val tmp = wordUIDao.getSelected()
+      .subscribeOn(Schedulers.io())
+      .onErrorReturn {
+        if (it is EmptyResultSetException) 0 else throw it
+      }
+      .toFlowable()
+    return if (id != null) {
+      tmp
+        .flatMap {
+          Single.merge(
+            wordUIDao.updateSelected(it, false)
+              .subscribeOn(Schedulers.io()),
+            wordUIDao.updateSelected(id, true)
+              .subscribeOn(Schedulers.io())
+          )
+        }
+//        .flatMap {
+//          wordUIDao.updateSelected(id, true)
+//            .subscribeOn(Schedulers.io())
+//        }
+    } else {
+      tmp
+        .flatMap {
+          wordUIDao
+            .updateSelected(it, false)
+            .subscribeOn(Schedulers.io())
+            .toFlowable()
+        }
+    }.toObservable()
   }
 }
