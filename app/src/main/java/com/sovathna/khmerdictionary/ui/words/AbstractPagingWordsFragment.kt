@@ -72,12 +72,15 @@ abstract class AbstractPagingWordsFragment<I : MviIntent, S : MviState, VM : Bas
       if (this is AbstractPagingWordsState) {
         wordsLiveData?.observe(viewLifecycleOwner, Observer {
           pagingAdapter.submitData(lifecycle, it)
+        })
+
+        rv.postOnAnimation {
           loadSuccess?.getContentIfNotHandled()?.let {
             selectWordIntent.value?.word?.let {
               selectWordIntent.onNext(WordsIntent.SelectWord(it))
             }
           }
-        })
+        }
 
       }
     }
