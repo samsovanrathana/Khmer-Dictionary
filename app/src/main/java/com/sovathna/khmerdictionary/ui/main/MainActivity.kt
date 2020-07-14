@@ -287,8 +287,8 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun onItemClickObserver(word: Word) {
-    selectWordSubject.onNext(WordsIntent.SelectWord(word.id))
-    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.id != null)
+    selectWordSubject.onNext(WordsIntent.SelectWord(word))
+    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       val intent = Intent(this, DefinitionActivity::class.java)
       intent.putExtra("word", word)
@@ -366,7 +366,7 @@ class MainActivity : AppCompatActivity() {
     menu?.findItem(R.id.action_clear)?.isVisible = clearMenuItemLiveData.value == true
 
     // Set definition menu items visibility
-    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.id != null)
+    setDefMenuItemsVisible(definition_container != null && selectWordSubject.value?.word != null)
 
     searchItem = menu?.findItem(R.id.action_search)
     searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {

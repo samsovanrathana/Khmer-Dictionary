@@ -3,13 +3,16 @@ package com.sovathna.khmerdictionary.ui.words.history
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.androidmvi.livedata.Event
 import com.sovathna.androidmvi.viewmodel.MviViewModel
 import com.sovathna.khmerdictionary.data.interactor.base.HistoriesInteractor
 import com.sovathna.khmerdictionary.model.result.HistoriesResult
 import com.sovathna.khmerdictionary.model.state.HistoriesState
-import com.sovathna.khmerdictionary.ui.words.WordItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.functions.BiFunction
 
@@ -23,22 +26,13 @@ class HistoriesViewModel @ViewModelInject constructor(
         is HistoriesResult.Success ->
           state.copy(
             isInit = false,
-            words =
-            if (state.words == null) {
-              result.words.map { WordItem(it) }
-            } else {
-              state.words.toMutableList().apply {
-                addAll(result.words.map { WordItem(it) })
-              }
-            },
-            isMore = result.isMore,
+            wordsLiveData = result.historiesPager.liveData
+              .map { it.map { it.toWordItem() } }
+              .cachedIn(viewModelScope),
             loadSuccess = Event(Unit)
           )
         is HistoriesResult.SelectWordSuccess -> state
-        is HistoriesResult.ClearHistoriesSuccess ->
-          state.copy(
-            words = emptyList()
-          )
+        is HistoriesResult.ClearHistoriesSuccess -> state
       }
     }
 

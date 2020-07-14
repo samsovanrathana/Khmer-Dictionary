@@ -5,7 +5,7 @@ import com.sovathna.androidmvi.intent.MviIntent
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.model.state.HistoriesState
-import com.sovathna.khmerdictionary.ui.words.AbstractWordsFragment
+import com.sovathna.khmerdictionary.ui.words.AbstractPagingWordsFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HistoriesFragment :
-  AbstractWordsFragment<MviIntent, HistoriesState, HistoriesViewModel>() {
+  AbstractPagingWordsFragment<MviIntent, HistoriesState, HistoriesViewModel>() {
 
   override val viewModel: HistoriesViewModel by viewModels()
 
@@ -40,19 +40,10 @@ class HistoriesFragment :
           )
         )
       }
-      words?.let {
-        clearMenuItemLiveData.value = it.isNotEmpty()
-      }
+//      words?.let {
+//        clearMenuItemLiveData.value = it.isNotEmpty()
+//      }
     }
-  }
-
-  override fun onLoadMore(offset: Int, pageSize: Int) {
-    getHistoriesIntent.onNext(
-      HistoriesIntent.GetWords(
-        offset,
-        Const.PAGE_SIZE
-      )
-    )
   }
 
 }

@@ -18,7 +18,6 @@ class WordsFragment :
 
   private val getWordsIntent = PublishSubject.create<WordsIntent.GetWords>()
 
-
   override fun intents(): Observable<WordsIntent> =
     Observable.merge(
       getWordsIntent,
@@ -26,6 +25,7 @@ class WordsFragment :
     )
 
   override fun render(state: WordsState) {
+    super.render(state)
     with(state) {
       if (isInit) {
         getWordsIntent.onNext(
@@ -35,9 +35,6 @@ class WordsFragment :
           )
         )
       }
-      wordsLiveData?.observe(viewLifecycleOwner, Observer {
-        pagingAdapter.submitData(lifecycle, it)
-      })
     }
   }
 }

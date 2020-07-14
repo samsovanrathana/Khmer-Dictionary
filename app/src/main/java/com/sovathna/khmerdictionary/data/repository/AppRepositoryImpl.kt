@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.room.EmptyResultSetException
+import com.sovathna.androidmvi.Logger
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.data.interactor.HistoriesRemoteMediator
 import com.sovathna.khmerdictionary.data.interactor.WordsRemoteMediator
@@ -17,7 +18,7 @@ import com.sovathna.khmerdictionary.model.entity.HistoryUI
 import com.sovathna.khmerdictionary.model.entity.WordUI
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,6 +32,7 @@ class AppRepositoryImpl @Inject constructor(
   private val historyDao = local.historyDao()
   private val bookmarkDao = local.bookmarkDao()
   private val wordUIDao = local.wordUIDao()
+  private val historyUIDao = local.historyUIDao()
 
   override fun getWords(offset: Int, pageSize: Int): Observable<List<Word>> {
     return wordDao
@@ -134,7 +136,6 @@ class AppRepositoryImpl @Inject constructor(
 
   override fun selectWord(id: Long?): Observable<Int> {
     val tmp = wordUIDao.getSelected()
-      .subscribeOn(Schedulers.io())
       .onErrorReturn {
         if (it is EmptyResultSetException) 0 else throw it
       }
@@ -143,10 +144,8 @@ class AppRepositoryImpl @Inject constructor(
       tmp
         .flatMap {
           Single.merge(
-            wordUIDao.updateSelected(it, false)
-              .subscribeOn(Schedulers.io()),
+            wordUIDao.updateSelected(it, false),
             wordUIDao.updateSelected(id, true)
-              .subscribeOn(Schedulers.io())
           )
         }
 //        .flatMap {
@@ -158,9 +157,22 @@ class AppRepositoryImpl @Inject constructor(
         .flatMap {
           wordUIDao
             .updateSelected(it, false)
-            .subscribeOn(Schedulers.io())
             .toFlowable()
         }
+    }.toObservable()
+  }
+
+  override fun selectHistory(word: Word?): Observable<Int> {
+    return if (word != null) {
+      historyUIDao
+        .deselectAll()
+        .flatMap {
+          historyUIDao
+            .add(HistoryUI(word.id, word.name,isSelected = true))
+            .map { 0 }
+        }
+    } else {
+      historyUIDao.deselectAll()
     }.toObservable()
   }
 }

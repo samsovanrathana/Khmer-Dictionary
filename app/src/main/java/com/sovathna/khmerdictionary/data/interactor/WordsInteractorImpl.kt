@@ -27,7 +27,7 @@ class WordsInteractorImpl @Inject constructor(
     ObservableTransformer<WordsIntent.SelectWord, WordsResult> {
       it.flatMap { intent ->
         repository
-          .selectWord(intent.id)
+          .selectWord(intent.word?.id)
           .subscribeOn(Schedulers.io())
           .map { WordsResult.SelectWordSuccess }
       }

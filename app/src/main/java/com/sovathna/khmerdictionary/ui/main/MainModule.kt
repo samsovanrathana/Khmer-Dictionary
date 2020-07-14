@@ -3,6 +3,7 @@ package com.sovathna.khmerdictionary.ui.main
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.sovathna.androidmvi.livedata.Event
+import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.intent.BookmarksIntent
 import com.sovathna.khmerdictionary.model.intent.HistoriesIntent
 import com.sovathna.khmerdictionary.model.intent.SearchesIntent
@@ -22,7 +23,7 @@ class MainModule {
 
   @Provides
   @ActivityScoped
-  fun clickWordSubject() = PublishSubject.create<Event<Long>>()
+  fun clickWordSubject() = PublishSubject.create<Event<Word>>()
 
   @Provides
   @ActivityScoped

@@ -17,5 +17,5 @@ data class HistoryEntity(
   val uid: Long = 0
 ) {
   fun toWord() = Word(id, word)
-  fun toHistoryUI() = HistoryUI(id, uid, word)
+  fun toHistoryUI() = HistoryUI(id, word, uid = uid)
 }

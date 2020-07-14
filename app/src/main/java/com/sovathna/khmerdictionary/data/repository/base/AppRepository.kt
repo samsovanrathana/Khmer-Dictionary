@@ -54,4 +54,6 @@ interface AppRepository {
   fun getWordsPager(): Observable<Pager<Int, WordUI>>
 
   fun selectWord(id: Long?): Observable<Int>
+
+  fun selectHistory(word: Word?): Observable<Int>
 }

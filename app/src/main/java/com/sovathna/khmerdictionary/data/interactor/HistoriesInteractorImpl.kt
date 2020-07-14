@@ -24,7 +24,12 @@ class HistoriesInteractorImpl @Inject constructor(
 
   override val selectWord =
     ObservableTransformer<WordsIntent.SelectWord, HistoriesResult> {
-      it.map { intent -> HistoriesResult.SelectWordSuccess }
+      it.flatMap { intent ->
+        repository
+          .selectHistory(intent.word)
+          .subscribeOn(Schedulers.io())
+          .map { HistoriesResult.SelectWordSuccess }
+      }
     }
 
   override val clearHistories =

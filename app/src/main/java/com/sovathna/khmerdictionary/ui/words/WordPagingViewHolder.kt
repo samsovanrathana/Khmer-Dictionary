@@ -38,7 +38,7 @@ class WordPagingViewHolder(itemView: View, onItemClick: ((Int, WordItem) -> Unit
       tvName.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.color_item_bg))
       divider.visibility = View.VISIBLE
     }
-    tvName.text = item.name
+    tvName.text = item.word.name
   }
 
 }

@@ -13,6 +13,7 @@ import com.sovathna.androidmvi.state.MviState
 import com.sovathna.androidmvi.viewmodel.BaseViewModel
 import com.sovathna.khmerdictionary.Const
 import com.sovathna.khmerdictionary.R
+import com.sovathna.khmerdictionary.model.Word
 import com.sovathna.khmerdictionary.model.intent.WordsIntent
 import com.sovathna.khmerdictionary.model.state.AbstractWordsState
 import io.reactivex.subjects.BehaviorSubject
@@ -29,7 +30,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
   protected lateinit var selectWordIntent: BehaviorSubject<WordsIntent.SelectWord>
 
   @Inject
-  protected lateinit var clickWordSubject: PublishSubject<Event<Long>>
+  protected lateinit var clickWordSubject: PublishSubject<Event<Word>>
 
   @Inject
   protected lateinit var recycledViewPool: RecyclerView.RecycledViewPool
@@ -81,7 +82,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
         if (words?.isNotEmpty() == true) {
           adapter.setOnItemClickListener { _, item ->
             if (!item.isSelected) {
-              clickWordSubject.onNext(Event(item.id))
+              clickWordSubject.onNext(Event(item.word))
             }
           }
 
@@ -89,7 +90,7 @@ abstract class AbstractWordsFragment<I : MviIntent, S : MviState, VM : BaseViewM
           // when list item is null or empty (it finished before items is
           // successfully retrieved)
           loadSuccess?.getContentIfNotHandled()?.let {
-            selectWordIntent.value?.id?.let {
+            selectWordIntent.value?.word?.let {
               selectWordIntent.onNext(WordsIntent.SelectWord(it))
             }
           }
